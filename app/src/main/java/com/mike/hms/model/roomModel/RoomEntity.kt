@@ -46,9 +46,10 @@ data class RoomBookingWithTenantName(
     val checkInDate: String,
     val checkOutDate: String,
     val bookingStatus: String,
-    val tenantName: String // Added tenant name
+    val firstName: String,
+    val lastName: String,// Added tenant name
 ){
-    constructor() : this("", "","", "", "", "", "")
+    constructor() : this("", "","", "", "", "", "", "")
 }
 
 enum class RoomType{
