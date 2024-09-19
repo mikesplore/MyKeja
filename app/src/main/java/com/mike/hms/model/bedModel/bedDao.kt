@@ -14,7 +14,7 @@ interface BedDao{
     suspend fun getBedsByRoomID(roomID: String): List<BedEntity>
 
     @Query("SELECT * FROM BedTable WHERE bedID = :bedID")
-    suspend fun getBedByID(bedID: String): BedEntity?
+    suspend fun getBedByID(bedID: String): BedEntity
 
     @Query("SELECT * FROM BedTable")
     suspend fun getAllBeds(): List<BedEntity>
