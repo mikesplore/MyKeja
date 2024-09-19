@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class TenantViewModel(private val tenantRepository: TenantRepository) {
+class TenantViewModel(private val tenantRepository: TenantRepository): ViewModel() {
     private val _tenants = MutableLiveData<List<TenantEntity>>()
     val tenants: LiveData<List<TenantEntity>> = _tenants
 
