@@ -11,7 +11,7 @@ interface HouseDao {
     suspend fun insertHouse(house: HouseEntity)
 
     @Query("SELECT * FROM HouseTable WHERE houseID = :houseID")
-    suspend fun getHouseByID(houseID: String): HouseEntity?
+    suspend fun getHouseByID(houseID: String): HouseEntity
 
     @Query("SELECT * FROM HouseTable")
     suspend fun getAllHouses(): List<HouseEntity>
