@@ -7,27 +7,34 @@ import kotlinx.coroutines.launch
 class HouseRepository(private val houseDao: HouseDao) {
     private val viewmodelScope = CoroutineScope(Dispatchers.IO)
 
-    fun insertHouse(house: HouseEntity) {
+    fun insertHouse(house: HouseEntity, onSuccess: (Boolean) -> Unit) {
         viewmodelScope.launch {
             houseDao.insertHouse(house)
+            onSuccess(true)
+
         }
     }
 
-    fun getHouseByID(houseID: String) {
+    fun getHouseByID(houseID: String, onResult: (HouseEntity) -> Unit) {
         viewmodelScope.launch {
-            houseDao.getHouseByID(houseID)
+            val house = houseDao.getHouseByID(houseID)
+            onResult(house)
         }
     }
 
-    fun getAllHouses() {
+    fun getAllHouses(onResult: (List<HouseEntity>) -> Unit) {
         viewmodelScope.launch {
-            houseDao.getAllHouses()
+            val houses = houseDao.getAllHouses()
+            onResult(houses)
+
         }
     }
 
-    fun deleteHouse(houseID: String) {
+    fun deleteHouse(houseID: String, onSuccess: (Boolean) -> Unit) {
         viewmodelScope.launch {
             houseDao.deleteHouse(houseID)
+            onSuccess(true)
+
         }
     }
 
