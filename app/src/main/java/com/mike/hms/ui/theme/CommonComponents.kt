@@ -62,7 +62,6 @@ object CommonComponents{
         )
     }
 
-
     @Composable
     fun buttonTextStyle(): TextStyle{
         return TextStyle(
@@ -72,7 +71,6 @@ object CommonComponents{
             fontSize = 14.sp
         )
     }
-
 
     @Composable
     fun MyOutlinedTextField(
