@@ -6,7 +6,7 @@ import com.mike.hms.model.houseModel.HouseRepository
 import com.mike.hms.model.roomModel.RoomRepository
 import com.mike.hms.model.tenantModel.TenantRepository
 
-class HmsAPP () : Application() {
+class HostelManagementSystemApp () : Application() {
     val database by lazy { HMSDatabase.getDatabase(this) }
     val tenantRepository by lazy { TenantRepository(database.tenantDao()) }
     val houseRepository by lazy { HouseRepository(database.houseDao()) }
