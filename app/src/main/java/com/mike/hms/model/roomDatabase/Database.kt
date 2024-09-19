@@ -9,6 +9,8 @@ import com.mike.hms.model.bedModel.BedDao
 import com.mike.hms.model.bedModel.BedEntity
 import com.mike.hms.model.houseModel.HouseDao
 import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.roomModel.RoomAllocationEntity
+import com.mike.hms.model.roomModel.RoomBookingEntity
 import com.mike.hms.model.roomModel.RoomDao
 import com.mike.hms.model.roomModel.RoomEntity
 import com.mike.hms.model.tenantModel.TenantDao
@@ -20,7 +22,10 @@ import com.mike.hms.model.tenantModel.TenantEntity
         TenantEntity::class,
         HouseEntity::class,
         RoomEntity::class,
-        BedEntity::class
+        BedEntity::class,
+        RoomAllocationEntity::class,
+        RoomBookingEntity::class
+
     ], version = 1,
     exportSchema = false
 )
