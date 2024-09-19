@@ -19,8 +19,8 @@ class RoomViewModel(private val roomRepository: RoomRepository) : ViewModel() {
     private val _roomAllocation = MutableLiveData<RoomAllocationEntity>()
     val roomAllocation: LiveData<RoomAllocationEntity> = _roomAllocation
 
-    private val _roomBookings = MutableLiveData<List<RoomBookingEntity>>()
-    val roomBookings: LiveData<List<RoomBookingEntity>> = _roomBookings
+    private val _roomBookings = MutableLiveData<List<RoomBookingWithTenantName>>()
+    val roomBookings: LiveData<List<RoomBookingWithTenantName>> = _roomBookings
 
     private val _roomBooking = MutableLiveData<RoomBookingEntity>()
     val roomBooking: LiveData<RoomBookingEntity> = _roomBooking
@@ -87,8 +87,8 @@ class RoomViewModel(private val roomRepository: RoomRepository) : ViewModel() {
         }
     }
 
-    fun getAllRoomBookings() {
-        roomRepository.getAllRoomBookings {
+    fun getAllRoomBookingsWithTenantName() {
+        roomRepository.getAllRoomBookingsWithTenantName {
             _roomBookings.value = it
         }
     }
@@ -96,6 +96,7 @@ class RoomViewModel(private val roomRepository: RoomRepository) : ViewModel() {
     fun deleteRoomBooking(roomBookingID: String, onSuccess: (Boolean) -> Unit) {
         roomRepository.deleteRoomBooking(roomBookingID) {
             onSuccess(it)
+            roomRepository.getAllRoomBookings()
         }
     }
 
