@@ -11,7 +11,7 @@ interface RoomDao {
     suspend fun insertRoom(room: RoomEntity)
 
     @Query("SELECT * FROM RoomTable WHERE roomID = :roomID")
-    suspend fun getRoomByID(roomID: String): RoomEntity?
+    suspend fun getRoomByID(roomID: String): RoomEntity
 
     @Query("SELECT * FROM RoomTable")
     suspend fun getAllRooms(): List<RoomEntity>
@@ -22,8 +22,11 @@ interface RoomDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRoomAllocation(roomAllocation: RoomAllocationEntity)
 
+    @Query("SELECT * FROM RoomAllocation")
+    suspend fun getAllRoomAllocations(): List<RoomAllocationEntity>
+
     @Query("SELECT * FROM RoomAllocation WHERE roomAllocationID = :roomAllocationID")
-    suspend fun getRoomAllocationByID(roomAllocationID: String): RoomAllocationEntity?
+    suspend fun getRoomAllocationByID(roomAllocationID: String): RoomAllocationEntity
 
     @Query(
         """
@@ -49,7 +52,7 @@ interface RoomDao {
     suspend fun insertRoomBooking(roomBooking: RoomBookingEntity)
 
     @Query("SELECT * FROM RoomBooking WHERE roomBookingID = :roomBookingID")
-    suspend fun getRoomBookingByID(roomBookingID: String): RoomBookingEntity?
+    suspend fun getRoomBookingByID(roomBookingID: String): RoomBookingEntity
 
     @Query("SELECT * FROM RoomBooking")
     suspend fun getAllRoomBookings(): List<RoomBookingEntity>
