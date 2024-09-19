@@ -31,5 +31,53 @@ class RoomRepository(private val roomDao: RoomDao) {
         }
     }
 
+    fun insertRoomAllocation(roomAllocation: RoomAllocationEntity) {
+        viewmodelScope.launch {
+            roomDao.insertRoomAllocation(roomAllocation)
+        }
+    }
+
+    fun getRoomAllocationByID(roomAllocationID: String) {
+        viewmodelScope.launch {
+            roomDao.getRoomAllocationByID(roomAllocationID)
+        }
+    }
+
+    fun getAllRoomAllocations() {
+        viewmodelScope.launch {
+            roomDao.getAllRoomBookingsWithTenantName()
+        }
+    }
+
+    fun deleteRoomAllocation(roomAllocationID: String) {
+        viewmodelScope.launch {
+            roomDao.deleteRoomAllocation(roomAllocationID)
+        }
+    }
+
+    fun insertRoomBooking(roomBooking: RoomBookingEntity) {
+        viewmodelScope.launch {
+            roomDao.insertRoomBooking(roomBooking)
+        }
+    }
+
+    fun getRoomBookingByID(roomBookingID: String) {
+        viewmodelScope.launch {
+            roomDao.getRoomBookingByID(roomBookingID)
+        }
+    }
+
+    fun getAllRoomBookings() {
+        viewmodelScope.launch {
+            roomDao.getAllRoomBookings()
+        }
+    }
+
+    fun deleteRoomBooking(roomBookingID: String) {
+        viewmodelScope.launch {
+            roomDao.deleteRoomBooking(roomBookingID)
+        }
+    }
+
 
 }
