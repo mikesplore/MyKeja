@@ -19,5 +19,4 @@ interface HouseDao {
     @Query("DELETE FROM HouseTable WHERE houseID = :houseID")
     suspend fun deleteHouse(houseID: String)
 
-
 }
