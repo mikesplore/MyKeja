@@ -11,7 +11,7 @@ interface TenantDao {
     suspend fun insertTenant(tenant: TenantEntity)
 
     @Query("SELECT * FROM tenantTable WHERE tenantID = :tenantID")
-    suspend fun getTenantByID(tenantID: String): TenantEntity?
+    suspend fun getTenantByID(tenantID: String): TenantEntity
 
     @Query("SELECT * FROM tenantTable")
     suspend fun getAllTenants(): List<TenantEntity>
