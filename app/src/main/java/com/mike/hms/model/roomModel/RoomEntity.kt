@@ -104,6 +104,8 @@ enum class RoomCategory{
     SUITE
 }
 
+
+
 enum class AmenityType {
     BASIC,
     ENTERTAINMENT,
