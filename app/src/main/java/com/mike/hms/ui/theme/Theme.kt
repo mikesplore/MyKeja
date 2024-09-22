@@ -17,13 +17,18 @@ import com.mike.hms.R
 private val DarkColorScheme = darkColorScheme(
     primary = Black,
     secondary = BlackSchemeTextColor,
-    tertiary = Blue
+    tertiary = Blue,
+    background = Black,
+    onPrimary = Green,
+    onSecondary = Purple
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = White,
     secondary = WhiteSchemeTextColor,
-    tertiary = Red
+    tertiary = Red,
+    onPrimary = Purple,
+    onSecondary = Green,
 )
 
 val LibreFranklin = FontFamily(
