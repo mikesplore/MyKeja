@@ -1,7 +1,6 @@
-package com.mike.hms.homeScreen
+package com.mike.hms.dashboard
 
 import android.content.Context
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.mike.hms.homeScreen.TopAppBarComponent
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
@@ -40,6 +40,8 @@ fun DashboardScreen(context: Context, navController: NavController){
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            HouseTypeList()
         }
     }
 

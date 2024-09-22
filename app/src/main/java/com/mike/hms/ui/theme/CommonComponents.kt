@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -128,7 +129,7 @@ object CommonComponents{
             placeholder = { Text(placeholder, style = contentTextStyle()) },
             shape = RoundedCornerShape(20.dp),
             modifier = modifier,
-            colors = OutlinedTextFieldDefaults.colors(),
+            colors = outLinedTextFieldColors(),
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Search,
@@ -137,6 +138,17 @@ object CommonComponents{
             }
         )
     }
+    @Composable
+    fun outLinedTextFieldColors(): TextFieldColors{
+        return OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = secondaryColor(),
+            unfocusedBorderColor = textColor(),
+            focusedLabelColor = textColor(),
+            unfocusedLabelColor = textColor(),
+            cursorColor = textColor()
+        )
+    }
+
 
     @Composable
     fun AdaptiveSizes(
