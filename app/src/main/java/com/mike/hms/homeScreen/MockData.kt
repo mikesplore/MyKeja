@@ -5,10 +5,12 @@ import com.mike.hms.model.houseModel.HouseEntity
 
 // House types
 val houseTypes = listOf(
-    HouseEntity(houseID = "1","House1","Villa","https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591","Nairobi"),
-    HouseEntity(houseID = "2","House2","Apartment","https://c8.alamy.com/comp/R8KC33/modern-residential-apartment-home-complex-block-with-outdoor-facilities-concept-R8KC33.jpg","Mombasa"),
-    HouseEntity(houseID = "1","House1","Hotel","https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/ed/95/07/limak-eurasia-luxury.jpg?w=700&h=-1&s=1","Nairobi"),
-    HouseEntity(houseID = "2","House2","Bungalow","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/George_L._Burlingame_House%2C_1238_Harvard_St%2C_Houston_%28HDR%29.jpg/800px-George_L._Burlingame_House%2C_1238_Harvard_St%2C_Houston_%28HDR%29.jpg","Mombasa"),
+    HouseEntity(houseID = "1",houseName = "House1","Villa", houseImageLink = "https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591", houseLocation = "Nairobi", houseRating = "5.0"),
+    HouseEntity(houseID = "2","House2","Apartment", houseImageLink = "https://c8.alamy.com/comp/R8KC33/modern-residential-apartment-home-complex-block-with-outdoor-facilities-concept-R8KC33.jpg",houseLocation = "Mombasa", houseRating = "4.9"),
+    HouseEntity(houseID = "3","House3","Hotel",houseImageLink ="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/ed/95/07/limak-eurasia-luxury.jpg?w=700&h=-1&s=1",houseLocation ="Kilifi", houseRating = "4.6"),
+    HouseEntity(houseID = "4","House4","Bungalow",houseImageLink ="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/George_L._Burlingame_House%2C_1238_Harvard_St%2C_Houston_%28HDR%29.jpg/800px-George_L._Burlingame_House%2C_1238_Harvard_St%2C_Houston_%28HDR%29.jpg",houseLocation ="Kisumu"),
+    HouseEntity(houseID = "5","House5","Condominiums",houseImageLink ="https://na.rdcpix.com/63bc3db5f65286a1fb4e2b1af9e14591w-c1980730521srd_q80.jpg",houseLocation ="Nairobi"),
+    HouseEntity(houseID = "6","House6","Boutiques",houseImageLink ="https://newsouthhomes.com.au/wp-content/uploads/2021/10/1-6303-100-Castle-Hill-Road-WPH-22008-0301-c02-scaled.jpg",houseLocation ="Nairobi", houseRating = "4.8"),
 
 )
 
