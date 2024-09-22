@@ -20,7 +20,8 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Blue,
     background = Black,
     onPrimary = Green,
-    onSecondary = Purple
+    onSecondary = Purple,
+    onBackground = whiteSurfaceContainer,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -29,6 +30,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Red,
     onPrimary = Purple,
     onSecondary = Green,
+    onBackground = blackSurfaceContainer,
 )
 
 val LibreFranklin = FontFamily(
