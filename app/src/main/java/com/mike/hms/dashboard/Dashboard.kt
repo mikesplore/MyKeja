@@ -19,7 +19,7 @@ import com.mike.hms.homeScreen.TopAppBarComponent
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun DashboardScreen(context: Context, navController: NavController){
+fun DashboardScreen(context: Context, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBarComponent(context)
@@ -40,23 +40,45 @@ fun DashboardScreen(context: Context, navController: NavController){
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             HouseTypeList()
             Spacer(modifier = Modifier.height(20.dp))
             CarouselWithLoop()
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                "Popular Places", style = CC.titleTextStyle().copy(
+                    color = CC.secondaryColor()
+                ),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            PopularHouseTypeList()
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                "Recommended for you", style = CC.titleTextStyle().copy(
+                    color = CC.secondaryColor()
+                ),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
         }
     }
-
 }
 
+
+
 @Composable
-fun TopText(){
-    CC.AdaptiveSizes{
-        textSize, dpSize ->
-        Row(modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 10.dp )
-            .width(dpSize)) {
-            Text("Where do you want to go?", style = CC.titleTextStyle().copy(fontSize = textSize* 0.06f, color = CC.tertiaryColor()))
+fun TopText() {
+    CC.AdaptiveSizes { textSize, dpSize ->
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .width(dpSize)
+        ) {
+            Text(
+                "Where do you want to go?",
+                style = CC.titleTextStyle()
+                    .copy(fontSize = textSize * 0.06f, color = CC.tertiaryColor())
+            )
 
         }
     }
