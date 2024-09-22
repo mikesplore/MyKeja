@@ -45,7 +45,7 @@ abstract class HMSDatabase : RoomDatabase() {
             val instance = Room.databaseBuilder(
                 context.applicationContext,
                 HMSDatabase::class.java,
-                "HmsDatabase"
+                "HmsDatabaseV1"
             )
                 .build()
             INSTANCE = instance
