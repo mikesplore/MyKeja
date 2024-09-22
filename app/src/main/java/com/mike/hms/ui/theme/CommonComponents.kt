@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.time.LocalTime
 
 object CommonComponents{
 
@@ -45,6 +46,13 @@ object CommonComponents{
     fun extraSecondaryColor(): Color{
         return MaterialTheme.colorScheme.onSecondary
     }
+
+    @Composable
+    fun surfaceContainerColor(): Color{
+        return MaterialTheme.colorScheme.onBackground
+    }
+
+
 
     @Composable
     fun textColor(): Color {
@@ -164,6 +172,17 @@ object CommonComponents{
             val dpSize = columnWidth * dpFraction
             content(textSize, dpSize)
         }
+    }
+
+    @Composable
+    fun greeting(): String {
+        val currentHour = LocalTime.now().hour
+        val greeting = when (currentHour) {
+            in 0..11 -> "Good morning"
+            in 12..16 -> "Good afternoon"
+            else -> "Good evening"
+        }
+       return greeting
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
