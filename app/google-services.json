@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "295771880605",
+    "project_id": "hostel-management-system-ddfb7",
+    "storage_bucket": "hostel-management-system-ddfb7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295771880605:android:7107f46c7d7d2bd84da874",
+        "android_client_info": {
+          "package_name": "com.mike.hms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADVmP-swUjC6tHWFCFC8VMa5NVvlz9sCQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
