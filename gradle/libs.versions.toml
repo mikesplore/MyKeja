@@ -1,6 +1,8 @@
 [versions]
 agp = "8.7.0-alpha03"
 appcompat = "1.7.0"
+coil = "2.5.0"
+coilVersion = "2.5.0"
 coreSplashscreen = "1.0.1"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -27,6 +29,8 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomCompiler" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomCompiler" }
+coil = { module = "io.coil.kt:coil", version.ref = "coil" }
+coil-kt-coil = { module = "io.coil-kt:coil", version.ref = "coilVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
