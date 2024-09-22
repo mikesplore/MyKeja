@@ -42,6 +42,8 @@ fun DashboardScreen(context: Context, navController: NavController){
             )
             Spacer(modifier = Modifier.height(20.dp))
             HouseTypeList()
+            Spacer(modifier = Modifier.height(20.dp))
+            CarouselWithLoop()
         }
     }
 
