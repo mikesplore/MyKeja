@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.appcompat)
+    implementation("io.coil-kt:coil-compose:2.4.0")
     implementation(libs.androidx.material.icons.extended.android)
 
     implementation(libs.androidx.core.splashscreen)
