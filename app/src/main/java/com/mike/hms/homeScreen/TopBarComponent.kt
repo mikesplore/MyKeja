@@ -30,14 +30,11 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarComponent(context: Context){
-    val brush = Brush.horizontalGradient(
-        colors = listOf(CC.primaryColor(), CC.secondaryColor())
-    )
     val location = HMSPreferences.location.value
     TopAppBar(
         title = {
             Column {
-                Text("Good Morning, Mike!", style = CC.titleTextStyle())
+                Text("${CC.greeting()}, Mike!", style = CC.titleTextStyle())
                 Row {
                     Icon(Icons.Default.LocationOn, contentDescription = "Location", tint = CC.secondaryColor(), modifier = Modifier.size(16.dp))
                     Text(location, style = CC.bodyTextStyle().copy(color = CC.extraPrimaryColor()))
