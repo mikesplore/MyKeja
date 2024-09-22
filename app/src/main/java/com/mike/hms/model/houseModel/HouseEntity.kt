@@ -8,19 +8,19 @@ class HouseEntity(
     @PrimaryKey val houseID: String,
     val houseName: String,
     val houseType: String,
+    val houseImageLink: String,
     val houseLocation: String,
     val houseCategory: String,
 ){
-    constructor() : this("", "", "", "", "")
+    constructor() : this("", "", "", "","", "")
 }
 
-enum class HouseType{
-    ECONOMY,
-    LUXURY
-}
+@Entity(tableName = "HouseTypes")
+class HouseType(
+    @PrimaryKey val houseTypeID: String,
+    val houseType: String,
+    val houseTypeImageLink: String,
+){
+    constructor() : this("", "", "")
 
-enum class HouseCategory{
-    MALE,
-    FEMALE,
-    MIXED
 }
