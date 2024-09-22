@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(libs.firebase.database)
+    implementation(libs.play.services.location)
     //room Dependencies
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
