@@ -16,8 +16,7 @@ import com.mike.hms.model.roomModel.RoomEntity
 import com.mike.hms.model.tenantModel.TenantDao
 import com.mike.hms.model.tenantModel.TenantEntity
 
-@Database
-    (
+@Database(
     entities = [
         TenantEntity::class,
         HouseEntity::class,
@@ -25,8 +24,8 @@ import com.mike.hms.model.tenantModel.TenantEntity
         BedEntity::class,
         RoomAllocationEntity::class,
         RoomBookingEntity::class
-
-    ], version = 1,
+    ],
+    version = 2, // Incremented version number
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,20 +36,22 @@ abstract class HMSDatabase : RoomDatabase() {
     abstract fun bedDao(): BedDao
 
     companion object {
-    @Volatile
-    private var INSTANCE: HMSDatabase? = null
+        @Volatile
+        private var INSTANCE: HMSDatabase? = null
 
-    fun getDatabase(context: Context): HMSDatabase {
-        return INSTANCE ?: synchronized(this) {
-            val instance = Room.databaseBuilder(
-                context.applicationContext,
-                HMSDatabase::class.java,
-                "HmsDatabaseV1"
-            )
-                .build()
-            INSTANCE = instance
-            instance
+        fun getDatabase(context: Context): HMSDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    HMSDatabase::class.java,
+                    "HmsDatabase"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+                instance
+            }
         }
     }
-    }
 }
+
