@@ -65,7 +65,7 @@ fun HouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
 fun HouseTypeList(modifier: Modifier = Modifier) {
     LazyRow(
         modifier = modifier
-            .padding(horizontal = 20.dp)
+            .padding(start = 20.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
