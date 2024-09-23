@@ -1,6 +1,7 @@
 package com.mike.hms.dashboard
 
 import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,7 +24,8 @@ fun DashboardScreen(context: Context, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBarComponent(context)
-        }
+        },
+        containerColor = CC.primaryColor()
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -35,7 +37,7 @@ fun DashboardScreen(context: Context, navController: NavController) {
             CC.SearchTextField(
                 value = "",
                 onValueChange = { /* Handle search query change */ },
-                placeholder = "Search destinations...",
+                placeholder = "Search destination...",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
@@ -45,21 +47,46 @@ fun DashboardScreen(context: Context, navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
             CarouselWithLoop()
             Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
             Text(
                 "Popular Places", style = CC.titleTextStyle().copy(
                     color = CC.secondaryColor()
                 ),
-                modifier = Modifier.padding(horizontal = 20.dp)
             )
+                Text(
+                    "See all", style = CC.contentTextStyle().copy(
+                        color = CC.extraPrimaryColor()
+                    )
+                )
+
+            }
             Spacer(modifier = Modifier.height(20.dp))
             PopularHouseTypeList()
             Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                "Recommended for you", style = CC.titleTextStyle().copy(
-                    color = CC.secondaryColor()
-                ),
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Recommended for you", style = CC.titleTextStyle().copy(
+                        color = CC.secondaryColor()
+                    ),
+                )
+                Text(
+                    "See all", style = CC.contentTextStyle().copy(
+                        color = CC.extraPrimaryColor()
+                    ),
+
+                    )
+
+            }
         }
     }
 }
