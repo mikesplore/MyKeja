@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,67 +45,63 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
         val density = LocalDensity.current
         val textSize = with(density) { (boxHeight * 0.1f).toSp() }
 
-        Box(
+        // Card for the house item
+        Card(
             modifier = modifier
                 .width(boxWidth)
-                .height(boxHeight)
-                .shadow(
-                    elevation = 10.dp,
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .border(
-                    width = 1.dp,
-                    color = CC.secondaryColor(),
-                    shape = RoundedCornerShape(20.dp)
-                )
+                .height(boxHeight),
+            shape = RoundedCornerShape(20.dp),  // Rounded corners
+            elevation = CardDefaults.cardElevation(5.dp)                 // Built-in shadow/elevation
         ) {
-            // Image
-            AsyncImage(
-                model = houseType.houseImageLink,
-                contentDescription = "House Image",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(20.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            // Bottom overlay with house name, location, and rating
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(CC.surfaceContainerColor().copy(alpha = 0.9f))
-                    .padding(10.dp) // Add padding for a cleaner look
-            ) {
-                // House name and location
-                Text(
-                    text = "${houseType.houseName}, ${houseType.houseLocation}",
-                    style = CC.bodyTextStyle().copy(
-                        fontSize = textSize * 0.7f,
-                        color = CC.extraPrimaryColor()
-                    ),
-                    modifier = Modifier.padding(bottom = 6.dp) // Space above the rating
+            Box {
+                // Image
+                AsyncImage(
+                    model = houseType.houseImageLink,
+                    contentDescription = "House Image",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(20.dp)),
+                    contentScale = ContentScale.Crop
                 )
 
-                // Row for rating with star icon
-                Row(
-                    verticalAlignment = Alignment.CenterVertically, // Center the star and rating
-                    modifier = Modifier.padding(start = 4.dp) // Add slight padding for structure
+                // Bottom overlay with house name, location, and rating
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .background(CC.surfaceContainerColor().copy(alpha = 0.9f))
+                        .padding(10.dp)  // Padding for a cleaner layout
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Star Icon",
-                        tint = CC.extraPrimaryColor(),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp)) // Space between the star and rating text
+                    // House name and location
                     Text(
-                        text = houseType.houseRating,
+                        text = "${houseType.houseName}, ${houseType.houseLocation}",
                         style = CC.bodyTextStyle().copy(
                             fontSize = textSize * 0.7f,
                             color = CC.extraPrimaryColor()
-                        )
+                        ),
+                        modifier = Modifier.padding(bottom = 6.dp)  // Space above the rating
                     )
+
+                    // Row for rating with star icon
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,  // Center the star and rating
+                        modifier = Modifier.padding(start = 4.dp)  // Padding for structure
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star Icon",
+                            tint = CC.extraPrimaryColor(),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))  // Space between star and rating
+                        Text(
+                            text = houseType.houseRating,
+                            style = CC.bodyTextStyle().copy(
+                                fontSize = textSize * 0.7f,
+                                color = CC.extraPrimaryColor()
+                            )
+                        )
+                    }
                 }
             }
         }
