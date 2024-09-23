@@ -41,7 +41,7 @@ fun HouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(boxSize)
                     .clip(CircleShape)
-                    .border(1.dp, CC.secondaryColor(), CircleShape)
+                    .border(1.dp, CC.secondaryColor().copy(0.5f), CircleShape)
             ) {
                 AsyncImage(
                     modifier = Modifier.size(boxSize),
