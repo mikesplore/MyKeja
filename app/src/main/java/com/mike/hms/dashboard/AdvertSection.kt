@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,35 +33,28 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 fun CarouselItemCard(carouselItem: CarouselItem) {
     BoxWithConstraints {
         val cardHeight = maxHeight * 0.3f
-        Box(
+
+        // Use Card instead of Box
+        Card(
             modifier = Modifier
                 .width(cardHeight * 2.0f)
                 .height(cardHeight)
-                .padding(10.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .border(
-                    width = 1.dp,
-                    color = CC.secondaryColor(),
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .shadow(
-                    elevation = 10.dp,
-                    shape = RoundedCornerShape(20.dp)
-                )
-
+                .padding(10.dp),
+            shape = RoundedCornerShape(20.dp),  // Rounded corners
+            elevation = CardDefaults.cardElevation(5.dp)                 // Elevation for shadow
         ) {
             AsyncImage(
                 model = carouselItem.itemImageLink,
                 contentDescription = "Carousel Image",
                 modifier = Modifier
-                    .fillMaxSize(),
-                contentScale = ContentScale.Crop,
-
-                )
-
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(20.dp)),  // Clip to rounded corners
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }
+
 
 @Composable
 fun CarouselWithLoop() {
