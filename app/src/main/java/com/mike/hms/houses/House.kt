@@ -1,34 +1,31 @@
 package com.mike.hms.houses
 
 import android.content.Context
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.mike.hms.homeScreen.houseTypes
-import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseType
 import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -39,7 +36,8 @@ object HouseTypes {
         HouseType.APARTMENT,
         HouseType.BUNGALOW,
         HouseType.CONDOMINIUM,
-        HouseType.VILLA
+        HouseType.VILLA,
+        HouseType.BOUTIQUE
     )
 }
 
@@ -68,7 +66,12 @@ fun Houses(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Search houses...", style = CC.contentTextStyle()) },
+                placeholder = {
+                    Text(
+                        "Search by name, type, or location...",
+                        style = CC.contentTextStyle()
+                    )
+                },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
                 colors = CC.outLinedTextFieldColors(),
                 shape = CC.outLinedTextFieldShape()
@@ -82,20 +85,37 @@ fun Houses(
             ) {
                 item {
                     FilterChip(
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = CC.secondaryColor(),
+                        ),
                         selected = selectedFilter == null, // "All" option when no filter is selected
                         onClick = { selectedFilter = null },
-                        label = { Text("All", style = CC.contentTextStyle()) },
-                        modifier = Modifier.padding(end = 8.dp)
+                        label = {
+                            Text(
+                                "All", style = CC.contentTextStyle().copy(
+                                    color = if (selectedFilter == null) CC.primaryColor() else CC.textColor()
+                                )
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(end = 8.dp)
                     )
                 }
                 items(HouseTypes.houseTypes) { filter ->
                     FilterChip(
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = CC.secondaryColor(),
+                        ),
                         selected = selectedFilter == filter,
                         onClick = { selectedFilter = filter },
                         label = {
                             Text(
-                                filter.name.first().uppercase(Locale.getDefault()) + filter.name.substring(1).lowercase(Locale.getDefault()),
-                                style = CC.contentTextStyle()
+                                filter.name.first()
+                                    .uppercase(Locale.getDefault()) + filter.name.substring(1)
+                                    .lowercase(Locale.getDefault()),
+                                style = CC.contentTextStyle().copy(
+                                    color = if (selectedFilter == filter) CC.primaryColor() else CC.textColor()
+                                )
                             )
                         },
                         // Displaying enum name
@@ -122,8 +142,11 @@ fun Houses(
                 groupedHouses.forEach { (type, housesOfType) ->
                     item {
                         Text(
-                            text = type.name, // Use the enum name for the title
-                            style = MaterialTheme.typography.bodySmall,
+                            text = type.name
+                                .first().uppercase(Locale.getDefault()) + type.name.substring(1)
+                                .lowercase(Locale.getDefault())
+                                .plus("s"), // Use the enum name for the title
+                            style = CC.titleTextStyle(),
                             modifier = Modifier.padding(16.dp)
                         )
                     }
@@ -147,72 +170,6 @@ fun Houses(
 }
 
 
-@Composable
-fun HouseCard(house: HouseEntity, onHouseClick: () -> Unit) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val cardHeight = screenWidth * 0.5f
-    val cardWidth = screenWidth * 0.49f
 
-    val brush = Brush.horizontalGradient(
-        colors = listOf(
-            CC.primaryColor(),
-            CC.tertiaryColor().copy(alpha = 0.5f)
-        ),
-    )
-    Card(
-        modifier = Modifier
-            .width(cardWidth)
-            .height(cardHeight)
-            .padding(end = 16.dp, bottom = 16.dp)
-            .clickable(onClick = onHouseClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column {
-            AsyncImage(
-                model = house.houseImageLink.random(),
-                contentDescription = "House Image",
-                modifier = Modifier
-                    .height(cardHeight * 0.59f)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(brush)
-                    .padding(8.dp)
-            ) {
-                Text(
-                    house.houseName,
-                    style = CC.titleTextStyle()
-                        .copy(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    house.houseLocation,
-                    style = CC.contentTextStyle().copy(color = CC.extraPrimaryColor())
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "★ ${house.houseRating}",
-                        style = CC.contentTextStyle().copy(
-                            color = Color(0xFFFFA000)
-                        )
-                    )
-                    Text(
-                        house.rooms.size.toString() + " Rooms",
-                        style = CC.contentTextStyle().copy(fontSize = 13.sp)
-                    )
-                }
-            }
-        }
-    }
-}
 
 
