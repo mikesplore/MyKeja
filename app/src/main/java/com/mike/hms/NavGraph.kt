@@ -7,13 +7,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.homeScreen.HomeScreen
+import com.mike.hms.houses.HouseDetailScreen
 import com.mike.hms.houses.Houses
 
 @Composable
 fun NavGraph(context: Context){
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "houses"){
+    NavHost(navController = navController, startDestination = "houseDetails"){
         composable("dashboard"){
             DashboardScreen(context, navController)
         }
@@ -24,6 +25,10 @@ fun NavGraph(context: Context){
 
         composable("houses"){
             Houses(navController, context)
+        }
+
+        composable("houseDetails"){
+            HouseDetailScreen()
         }
     }
 }
