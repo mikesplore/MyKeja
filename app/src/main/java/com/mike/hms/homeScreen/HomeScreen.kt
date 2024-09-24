@@ -80,7 +80,7 @@ fun HomeScreen(
         Scaffold(
             bottomBar = {
                 NavigationBar(
-                    containerColor = CC.textColor().copy(alpha = 0.1f)
+                    containerColor = CC.primaryColor()
                 ) {
                     screens.forEachIndexed { index, screen ->
                         NavigationBarItem(
