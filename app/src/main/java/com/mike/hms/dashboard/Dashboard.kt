@@ -43,8 +43,6 @@ fun DashboardScreen(context: Context, navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TopText()
-            Spacer(modifier = Modifier.height(10.dp))
             CC.SearchTextField(
                 value = "",
                 onValueChange = { /* Handle search query change */ },
@@ -106,25 +104,6 @@ fun DashboardScreen(context: Context, navController: NavController) {
                     ))
             }
             Spacer(modifier = Modifier.height(30.dp))
-
-        }
-    }
-}
-
-
-@Composable
-fun TopText() {
-    CC.AdaptiveSizes { textSize, dpSize ->
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 10.dp)
-                .width(dpSize)
-        ) {
-            Text(
-                "Where do you want to go?",
-                style = CC.titleTextStyle()
-                    .copy(fontSize = textSize * 0.06f, color = CC.tertiaryColor())
-            )
 
         }
     }
