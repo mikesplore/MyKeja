@@ -31,12 +31,12 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 fun HouseAmenities(house: HouseEntity) {
     val amenities = house.houseAmenities.map { it.name }
     val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
 
     val brush = Brush.horizontalGradient(
-        listOf(CC.surfaceContainerColor(), CC.secondaryColor().copy(alpha = 0.5f))
+        listOf(CC.primaryColor(), CC.secondaryColor().copy(alpha = 0.5f))
     )
+
 
     Card(
         modifier = Modifier
@@ -85,7 +85,7 @@ fun HouseAmenities(house: HouseEntity) {
                                 fontSize = 14.sp,
                                 color = CC.textColor(),
                                 textAlign = TextAlign.Center
-                            )
+                            ),
                         )
                     }
                 }
