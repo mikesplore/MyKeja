@@ -36,7 +36,6 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun ImageGallery(
     house: HouseEntity,
-    selectedImage: String?,
     onImageClick: (String?) -> Unit,
     isHouseFavorite: MutableState<Boolean>,
     screenWidth: Dp,
@@ -67,7 +66,7 @@ fun ImageGallery(
                 IconButton(
                     onClick = { /* Handle back action */ },
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CC.primaryColor()
+                        containerColor = CC.primaryColor().copy(0.5f)
                     ),
                     modifier = Modifier
                         .padding(start = 5.dp)
@@ -83,7 +82,7 @@ fun ImageGallery(
                 IconButton(
                     onClick = { isHouseFavorite.value = !isHouseFavorite.value },
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CC.primaryColor()
+                        containerColor = CC.primaryColor().copy(0.5f)
                     ),
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -101,7 +100,7 @@ fun ImageGallery(
                     modifier = Modifier
                         .align(Alignment.BottomEnd),
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CC.primaryColor()
+                        containerColor = CC.primaryColor().copy(0.5f)
                     )
                 ) {
                     Icon(
