@@ -34,7 +34,7 @@ fun HouseDetailScreen() {
     val density = LocalDensity.current.density
     val textSize = (screenWidth.value / density).sp
     val isHouseFavorite = remember { mutableStateOf(false) }
-    val house = houseTypes[0]
+    val house = houseTypes.random()
     var selectedImage by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -47,7 +47,6 @@ fun HouseDetailScreen() {
         // Image Gallery
         ImageGallery(
             house = house,
-            selectedImage = selectedImage,
             onImageClick = { selectedImage = it },
             isHouseFavorite = isHouseFavorite,
             screenWidth = screenWidth,
@@ -73,6 +72,18 @@ fun HouseDetailScreen() {
 
         // House Amenities
         HouseAmenities(house)
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // House Description
+        HouseDescription(house)
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Available Rooms
+        AvailableRooms()
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Book Now
+        BookNow(house)
     }
 
     // Full-screen image dialog
