@@ -52,6 +52,7 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.androidx.material.icons.extended.android)
 
     implementation(libs.androidx.core.splashscreen)
