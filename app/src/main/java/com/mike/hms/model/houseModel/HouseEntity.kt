@@ -16,7 +16,9 @@ data class HouseEntity(
     val houseDescription: String = "",           // Description of the house
     val ownerID: String = "",                    // ID of the house owner: HouseOwner,                  // Link to the owner data class
     val bookingInfoID: String = "",           // Link to the booking information
-    val rooms: List<String>   = listOf()                    // List of rooms id available in the house
+    val rooms: List<String>   = listOf()   ,                 // List of rooms id available in the house
+    val housePrice: Float = 0.0f,                // Price of the house or starting room price
+
 ){
     constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", emptyList())
 }
@@ -44,7 +46,7 @@ enum class HouseType {
     HOTEL,
     BUNGALOW,
     CONDOMINIUM,
-    BOUTIQUES
+    BOUTIQUE
 }
 
 
