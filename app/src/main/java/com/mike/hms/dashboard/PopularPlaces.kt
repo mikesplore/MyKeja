@@ -79,7 +79,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
                 ) {
                     // House name, type and location
                     Text(
-                        text = "${houseType.houseName}, ${if (houseType.houseType.startsWith("a", ignoreCase = true)) "an" else "a"} ${houseType.houseType.lowercase(
+                        text = "${houseType.houseName}, ${if (houseType.houseType.name.startsWith("a", ignoreCase = true)) "an" else "a"} ${houseType.houseType.name.lowercase(
                             Locale.getDefault()
                         )} in ${houseType.houseLocation}",
                         style = CC.bodyTextStyle().copy(
