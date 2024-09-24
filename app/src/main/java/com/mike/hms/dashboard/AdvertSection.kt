@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mike.hms.homeScreen.CarouselItem
@@ -31,8 +32,9 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun CarouselItemCard(carouselItem: CarouselItem) {
-    BoxWithConstraints {
-        val cardHeight = maxHeight * 0.3f
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+        val cardHeight = screenHeight * 0.2f
 
         // Use Card instead of Box
         Card(
@@ -52,7 +54,7 @@ fun CarouselItemCard(carouselItem: CarouselItem) {
                 contentScale = ContentScale.Crop
             )
         }
-    }
+
 }
 
 
