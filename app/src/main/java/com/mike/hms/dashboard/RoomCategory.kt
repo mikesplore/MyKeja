@@ -44,7 +44,6 @@ import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
-
 val roomCategory = listOf(
     RoomCategory.ECONOMY,
     RoomCategory.STANDARD,
@@ -52,10 +51,9 @@ val roomCategory = listOf(
     RoomCategory.LUXURY,
     RoomCategory.DELUXE,
     RoomCategory.EXECUTIVE,
-
 )
 
-object FilteredCategory{
+object FilteredCategory {
     val category: MutableState<String> = mutableStateOf("")
 }
 
@@ -88,7 +86,7 @@ fun RoomsCategory() {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         items(roomCategory.size) { index ->
@@ -103,12 +101,12 @@ fun RoomsCategory() {
                 isSelected = selectedIndex == index, // Check if this box is selected
                 onClick = {
                     FilteredCategory.category.value = formattedCategory
-                    selectedIndex = index } // Update selected index when clicked
+                    selectedIndex = index
+                } // Update selected index when clicked
             )
         }
     }
 }
-
 
 
 @Composable
@@ -144,7 +142,7 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .background(CC.secondaryColor(), shape = RoundedCornerShape(10.dp))
                     .align(Alignment.TopEnd)  // Align to the bottom end
-            ){
+            ) {
                 Text(
                     text = String.format(Locale.getDefault(), "Ksh %,d/Night", room.roomPrice),
                     style = CC.bodyTextStyle().copy(
@@ -161,44 +159,37 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .align(Alignment.BottomStart)  // Align the other details to the bottom start
                     .fillMaxWidth()
-                    .background(CC.surfaceContainerColor().copy(alpha = 0.9f))
-                    .padding(10.dp)  // Padding for a cleaner layout
+                    .background(
+                        CC
+                            .surfaceContainerColor()
+                            .copy(alpha = 0.9f)
+                    )
+                    .padding(5.dp)  // Padding for a cleaner layout
             ) {
                 // Room type and capacity
                 Text(
-                    text = "${room.roomType} - Best for ${room.roomCapacity} people",
+                    text = room.roomType.name.first()
+                        .uppercase(Locale.getDefault()) + room.roomType.name.substring(1)
+                        .lowercase(Locale.getDefault()),
                     style = CC.bodyTextStyle().copy(
                         fontSize = textSize * 0.7f,
                         color = CC.extraPrimaryColor()
                     ),
-                    modifier = Modifier.padding(bottom = 6.dp)  // Space above the rating
+                    modifier = Modifier.padding(bottom = 3.dp)
                 )
-
-                // Row for rating and star icon
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,  // Center star and rating
-                    modifier = Modifier.padding(start = 4.dp)  // Padding for structure
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Star Icon",
-                        tint = CC.extraPrimaryColor(),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))  // Space between star and rating
-                    Text(
-                        text = room.roomRating.toString(),
-                        style = CC.bodyTextStyle().copy(
-                            fontSize = textSize * 0.7f,
-                            color = CC.extraPrimaryColor()
-                        )
-                    )
-                }
+                val guests= if (room.roomCapacity == 1) " ${room.roomCapacity} Guest" else " ${room.roomCapacity} Guests"
+                Text(
+                    text = guests,
+                    style = CC.bodyTextStyle().copy(
+                        fontSize = textSize * 0.7f,
+                        color = CC.extraPrimaryColor()
+                        ),
+                    modifier = Modifier.padding(bottom = 3.dp)
+                )
             }
         }
     }
 }
-
 
 
 @Composable
