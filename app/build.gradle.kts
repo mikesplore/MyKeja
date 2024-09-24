@@ -51,14 +51,14 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
     implementation(libs.androidx.appcompat)
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.coil.compose)
+    implementation(libs.gson)
     implementation(libs.androidx.material.icons.extended.android)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation.compose)
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.2")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.accompanist.systemuicontroller)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
