@@ -5,13 +5,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -32,9 +31,9 @@ fun RoomsAndAvailability(house: HouseEntity) {
 
     Row(
         modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Rooms information
@@ -61,7 +60,30 @@ fun RoomsAndAvailability(house: HouseEntity) {
             )
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+
+        //Guests information
+        Row (
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = CC.primaryColor(),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .background(CC.primaryColor(), RoundedCornerShape(8.dp)),
+            verticalAlignment = Alignment.CenterVertically,
+        ){
+            Icon(
+                Icons.Default.Groups,
+                contentDescription = "Guests",
+                tint = CC.textColor(),
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = "8 Guests",
+                style = CC.contentTextStyle().copy(color = CC.textColor()),
+                modifier = Modifier.padding(5.dp)
+            )
+        }
 
         // Availability information
         Box(
