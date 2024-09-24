@@ -157,6 +157,11 @@ object CommonComponents{
         )
     }
 
+    @Composable
+    fun outLinedTextFieldShape(): RoundedCornerShape{
+        return RoundedCornerShape(20.dp)
+    }
+
 
     @Composable
     fun AdaptiveSizes(
