@@ -3,7 +3,6 @@ package com.mike.hms.dashboard
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,7 +54,7 @@ fun HouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = houseType.houseType,
+                text = houseType.houseType.name,
                 style = CC.titleTextStyle().copy(fontSize = textSize * 0.2f)
             )
         }
