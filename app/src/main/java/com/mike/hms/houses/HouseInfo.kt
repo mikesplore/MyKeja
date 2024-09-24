@@ -1,7 +1,6 @@
 package com.mike.hms.houses
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -59,14 +57,15 @@ fun HouseDetailScreen(
     val isHouseFavorite = remember { mutableStateOf(false) }
 
 
-    val house = houseTypes.random()
+    val house = houseTypes[0]
     var selectedImage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
             .background(CC.primaryColor())
             .padding(top = 16.dp)
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Image Gallery
         LazyRow(
@@ -76,9 +75,11 @@ fun HouseDetailScreen(
                 .padding(vertical = 8.dp)
         ) {
             items(house.houseImageLink) { imageUrl ->
-                Box(modifier = Modifier
-                    .height(screenHeight)
-                    .width(screenWidth)){
+                Box(
+                    modifier = Modifier
+                        .height(screenHeight)
+                        .width(screenWidth)
+                ) {
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = "House Image",
@@ -88,13 +89,15 @@ fun HouseDetailScreen(
                             .clickable { selectedImage = imageUrl },
                         contentScale = ContentScale.Crop
                     )
-                    IconButton(onClick = {},
+                    IconButton(
+                        onClick = {},
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = CC.primaryColor()
                         ),
                         modifier = Modifier
                             .padding(start = 5.dp)
-                            .align(Alignment.TopStart)) {
+                            .align(Alignment.TopStart)
+                    ) {
                         Icon(
                             Icons.Default.ArrowBackIosNew,
                             contentDescription = "Close",
@@ -110,7 +113,8 @@ fun HouseDetailScreen(
                             containerColor = CC.primaryColor()
                         ),
                         modifier = Modifier
-                            .align(Alignment.TopEnd)) {
+                            .align(Alignment.TopEnd)
+                    ) {
                         Icon(
                             if (isHouseFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Favorite",
@@ -118,12 +122,14 @@ fun HouseDetailScreen(
                             modifier = Modifier.size(screenWidth * 0.05f)
                         )
                     }
-                    IconButton(onClick = { },
+                    IconButton(
+                        onClick = { },
                         modifier = Modifier
                             .align(Alignment.BottomEnd),
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = CC.primaryColor()
-                        )) {
+                        )
+                    ) {
                         Icon(
                             Icons.Default.Share,
                             contentDescription = "Share",
@@ -146,6 +152,12 @@ fun HouseDetailScreen(
                 style = CC.titleTextStyle().copy(fontSize = textSize * 0.15f)
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        HouseLocationAndRatings(house)
+        Spacer(modifier = Modifier.height(10.dp))
+        RoomsAndAvailability(house)
+        Spacer(modifier = Modifier.height(10.dp))
+        HouseAmenities(house)
     }
 
 
@@ -179,3 +191,12 @@ fun HouseDetailScreen(
         }
     }
 }
+
+
+
+
+
+
+
+
+
