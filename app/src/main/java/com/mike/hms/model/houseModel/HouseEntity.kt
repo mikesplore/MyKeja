@@ -8,19 +8,22 @@ import com.mike.hms.model.roomModel.RoomEntity
 @Entity(tableName = "HouseTable")
 data class HouseEntity(
     @PrimaryKey val houseID: String,
-    val houseName: String = "" ,
+    val houseName: String = "",
     val houseType: HouseType = HouseType.HOTEL,                  // Type of house (e.g., villa, apartment)
     val houseLocation: String = "",              // General location or address
     val houseRating: String = "5.0",        // Rating of the house
     val houseImageLink: List<String> = emptyList(),             // Image link for the house
     val houseDescription: String = "",           // Description of the house
     val ownerID: String = "",                    // ID of the house owner: HouseOwner,                  // Link to the owner data class
-    val bookingInfoID: String = "",           // Link to the booking information
+    val bookingInfoID: String = "",           // Link to the booking information id
     val rooms: List<String>   = listOf()   ,                 // List of rooms id available in the house
     val housePrice: Float = 0.0f,                // Price of the house or starting room price
+    val houseReview: List<String> = emptyList(), // List of reviews for the house
+    val houseAmenities: List<HouseAmenities> = emptyList(),
+    val houseAvailable: Boolean = true,
 
 ){
-    constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", emptyList())
+    constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", emptyList(), 0.0f, emptyList(), emptyList(), true)
 }
 
 data class HouseOwner(
@@ -47,6 +50,19 @@ enum class HouseType {
     BUNGALOW,
     CONDOMINIUM,
     BOUTIQUE
+}
+
+enum class  HouseAmenities{
+    SWIMMING_POOL,
+    PARKING,
+    OUTDOOR,
+    JACUZZI,
+    FIREPLACE,
+    SAUNA,
+    BEACHFRONT,
+    GARDEN,
+    WATERFRONT,
+    MOUNTAIN_VIEW,
 }
 
 
