@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -29,8 +30,9 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun HouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
-    BoxWithConstraints(modifier = modifier) {
-        val boxSize = maxHeight * 0.09f // Adjust the fraction as needed
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp.dp
+        val boxSize = screenWidth * 0.15f
         val density = LocalDensity.current
         val textSize = with(density) { (boxSize).toSp() }
 
@@ -57,7 +59,7 @@ fun HouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
                 style = CC.titleTextStyle().copy(fontSize = textSize * 0.2f)
             )
         }
-    }
+
 }
 
 
