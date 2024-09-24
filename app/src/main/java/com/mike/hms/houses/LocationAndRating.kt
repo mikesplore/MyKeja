@@ -48,7 +48,7 @@ fun HouseLocationAndRatings(house: HouseEntity) {
                 text = house.houseLocation,
                 style = CC.titleTextStyle().copy(
                     fontSize = 14.sp,
-                    color = CC.textColor()
+                    color = CC.tertiaryColor()
                 ),
                 modifier = Modifier.padding(start = 4.dp)
             )
@@ -77,7 +77,7 @@ fun HouseLocationAndRatings(house: HouseEntity) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "(${house.houseReview.size} reviews)",
+                text = "(11 reviews)",
                 style = CC.bodyTextStyle().copy(
                     fontSize = 12.sp,
                     color = CC.secondaryColor()
