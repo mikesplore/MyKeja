@@ -1,6 +1,10 @@
 package com.mike.hms.model.roomDatabase
 
+import androidx.compose.ui.input.key.type
 import androidx.room.TypeConverter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.mike.hms.model.houseModel.HouseAmenities
 import com.mike.hms.model.roomModel.AmenityType
 
 class Converters {
@@ -24,5 +28,16 @@ class Converters {
     @TypeConverter
     fun toSet(amenitiesString: String): Set<AmenityType> {
         return amenitiesString.split(",").map { AmenityType.valueOf(it) }.toSet()
+    }
+
+    @TypeConverter
+    fun fromEnumList(houseAmenities: List<HouseAmenities>): String {
+        return Gson().toJson(houseAmenities)
+    }
+
+    @TypeConverter
+    fun toEnumList(houseAmenitiesString: String): List<HouseAmenities> {
+        val type = object : TypeToken<List<HouseAmenities>>() {}.type
+        return Gson().fromJson(houseAmenitiesString, type)
     }
 }
