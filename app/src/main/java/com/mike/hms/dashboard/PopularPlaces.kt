@@ -29,18 +29,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mike.hms.homeScreen.houseTypes
 import com.mike.hms.model.houseModel.HouseEntity
+import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
+
 
 
 @Composable
 fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
-    BoxWithConstraints {
-        val boxWidth = maxHeight * 0.4f
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp.dp
+        val boxWidth = screenWidth * 0.35f
         val boxHeight = boxWidth * 1.3f
         val density = LocalDensity.current
         val textSize = with(density) { (boxHeight * 0.1f).toSp() }
@@ -70,16 +75,18 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .background(CC.surfaceContainerColor().copy(alpha = 0.9f))
-                        .padding(10.dp)  // Padding for a cleaner layout
+                        .padding(5.dp)  // Padding for a cleaner layout
                 ) {
-                    // House name and location
+                    // House name, type and location
                     Text(
-                        text = "${houseType.houseName}, ${houseType.houseLocation}",
+                        text = "${houseType.houseName}, ${if (houseType.houseType.startsWith("a", ignoreCase = true)) "an" else "a"} ${houseType.houseType.lowercase(
+                            Locale.getDefault()
+                        )} in ${houseType.houseLocation}",
                         style = CC.bodyTextStyle().copy(
-                            fontSize = textSize * 0.7f,
+                            fontSize = textSize * 0.6f,
                             color = CC.extraPrimaryColor()
                         ),
-                        modifier = Modifier.padding(bottom = 6.dp)  // Space above the rating
+                        modifier = Modifier.padding(bottom = 5.dp)
                     )
 
                     // Row for rating with star icon
@@ -105,7 +112,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
                 }
             }
         }
-    }
+
 }
 
 
