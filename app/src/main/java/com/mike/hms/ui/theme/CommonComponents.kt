@@ -66,7 +66,7 @@ object CommonComponents{
 
     @Composable
     fun titleTextStyle(): TextStyle{
-        return TextStyle(
+        return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
             color = textColor(),
             fontWeight = FontWeight.Bold,
@@ -76,27 +76,17 @@ object CommonComponents{
 
     @Composable
     fun contentTextStyle(): TextStyle{
-        return TextStyle(
+        return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
             color = textColor(),
             fontWeight = FontWeight.Normal,
-            fontSize = 14.sp
+            fontSize = 15.sp,
         )
     }
 
     @Composable
     fun bodyTextStyle(): TextStyle{
-        return TextStyle(
-            fontFamily = LibreFranklin,
-            color = textColor(),
-            fontWeight = FontWeight.Normal,
-            fontSize = 14.sp
-        )
-    }
-
-    @Composable
-    fun buttonTextStyle(): TextStyle{
-        return TextStyle(
+        return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
             color = textColor(),
             fontWeight = FontWeight.Normal,
