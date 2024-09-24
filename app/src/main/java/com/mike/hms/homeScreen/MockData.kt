@@ -1,5 +1,6 @@
 package com.mike.hms.homeScreen
 
+import com.mike.hms.model.houseModel.HouseAmenities
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseType
 import com.mike.hms.model.roomModel.AmenityType
@@ -11,7 +12,7 @@ import com.mike.hms.model.roomModel.RoomType
 
 // House types
 val houseTypes = listOf(
-    HouseEntity(houseID = "1", "Riverside Villa", HouseType.VILLA, houseImageLink = listOf("https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591","https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591"), houseLocation = "Nairobi", houseRating = "4.8"),
+    HouseEntity(houseID = "1", "Riverside Villa", HouseType.VILLA, houseImageLink = listOf("https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591","https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591"), houseLocation = "Nairobi", houseRating = "4.8", housePrice = 20000.0f, houseAmenities = listOf(HouseAmenities.GARDEN, HouseAmenities.JACUZZI, HouseAmenities.SWIMMING_POOL, HouseAmenities.OUTDOOR, HouseAmenities.PARKING, HouseAmenities.FIREPLACE), rooms = listOf("1","2","3")),
     HouseEntity(houseID = "2", "Palm Breeze Apartments", HouseType.APARTMENT, houseImageLink = listOf("https://kenyahomes.co.ke/blog/wp-content/uploads/2019/04/florida-3720056__340.jpg", "https://kenyahomes.co.ke/blog/wp-content/uploads/2019/04/florida-3720056__340.jpg"), houseLocation = "Mombasa", houseRating = "4.6"),
     HouseEntity(houseID = "3", "Seaside Resort", HouseType.HOTEL, houseImageLink = listOf("https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1b/ed/95/07/limak-eurasia-luxury.jpg?w=700&h=-1&s=1"), houseLocation = "Kilifi", houseRating = "4.7"),
     HouseEntity(houseID = "4", "Lakeview Bungalow", HouseType.BUNGALOW, houseImageLink = listOf("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/George_L._Burlingame_House%2C_1238_Harvard_St%2C_Houston_%28HDR%29.jpg/800px-George_L._Burlingame_House%2C_1238_Harvard_St%2C_Houston_%28HDR%29.jpg"), houseLocation = "Kisumu", houseRating = "4.5"),
