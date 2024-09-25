@@ -80,7 +80,7 @@ fun HouseDetailScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(10.dp))
 
         // House Description
-        HouseDescription(house)
+        HouseOverview(house)
         Spacer(modifier = Modifier.height(10.dp))
 
         // Available Rooms
