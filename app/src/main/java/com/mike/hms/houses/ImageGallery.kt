@@ -1,8 +1,11 @@
 package com.mike.hms.houses
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,7 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
@@ -20,100 +28,114 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun ImageGallery(
     house: HouseEntity,
     onImageClick: (String?) -> Unit,
     isHouseFavorite: MutableState<Boolean>,
-    screenWidth: Dp,
     screenHeight: Dp
 ) {
-    LazyRow(
+    // State for the current page index
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { house.houseImageLink.size })
+
+    // Image index state that updates when pager changes
+    val currentImageIndex by  derivedStateOf { pagerState.currentPage }
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
-            .padding(vertical = 8.dp)
+            .height(screenHeight * 0.25f)
     ) {
-        items(house.houseImageLink) { imageUrl ->
-            Box(
+        // Image Pager
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxSize()
+        ) { page ->
+            AsyncImage(
+                model = house.houseImageLink[page],
+                contentDescription = "House Image ${page + 1}",
                 modifier = Modifier
-                    .height(screenHeight)
-                    .width(screenWidth)
-            ) {
-                AsyncImage(
-                    model = imageUrl,
-                    contentDescription = "House Image",
-                    modifier = Modifier
-                        .height(screenHeight * 0.3f)
-                        .width(screenWidth)
-                        .clickable { onImageClick(imageUrl) },
-                    contentScale = ContentScale.Crop
+                    .fillMaxSize()
+                    .clickable { onImageClick(house.houseImageLink[page]) },
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        // Image Counter
+        Box(
+            modifier = Modifier
+                .padding(8.dp)
+                .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
+                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .align(Alignment.TopEnd)
+        ) {
+            Text(
+                text = "${currentImageIndex + 1}/${house.houseImageLink.size}",
+                color = Color.White,
+                fontSize = 14.sp
+            )
+        }
+
+        // Bottom Action Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(CC.primaryColor().copy(alpha = 0.6f))
+                .align(Alignment.BottomCenter),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { /* Handle back action */ }) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = CC.textColor()
                 )
+            }
 
-                IconButton(
-                    onClick = { /* Handle back action */ },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CC.primaryColor().copy(0.5f)
-                    ),
-                    modifier = Modifier
-                        .padding(start = 5.dp)
-                        .align(Alignment.TopStart)
-                ) {
-                    Icon(
-                        Icons.Default.ArrowBackIosNew,
-                        contentDescription = "Close",
-                        tint = CC.tertiaryColor()
-                    )
-                }
+            IconButton(onClick = { isHouseFavorite.value = !isHouseFavorite.value }) {
+                Icon(
+                    if (isHouseFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite",
+                    tint = CC.textColor()
+                )
+            }
 
-                IconButton(
-                    onClick = { isHouseFavorite.value = !isHouseFavorite.value },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CC.primaryColor().copy(0.5f)
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        if (isHouseFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint = CC.tertiaryColor(),
-                        modifier = Modifier.size(screenWidth * 0.05f)
-                    )
-                }
-
-                IconButton(
-                    onClick = { /* Handle share action */ },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = CC.primaryColor().copy(0.5f)
-                    )
-                ) {
-                    Icon(
-                        Icons.Default.Share,
-                        contentDescription = "Share",
-                        tint = CC.tertiaryColor(),
-                        modifier = Modifier.size(screenWidth * 0.05f)
-                    )
-                }
+            IconButton(onClick = { /* Handle share action */ }) {
+                Icon(
+                    Icons.Default.Share,
+                    contentDescription = "Share",
+                    tint = CC.textColor()
+                )
             }
         }
     }
 }
+
 
 
 @Composable
