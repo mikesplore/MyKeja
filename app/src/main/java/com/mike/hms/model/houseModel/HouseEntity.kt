@@ -17,13 +17,13 @@ data class HouseEntity(
     val ownerID: String = "",                    // ID of the house owner: HouseOwner,                  // Link to the owner data class
     val bookingInfoID: String = "",           // Link to the booking information id
     val rooms: List<String>   = listOf()   ,                 // List of rooms id available in the house
-    val housePrice: Float = 0.0f,                // Price of the house or starting room price
+    val housePrice: Int = 0,                // Price of the house or starting room price
     val houseReview: List<String> = emptyList(), // List of reviews for the house
     val houseAmenities: List<HouseAmenities> = emptyList(),
     val houseAvailable: Boolean = true,
 
 ){
-    constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", emptyList(), 0.0f, emptyList(), emptyList(), true)
+    constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", emptyList(), 0, emptyList(), emptyList(), true)
 }
 
 data class HouseOwner(
