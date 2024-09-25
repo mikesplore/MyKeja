@@ -173,7 +173,7 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
                         .lowercase(Locale.getDefault()),
                     style = CC.bodyTextStyle().copy(
                         fontSize = textSize * 0.7f,
-                        color = CC.extraPrimaryColor()
+                        color = CC.tertiaryColor()
                     ),
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
