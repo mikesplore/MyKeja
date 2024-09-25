@@ -1,6 +1,8 @@
 package com.mike.hms.houses
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,19 +25,21 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.mike.hms.homeScreen.houseTypes
 import com.mike.hms.model.houseModel.HouseEntity
+import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun HouseDetailScreen() {
+fun HouseDetailScreen(navController:NavController) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
     val density = LocalDensity.current.density
     val textSize = (screenWidth.value / density).sp
     val isHouseFavorite = remember { mutableStateOf(false) }
-    val house = houseTypes.random()
+    val house = houseTypes[0]
     var selectedImage by remember { mutableStateOf<String?>(null) }
 
     Column(
@@ -49,7 +54,6 @@ fun HouseDetailScreen() {
             house = house,
             onImageClick = { selectedImage = it },
             isHouseFavorite = isHouseFavorite,
-            screenWidth = screenWidth,
             screenHeight = screenHeight
         )
 
@@ -61,7 +65,7 @@ fun HouseDetailScreen() {
         Spacer(modifier = Modifier.height(10.dp))
 
         // Location and Ratings
-        HouseLocationAndRatings(house)
+        HouseLocationAndRatings(house, navController)
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -79,7 +83,7 @@ fun HouseDetailScreen() {
         Spacer(modifier = Modifier.height(10.dp))
 
         // Available Rooms
-        AvailableRooms()
+        AvailableRooms(navController)
         Spacer(modifier = Modifier.height(10.dp))
 
         // Book Now
@@ -100,19 +104,43 @@ fun HouseTitleRow(house: HouseEntity, textSize: TextUnit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
+
     ) {
         Text(
             text = house.houseName,
-            style = CC.titleTextStyle().copy(fontSize = textSize * 0.15f)
+            style = CC.titleTextStyle().copy(fontSize = textSize * 0.15f),
+            modifier = Modifier.weight(1f)
         )
+
+        Box(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = CC.secondaryColor(),
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .background(
+                    color = CC.secondaryColor(),
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "Ksh ${formatNumber(house.housePrice)}",
+                style = CC.titleTextStyle().copy(
+                    fontSize = textSize * 0.08f,
+                    color = CC.primaryColor()
+                )
+            )
+        }
     }
 }
 
 
 
-
-
-
+fun formatNumber(number: Int): String {
+    return NumberFormat.getNumberInstance().format(number)
+}
 
 
 
