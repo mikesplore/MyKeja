@@ -2,6 +2,7 @@ package com.mike.hms.houses
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,7 +36,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -189,58 +194,57 @@ fun Houses(
 @Composable
 fun BookNow(house: HouseEntity) {
     // Define a small size for the card
-    val cardModifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth(0.9f)
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val density = LocalDensity.current
+    val textSize = with(density) { (screenWidth * 0.05f).toSp() }
 
     Card(
-        modifier = cardModifier,
-        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .padding(16.dp)
+            .background(
+                color = CC.secondaryColor(),
+                shape = RoundedCornerShape(10.dp)
+            ),
+        shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-
+        colors = CardDefaults.cardColors(
+            containerColor = CC.secondaryColor()
+        ),
     ) {
-        Row(
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 12.dp), // Adjusted padding for more space
+        horizontalAlignment = Alignment.CenterHorizontally // Center content horizontally
+    ) {
+        Text(
+            text = "Ksh ${formatNumber(house.housePrice)} / night",
+            style = CC.titleTextStyle().copy(
+                fontSize = textSize * 0.7f,
+                color = CC.extraSecondaryColor()
+            )
+        )
+
+        Button(
+            onClick = { /* Handle book now action */ },
             modifier = Modifier
-                .background(CC.tertiaryColor().copy(alpha = 0.5f))
-                .fillMaxSize()
-                .padding(12.dp), // Increased padding for better spacing
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxWidth()
+                .padding(top = 8.dp), // Add space above the button
+            colors = ButtonDefaults.buttonColors(
+                containerColor = CC.primaryColor(), // Set button background color
+                contentColor = Color.White // Set button text color
+            ),
+            shape = RoundedCornerShape(10.dp) // Rounded corners for the button
         ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "💰 Price per Month",
-                    style = CC.contentTextStyle().copy(
-                        fontSize = 14.sp,
-                        color = CC.textColor()
-                    ),
-                    textAlign = TextAlign.Center
+            Text(
+                text = "Book Now",
+                style = CC.contentTextStyle().copy(
+                    fontSize = textSize * 0.7f, // Adjust font size for the button
+                    fontWeight = FontWeight.Bold // Make button text bold
                 )
-                Spacer(modifier = Modifier.height(4.dp)) // Reduced space
-                Text(
-                    text = "$${house.housePrice}",
-                    style = CC.titleTextStyle().copy(
-                        fontSize = 18.sp, // Increased font size for price
-                        color = CC.extraPrimaryColor()
-                    ),
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp)) // Space between price and button
-
-            Button(
-                onClick = { /* Handle booking action */ },
-                colors = ButtonDefaults.buttonColors(containerColor = CC.secondaryColor().copy(alpha = 0.4f)),
-                modifier = Modifier.padding(start = 8.dp) // Small padding for aesthetics
-            ) {
-                Text(text = "🛏️ Book Now", color = Color.White) // Added bed emoji
-            }
+            )
         }
-    }
+    }}
 }
 
 
