@@ -1,5 +1,6 @@
 package com.mike.hms.houses
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun HouseDescription(house: HouseEntity) {
     val brush = Brush.horizontalGradient(
-        listOf(CC.primaryColor(), CC.secondaryColor().copy(alpha = 0.5f))
+        listOf(CC.primaryColor(), CC.extraSecondaryColor().copy(alpha = 0.5f))
     )
 
     // Track the expanded state
@@ -53,6 +54,7 @@ fun HouseDescription(house: HouseEntity) {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(brush, shape = RoundedCornerShape(10.dp))
+                .animateContentSize() // Animate size changes
         ) {
             Text(
                 text = "Description",
@@ -78,7 +80,7 @@ fun HouseDescription(house: HouseEntity) {
             if (words.size > 25) {
                 Text(
                     text = if (isExpanded) "Read Less" else "Read More",
-                    style = CC.bodyTextStyle().copy(color = CC.tertiaryColor()),
+                    style = CC.bodyTextStyle().copy(color = CC.extraPrimaryColor()),
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(8.dp)
