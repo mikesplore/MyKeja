@@ -1,5 +1,6 @@
 package com.mike.hms.houses
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -10,33 +11,60 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mike.hms.homeScreen.rooms
 import com.mike.hms.model.roomModel.RoomEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun AvailableRooms() {
+fun AvailableRooms(navController: NavController) {
     val rooms = rooms
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, bottom = 10.dp),
+            .padding(start = 20.dp, bottom = 10.dp, end = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Step Inside",
+            text = "Inside View",
             style = CC.titleTextStyle().copy(color = CC.tertiaryColor())
         )
+
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ){
+        Text(
+            text = "Open",
+            style = CC.contentTextStyle().copy(color = CC.extraPrimaryColor())
+        )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Open",
+                tint = CC.extraPrimaryColor(),
+                modifier = Modifier.clickable {
+                    navController.navigate("houseGallery")
+                }
+            )
+        }
+
 
     }
     LazyRow(
