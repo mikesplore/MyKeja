@@ -9,6 +9,6 @@ val Red = Color(0XFFD20062)
 val WhiteSchemeTextColor = Color(0xff526D82)
 val BlackSchemeTextColor = Color(0xFF9DB2BF)
 val Green = Color(0xFF76B39D)
-val Purple = Color(0XFF914F1E)
+val Purple = Color(0XFF0C2D57)
 val whiteSurfaceContainer = Black
 val blackSurfaceContainer = BlackSchemeTextColor
