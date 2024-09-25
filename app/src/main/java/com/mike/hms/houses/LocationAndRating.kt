@@ -1,5 +1,6 @@
 package com.mike.hms.houses
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,11 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun HouseLocationAndRatings(house: HouseEntity) {
+fun HouseLocationAndRatings(house: HouseEntity, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,7 +89,10 @@ fun HouseLocationAndRatings(house: HouseEntity) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Arrow",
-                tint = CC.secondaryColor()
+                tint = CC.secondaryColor(),
+                modifier = Modifier.clickable {
+                    navController.navigate("houseReviews")
+                }
             )
         }
     }
