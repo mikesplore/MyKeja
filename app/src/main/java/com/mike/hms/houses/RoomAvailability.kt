@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -37,7 +38,7 @@ fun RoomsAndAvailability(house: HouseEntity) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Rooms information
-        Row (
+        Row(
             modifier = Modifier
                 .border(
                     width = 1.dp,
@@ -62,7 +63,7 @@ fun RoomsAndAvailability(house: HouseEntity) {
 
 
         //Guests information
-        Row (
+        Row(
             modifier = Modifier
                 .border(
                     width = 1.dp,
@@ -71,7 +72,7 @@ fun RoomsAndAvailability(house: HouseEntity) {
                 )
                 .background(CC.primaryColor(), RoundedCornerShape(8.dp)),
             verticalAlignment = Alignment.CenterVertically,
-        ){
+        ) {
             Icon(
                 Icons.Default.Groups,
                 contentDescription = "Guests",
@@ -98,8 +99,14 @@ fun RoomsAndAvailability(house: HouseEntity) {
         ) {
             Text(
                 text = roomAvailability,
-                style = CC.contentTextStyle().copy(color = if (house.houseAvailable) CC.primaryColor() else CC.tertiaryColor())
+                style = CC.contentTextStyle().copy(
+                    color = if (house.houseAvailable) CC.primaryColor() else CC.tertiaryColor(),
+                    fontSize = 12.sp
+                )
             )
         }
     }
 }
+
+
+
