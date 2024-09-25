@@ -8,6 +8,8 @@ import androidx.navigation.compose.rememberNavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.homeScreen.HomeScreen
 import com.mike.hms.houses.HouseDetailScreen
+import com.mike.hms.houses.HouseGallery
+import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
 
 @Composable
@@ -28,7 +30,15 @@ fun NavGraph(context: Context){
         }
 
         composable("houseDetails"){
-            HouseDetailScreen()
+            HouseDetailScreen(navController)
+        }
+
+        composable("houseReviews"){
+            HouseReviewsScreen(navController)
+        }
+
+        composable("houseGallery"){
+            HouseGallery()
         }
     }
 }
