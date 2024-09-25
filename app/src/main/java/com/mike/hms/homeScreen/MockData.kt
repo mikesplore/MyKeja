@@ -10,9 +10,17 @@ import com.mike.hms.model.roomModel.RoomEntity
 import com.mike.hms.model.roomModel.RoomType
 
 
+data class Review(
+    val reviewerName: String,
+    val rating: Float, // Rating out of 5
+    val reviewText: String,
+    val timestamp: String // Could be formatted date or time
+)
+
+
 // House types
 val houseTypes = listOf(
-    HouseEntity(houseID = "1", "Riverside Villa", HouseType.VILLA, houseImageLink = listOf("https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591","https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591"), houseLocation = "Nairobi", houseRating = "4.8", housePrice = 20000.0f, houseAmenities = listOf(HouseAmenities.GARDEN, HouseAmenities.JACUZZI, HouseAmenities.SWIMMING_POOL, HouseAmenities.OUTDOOR, HouseAmenities.PARKING, HouseAmenities.FIREPLACE), rooms = listOf("1","2","3"), houseDescription = "Nestled in the heart of nature, the Cozy Cottage by the Lake offers a serene escape for families and friends. This charming two-bedroom cottage features stunning lake views, a private garden, and direct access to hiking trails.\n" +
+    HouseEntity(houseID = "1", "Riverside Villa", HouseType.VILLA, houseImageLink = listOf("https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591","https://cdn.shopify.com/s/files/1/0567/3873/files/ID_24402-2_480x480.jpg?v=1700459591"), houseLocation = "Nairobi", houseRating = "4.8", housePrice = 20000, houseAmenities = listOf(HouseAmenities.GARDEN, HouseAmenities.JACUZZI, HouseAmenities.SWIMMING_POOL, HouseAmenities.OUTDOOR, HouseAmenities.PARKING, HouseAmenities.FIREPLACE), rooms = listOf("1","2","3"), houseDescription = "Nestled in the heart of nature, the Cozy Cottage by the Lake offers a serene escape for families and friends. This charming two-bedroom cottage features stunning lake views, a private garden, and direct access to hiking trails.\n" +
             "\n" +
             "The spacious living area is adorned with rustic wooden beams and large windows that flood the space with natural light. Enjoy cozy evenings by the fireplace or prepare delicious meals in the fully equipped kitchen, complete with modern appliances"),
     HouseEntity(houseID = "2", "Palm Breeze Apartments", HouseType.APARTMENT, houseImageLink = listOf("https://kenyahomes.co.ke/blog/wp-content/uploads/2019/04/florida-3720056__340.jpg", "https://kenyahomes.co.ke/blog/wp-content/uploads/2019/04/florida-3720056__340.jpg"), houseLocation = "Mombasa", houseRating = "4.6"),
@@ -176,3 +184,33 @@ val rooms = listOf(
         roomImageLink = listOf("https://cdn.prod.website-files.com/5c6d6c45eaa55f57c6367749/65045f093c166fdddb4a94a5_x-65045f0266217.webp")
     )
 )
+
+
+fun getMockReviews(): List<Review> {
+    return listOf(
+        Review(
+            reviewerName = "John Doe",
+            rating = 4.5f,
+            reviewText = "Amazing stay! The house was clean and well-equipped. Highly recommend!",
+            timestamp = "2024-09-25"
+        ),
+        Review(
+            reviewerName = "Jane Smith",
+            rating = 3.0f,
+            reviewText = "Decent place, but it could use some updates. The location was great though.",
+            timestamp = "2024-09-24"
+        ),
+        Review(
+            reviewerName = "Alice Johnson",
+            rating = 5.0f,
+            reviewText = "Absolutely loved it! The amenities were perfect, and the view was stunning.",
+            timestamp = "2024-09-23"
+        ),
+        Review(
+            reviewerName = "Bob Brown",
+            rating = 4.0f,
+            reviewText = "Good experience overall. The host was very responsive and helpful.",
+            timestamp = "2024-09-22"
+        )
+    )
+}
