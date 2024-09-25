@@ -17,6 +17,16 @@ data class Review(
     val timestamp: String // Could be formatted date or time
 )
 
+data class User(
+    val fullName: String,
+    val email: String
+)
+
+val mockUser = User(
+    fullName = "Michael Odhiambo",
+    email = "michael.odhiambo@example.com"
+)
+
 
 // House types
 val houseTypes = listOf(
