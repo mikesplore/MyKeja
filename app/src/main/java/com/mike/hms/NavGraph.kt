@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.homeScreen.HomeScreen
 import com.mike.hms.homeScreen.houseTypes
+import com.mike.hms.houses.BookingInfoScreen
 import com.mike.hms.houses.FullScreenGallery
 import com.mike.hms.houses.HouseDetailScreen
 import com.mike.hms.houses.HouseGallery
@@ -18,7 +19,7 @@ import com.mike.hms.houses.Houses
 fun NavGraph(context: Context){
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "homeScreen"){
+    NavHost(navController = navController, startDestination = "booking"){
         composable("dashboard"){
             DashboardScreen(context, navController)
         }
@@ -41,6 +42,10 @@ fun NavGraph(context: Context){
 
         composable("houseGallery"){
             HouseGallery(navController)
+        }
+
+        composable("booking"){
+            BookingInfoScreen()
         }
 
         composable("fullScreenGallery/{initialPage}") {
