@@ -61,7 +61,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
             Box {
                 // Image
                 AsyncImage(
-                    model = houseType.houseImageLink,
+                    model = houseType.houseImageLink.random(),
                     contentDescription = "House Image",
                     modifier = Modifier
                         .fillMaxSize()
@@ -84,7 +84,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
                         )} in ${houseType.houseLocation}",
                         style = CC.bodyTextStyle().copy(
                             fontSize = textSize * 0.6f,
-                            color = CC.extraPrimaryColor()
+                            color = CC.tertiaryColor()
                         ),
                         modifier = Modifier.padding(bottom = 5.dp)
                     )
