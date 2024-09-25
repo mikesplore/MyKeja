@@ -31,8 +31,9 @@ import com.mike.hms.model.houseModel.HouseEntity
 import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
 
+
 @Composable
-fun HouseDetailScreen(navController:NavController) {
+fun HouseDetailScreen(navController: NavController) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -50,7 +51,7 @@ fun HouseDetailScreen(navController:NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Image Gallery
-        ImageGallery(
+        HouseImageOverView(
             house = house,
             onImageClick = { selectedImage = it },
             isHouseFavorite = isHouseFavorite,
@@ -90,10 +91,6 @@ fun HouseDetailScreen(navController:NavController) {
         BookNow(house)
     }
 
-    // Full-screen image dialog
-    selectedImage?.let { imageUrl ->
-        FullScreenImageDialog(imageUrl = imageUrl, onDismiss = { selectedImage = null })
-    }
 }
 
 
@@ -135,8 +132,6 @@ fun HouseTitleRow(house: HouseEntity, textSize: TextUnit) {
         }
     }
 }
-
-
 
 fun formatNumber(number: Int): String {
     return NumberFormat.getNumberInstance().format(number)
