@@ -34,7 +34,7 @@ fun HouseAmenities(house: HouseEntity) {
     val screenHeight = configuration.screenHeightDp.dp
 
     val brush = Brush.horizontalGradient(
-        listOf(CC.primaryColor(), CC.secondaryColor().copy(alpha = 0.5f))
+        listOf(CC.primaryColor(), CC.extraSecondaryColor().copy(alpha = 0.7f))
     )
 
 
@@ -42,7 +42,7 @@ fun HouseAmenities(house: HouseEntity) {
         modifier = Modifier
             .padding(bottom = 10.dp)
             .fillMaxWidth(0.9f)
-            .heightIn(max = screenHeight * 0.2f),
+            .heightIn(max = screenHeight * 0.16f),
         elevation = CardDefaults.cardElevation(4.dp),
     ) {
         Column(
@@ -73,7 +73,7 @@ fun HouseAmenities(house: HouseEntity) {
                         modifier = Modifier
                             .border(
                                 width = 1.dp,
-                                color = CC.primaryColor(),
+                                color = CC.extraPrimaryColor(),
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .padding(8.dp)
