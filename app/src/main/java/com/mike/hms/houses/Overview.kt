@@ -24,7 +24,7 @@ import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun HouseDescription(house: HouseEntity) {
+fun HouseOverview(house: HouseEntity) {
     val brush = Brush.horizontalGradient(
         listOf(CC.primaryColor(), CC.extraSecondaryColor().copy(alpha = 0.5f))
     )
@@ -57,7 +57,7 @@ fun HouseDescription(house: HouseEntity) {
                 .animateContentSize() // Animate size changes
         ) {
             Text(
-                text = "Description",
+                text = "Overview",
                 style = CC.titleTextStyle().copy(
                     fontSize = 18.sp,
                     color = CC.tertiaryColor()
