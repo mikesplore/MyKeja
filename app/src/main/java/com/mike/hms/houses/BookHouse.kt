@@ -1,6 +1,8 @@
 package com.mike.hms.houses
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,18 +17,28 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +52,8 @@ import com.mike.hms.homeScreen.User
 import com.mike.hms.homeScreen.houseTypes
 import com.mike.hms.homeScreen.mockUser
 import com.mike.hms.model.houseModel.HouseEntity
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,24 +99,7 @@ fun BookingInfoScreen(
                 HouseCharacteristicsCard(house)
 
                 // Reschedule Card
-                Card(
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(
-                            text = "Reschedule",
-                            style = CC.titleTextStyle(),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Old Date: 2024-09-28", style = CC.contentTextStyle())
-                        Text(text = "New Date: 2024-09-30", style = CC.contentTextStyle())
-                    }
-                }
+                RescheduleCard()
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -113,10 +110,13 @@ fun BookingInfoScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = CC.secondaryColor()
+                        containerColor = CC.extraPrimaryColor()
                     )
                 ) {
-                    Text(text = "Proceed to Checkout")
+                    Text(text = "Proceed to Checkout", style = CC.bodyTextStyle().copy(
+                        fontWeight = FontWeight.Bold,
+                        color = CC.primaryColor()
+                    ))
                 }
             }
         }
@@ -188,13 +188,27 @@ fun UserDetails(user: User) {
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier
+                        .width(screenWidth * 0.4f)
+                        .background(CC.extraSecondaryColor(), shape = RoundedCornerShape(10.dp)),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    Icon(
+                        imageVector = Icons.Default.WorkspacePremium,
+                        contentDescription = "Location Icon",
+                        tint = CC.secondaryColor(),
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 Text(
                     text = "Premium Member", // Membership status
                     style = CC.contentTextStyle().copy(
-                        color = CC.extraSecondaryColor(),
-                        fontStyle = FontStyle.Italic // Italic for premium status
-                    )
-                )
+                        color = CC.secondaryColor(),
+                        fontStyle = FontStyle.Italic,
+                    ),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )}
             }
         }
     }
@@ -212,17 +226,19 @@ fun HouseDetailsCard(house: HouseEntity) {
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier
-            .height(screenHeight * 0.13f)
+            .height(screenHeight * 0.11f)
             .fillMaxWidth(0.9f)
     ) {
         Column(
             modifier = Modifier
-                .background(brush)
-                .fillMaxSize()
+
+                .background(CC.primaryColor())
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center
         ) {
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth()
             ) {
                 Text(
@@ -233,14 +249,14 @@ fun HouseDetailsCard(house: HouseEntity) {
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    "Ksh. ${house.housePrice} /Night",
+                    "Ksh. ${formatNumber(house.housePrice)} /Night",
                     style = CC.bodyTextStyle(),
                     fontWeight = FontWeight.Bold
                 )
             }
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth()
             ) {
                 Row {
@@ -272,28 +288,237 @@ fun HouseDetailsCard(house: HouseEntity) {
 }
 
 
+
 @Composable
 fun HouseCharacteristicsCard(house: HouseEntity) {
     Card(
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        modifier = Modifier.fillMaxWidth()
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors = CardDefaults.cardColors(containerColor = CC.primaryColor()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+
+                .padding(20.dp)
         ) {
-            Text(
-                text = "House Characteristics",
-                style = CC.titleTextStyle(),
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Type: ${house.houseType}", style = CC.contentTextStyle())
-            Text(text = "Rooms: ${house.rooms.size}", style = CC.contentTextStyle())
-            Text(text = "Category: ${house.houseLocation}", style = CC.contentTextStyle())
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Check-in Date: 2024-09-30", style = CC.contentTextStyle())
-            Text(text = "Check-out Date: 2024-10-05", style = CC.contentTextStyle())
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CharacteristicsColumn(
+                    title1 = "Check-In",
+                    value1 = "01/02/2024",
+                    title2 = "Check-Out",
+                    value2 = "11/02/2024"
+                )
+                CharacteristicsColumn(
+                    title1 = "House Type",
+                    value1 = house.houseType.toString(),
+                    title2 = "Capacity",
+                    value2 = "${house.rooms.size} Rooms"
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            TotalPriceRow()
         }
     }
 }
+
+@Composable
+fun CharacteristicsColumn(
+    title1: String,
+    value1: String,
+    title2: String,
+    value2: String
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        CharacteristicItem(title = title1, value = value1)
+        CharacteristicItem(title = title2, value = value2)
+    }
+}
+
+@Composable
+fun CharacteristicItem(title: String, value: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(CC.extraPrimaryColor())
+        )
+        Column {
+            Text(
+                text = title,
+                style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Medium)
+            )
+            Text(
+                text = value,
+                style = CC.bodyTextStyle().copy(
+                    color = CC.extraPrimaryColor(),
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun TotalPriceRow() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(CC.secondaryColor().copy(alpha = 0.1f))
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Total Price",
+            style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Bold)
+        )
+        Text(
+            text = "Ksh 45,000",
+            style = CC.titleTextStyle().copy(
+                fontWeight = FontWeight.ExtraBold,
+                color = CC.tertiaryColor()
+            )
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RescheduleCard() {
+    var oldDate by remember { mutableStateOf(LocalDate.now()) }
+    var newDate by remember { mutableStateOf(LocalDate.now().plusDays(1)) }
+    var showOldDatePicker by remember { mutableStateOf(false) }
+    var showNewDatePicker by remember { mutableStateOf(false) }
+
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = CC.primaryColor()),
+        modifier = Modifier
+
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth()
+
+        ) {
+            Text(
+                text = "Reschedule",
+                style = CC.titleTextStyle().copy(fontWeight = FontWeight.Bold),
+                color = CC.textColor()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                DateColumn(
+                    title = "Old Date",
+                    date = oldDate,
+                    onDateClick = { showOldDatePicker = true }
+                )
+                DateColumn(
+                    title = "New Date",
+                    date = newDate,
+                    onDateClick = { showNewDatePicker = true }
+                )
+            }
+        }
+    }
+
+    // Date Pickers
+    if (showOldDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showOldDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = { showOldDatePicker = false }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showOldDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(
+                state = rememberDatePickerState(initialSelectedDateMillis = oldDate.toEpochDay() * 24 * 60 * 60 * 1000),
+
+            )
+        }
+    }
+
+    if (showNewDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showNewDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = { showNewDatePicker = false }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showNewDatePicker = false }) {
+                    Text("Cancel")
+                }
+            }
+        ) {
+            DatePicker(
+                state = rememberDatePickerState(initialSelectedDateMillis = newDate.toEpochDay() * 24 * 60 * 60 * 1000),
+            )
+        }
+    }
+}
+
+@Composable
+fun DateColumn(
+    title: String,
+    date: LocalDate,
+    onDateClick: () -> Unit
+) {
+    Column(horizontalAlignment = Alignment.Start) {
+        Text(
+            text = title,
+            style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Medium),
+            color = CC.textColor()
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = onDateClick)
+        ) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Select Date",
+                tint = CC.extraPrimaryColor(),
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Bold),
+                color = CC.extraPrimaryColor()
+            )
+        }
+    }
+}
+
