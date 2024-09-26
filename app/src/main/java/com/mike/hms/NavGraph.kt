@@ -8,7 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.homeScreen.HomeScreen
 import com.mike.hms.homeScreen.houseTypes
-import com.mike.hms.houses.BookingInfoScreen
+import com.mike.hms.houses.bookHouse.BookingInfoScreen
 import com.mike.hms.houses.FullScreenGallery
 import com.mike.hms.houses.HouseDetailScreen
 import com.mike.hms.houses.HouseGallery
