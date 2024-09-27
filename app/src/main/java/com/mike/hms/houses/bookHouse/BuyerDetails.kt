@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mike.hms.homeScreen.User
-import com.mike.hms.ui.theme.CommonComponents
+import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun UserDetails(user: User) {
@@ -39,7 +39,7 @@ fun UserDetails(user: User) {
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
     val brush = Brush.horizontalGradient(
-        listOf(CommonComponents.primaryColor(), CommonComponents.secondaryColor().copy(alpha = 0.5f), CommonComponents.primaryColor())
+        listOf(CC.primaryColor(), CC.secondaryColor().copy(alpha = 0.5f), CC.primaryColor())
     )
 
     Card(
@@ -59,17 +59,17 @@ fun UserDetails(user: User) {
             // User avatar
             Box(
                 modifier = Modifier
-                    .background(CommonComponents.secondaryColor(), shape = CircleShape)
+                    .background(CC.secondaryColor(), shape = CircleShape)
                     .clip(CircleShape)
                     .size(screenWidth * 0.15f), // Adjusted size for balance
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = user.fullName.first().toString(),
-                    style = CommonComponents.titleTextStyle().copy(
+                    style = CC.titleTextStyle().copy(
                         fontSize = 24.sp, // Larger font for initials
                         fontWeight = FontWeight.Bold,
-                        color = CommonComponents.primaryColor() // Text color for avatar
+                        color = CC.primaryColor() // Text color for avatar
                     )
                 )
             }
@@ -83,37 +83,37 @@ fun UserDetails(user: User) {
             ) {
                 Text(
                     text = user.fullName,
-                    style = CommonComponents.titleTextStyle().copy(
+                    style = CC.titleTextStyle().copy(
                         fontSize = 20.sp, // Increased font size for name
                         fontWeight = FontWeight.Bold,
-                        color = CommonComponents.textColor()
+                        color = CC.textColor()
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp)) // Small gap between text
                 Text(
                     text = user.email,
-                    style = CommonComponents.contentTextStyle().copy(
-                        color = CommonComponents.textColor().copy(alpha = 0.8f) // Slightly lighter color
+                    style = CC.contentTextStyle().copy(
+                        color = CC.textColor().copy(alpha = 0.8f) // Slightly lighter color
                     )
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     modifier = Modifier
                         .width(screenWidth * 0.4f)
-                        .background(CommonComponents.extraSecondaryColor(), shape = RoundedCornerShape(10.dp)),
+                        .background(CC.extraSecondaryColor(), shape = RoundedCornerShape(10.dp)),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Default.WorkspacePremium,
                         contentDescription = "Location Icon",
-                        tint = CommonComponents.secondaryColor(),
+                        tint = CC.secondaryColor(),
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                     Text(
                         text = "Premium Member", // Membership status
-                        style = CommonComponents.contentTextStyle().copy(
-                            color = CommonComponents.secondaryColor(),
+                        style = CC.contentTextStyle().copy(
+                            color = CC.secondaryColor(),
                             fontStyle = FontStyle.Italic,
                         ),
                         modifier = Modifier.padding(vertical = 4.dp)
