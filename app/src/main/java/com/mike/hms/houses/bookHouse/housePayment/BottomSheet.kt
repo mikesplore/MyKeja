@@ -8,14 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -31,14 +30,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.mike.hms.R
-import com.mike.hms.homeScreen.User
-import com.mike.hms.model.houseModel.HouseEntity
-import com.mike.hms.ui.theme.CommonComponents
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +40,7 @@ fun PaymentBottomSheet(
     onPaymentSelected: (PaymentMethod) -> Unit,
     onPayNowClicked: () -> Unit
 ) {
-    var selectedPayment by remember { mutableStateOf<PaymentMethod?>(null) }
+    var selectedPayment by remember { mutableStateOf<PaymentMethod?>(PaymentMethod.PAYPAL) }
     var email by remember { mutableStateOf("") }
     var cardNumber by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
@@ -56,15 +49,16 @@ fun PaymentBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = CommonComponents.primaryColor()
+        containerColor = CC.primaryColor()
     ) {
         Column(
             modifier = Modifier
+                .imePadding()
                 .fillMaxWidth()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Select Payment Method", style = CommonComponents.titleTextStyle(), fontWeight = FontWeight.Bold)
+            Text("Select Payment Method", style = CC.titleTextStyle(), fontWeight = FontWeight.Bold)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,45 +95,47 @@ fun PaymentBottomSheet(
 
             when (selectedPayment) {
                 PaymentMethod.PAYPAL, PaymentMethod.CREDIT_CARD -> {
-                    OutlinedTextField(
+                    PaymentTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Email"
                     )
-                    OutlinedTextField(
+                    PaymentTextField(
                         value = cardNumber,
                         onValueChange = { cardNumber = it },
-                        label = { Text("Card Number") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "Card Number"
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        OutlinedTextField(
+                        PaymentTextField(
                             value = expiryDate,
                             onValueChange = { expiryDate = it },
-                            label = { Text("Expiry Date") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            label = "Expiry Date"
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedTextField(
+                        PaymentTextField(
                             value = cvv,
                             onValueChange = { cvv = it },
-                            label = { Text("CVV") },
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            label = "CVV"
                         )
                     }
                 }
+
                 PaymentMethod.MPESA -> {
-                    OutlinedTextField(
+                    PaymentTextField(
                         value = mpesaNumber,
                         onValueChange = { mpesaNumber = it },
-                        label = { Text("M-Pesa Number") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        label = "M-Pesa Number"
                     )
                 }
+
                 null -> {}
             }
 
@@ -148,7 +144,7 @@ fun PaymentBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = selectedPayment != null
             ) {
-                Text("Pay Now")
+                Text("Pay Now", style = CC.bodyTextStyle())
             }
         }
     }
@@ -167,7 +163,7 @@ fun PaymentOption(
             .clickable(onClick = onSelect)
             .border(
                 width = 2.dp,
-                color = if (isSelected) CommonComponents.extraPrimaryColor() else Color.Transparent,
+                color = if (isSelected) CC.extraPrimaryColor() else Color.Transparent,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(8.dp)
@@ -177,50 +173,34 @@ fun PaymentOption(
             contentDescription = name,
             modifier = Modifier.size(48.dp)
         )
-        Text(name, style = CommonComponents.bodyTextStyle())
+        Text(name, style = CC.bodyTextStyle())
     }
 }
 
-@Composable
-fun ReceiptDialog(
-    house: HouseEntity,
-    user: User,
-    paymentMethod: PaymentMethod?,
-    onDismiss: () -> Unit
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("Purchase Receipt", style = CommonComponents.titleTextStyle(), fontWeight = FontWeight.Bold)
-                HorizontalDivider()
-                Text("House: ${house.houseName}", style = CommonComponents.bodyTextStyle())
-                Text("Price: $${house.housePrice}", style = CommonComponents.bodyTextStyle())
-                Text("Payment Method: ${paymentMethod?.name ?: "N/A"}", style = CommonComponents.bodyTextStyle())
-                Text("Buyer: ${user.fullName}", style = CommonComponents.bodyTextStyle())
-                Text("Date: ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())}", style = CommonComponents.bodyTextStyle())
-                HorizontalDivider()
-                Text("Thank you for your purchase! Enjoy your time in the house.", style = CommonComponents.bodyTextStyle(), fontWeight = FontWeight.Bold)
-                Button(
-                    onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Close")
-                }
-            }
-        }
-    }
-}
 
 enum class PaymentMethod {
     PAYPAL, CREDIT_CARD, MPESA
 }
+
+
+@Composable
+fun PaymentTextField(
+    value: String,
+    label: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = value,
+        textStyle = CC.bodyTextStyle(),
+        singleLine = true,
+        onValueChange = onValueChange,
+        label = { Text(label, style = CC.bodyTextStyle()) },
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CC.outLinedTextFieldColors()
+
+    )
+}
+
+
