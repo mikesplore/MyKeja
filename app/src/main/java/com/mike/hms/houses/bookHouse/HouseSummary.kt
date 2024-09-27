@@ -28,14 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mike.hms.houses.formatNumber
 import com.mike.hms.model.houseModel.HouseEntity
-import com.mike.hms.ui.theme.CommonComponents
+import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun HouseDetailsCard(house: HouseEntity) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
     val brush = Brush.horizontalGradient(
-        listOf(CommonComponents.primaryColor(), CommonComponents.secondaryColor().copy(alpha = 0.5f), CommonComponents.primaryColor())
+        listOf(CC.primaryColor(), CC.secondaryColor().copy(alpha = 0.5f), CC.primaryColor())
     )
     Card(
         shape = RoundedCornerShape(10.dp),
@@ -47,7 +47,7 @@ fun HouseDetailsCard(house: HouseEntity) {
         Column(
             modifier = Modifier
 
-                .background(CommonComponents.primaryColor())
+                .background(CC.primaryColor())
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
@@ -58,14 +58,14 @@ fun HouseDetailsCard(house: HouseEntity) {
             ) {
                 Text(
                     house.houseName,
-                    style = CommonComponents.titleTextStyle(),
+                    style = CC.titleTextStyle(),
                     fontWeight = FontWeight.Bold,
-                    fontSize = CommonComponents.titleTextStyle().fontSize * 1.2f,
+                    fontSize = CC.titleTextStyle().fontSize * 1.2f,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
                     "Ksh. ${formatNumber(house.housePrice)} /Night",
-                    style = CommonComponents.bodyTextStyle(),
+                    style = CC.bodyTextStyle(),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -78,10 +78,10 @@ fun HouseDetailsCard(house: HouseEntity) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Location Icon",
-                        tint = CommonComponents.secondaryColor()
+                        tint = CC.secondaryColor()
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(house.houseLocation, style = CommonComponents.bodyTextStyle())
+                    Text(house.houseLocation, style = CC.bodyTextStyle())
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -91,10 +91,10 @@ fun HouseDetailsCard(house: HouseEntity) {
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Location Icon",
-                        tint = CommonComponents.secondaryColor()
+                        tint = CC.secondaryColor()
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(house.houseRating, style = CommonComponents.bodyTextStyle())
+                    Text(house.houseRating, style = CC.bodyTextStyle())
                 }
 
             }
@@ -114,7 +114,7 @@ fun TotalPriceRow() {
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(
-                CommonComponents
+                CC
                     .secondaryColor()
                     .copy(alpha = 0.1f)
             )
@@ -124,13 +124,13 @@ fun TotalPriceRow() {
     ) {
         Text(
             text = "Total Price",
-            style = CommonComponents.bodyTextStyle().copy(fontWeight = FontWeight.Bold)
+            style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Bold)
         )
         Text(
             text = "Ksh 45,000",
-            style = CommonComponents.titleTextStyle().copy(
+            style = CC.titleTextStyle().copy(
                 fontWeight = FontWeight.ExtraBold,
-                color = CommonComponents.tertiaryColor()
+                color = CC.tertiaryColor()
             )
         )
     }
