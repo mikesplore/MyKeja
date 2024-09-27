@@ -31,7 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.mike.hms.ui.theme.CommonComponents
+import com.mike.hms.ui.theme.CommonComponents as CC
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -46,7 +46,7 @@ fun RescheduleCard() {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = CommonComponents.primaryColor()),
+        colors = CardDefaults.cardColors(containerColor = CC.primaryColor()),
         modifier = Modifier
 
             .fillMaxWidth()
@@ -60,8 +60,8 @@ fun RescheduleCard() {
         ) {
             Text(
                 text = "Reschedule",
-                style = CommonComponents.titleTextStyle().copy(fontWeight = FontWeight.Bold),
-                color = CommonComponents.textColor()
+                style = CC.titleTextStyle().copy(fontWeight = FontWeight.Bold),
+                color = CC.textColor()
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -135,8 +135,8 @@ fun DateColumn(
     Column(horizontalAlignment = Alignment.Start) {
         Text(
             text = title,
-            style = CommonComponents.bodyTextStyle().copy(fontWeight = FontWeight.Medium),
-            color = CommonComponents.textColor()
+            style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Medium),
+            color = CC.textColor()
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row(
@@ -146,14 +146,14 @@ fun DateColumn(
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = "Select Date",
-                tint = CommonComponents.extraPrimaryColor(),
+                tint = CC.extraPrimaryColor(),
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = date.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                style = CommonComponents.bodyTextStyle().copy(fontWeight = FontWeight.Bold),
-                color = CommonComponents.extraPrimaryColor()
+                style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Bold),
+                color = CC.extraPrimaryColor()
             )
         }
     }
