@@ -45,7 +45,7 @@ fun NavGraph(context: Context){
         }
 
         composable("booking"){
-            BookingInfoScreen()
+            BookingInfoScreen(context)
         }
 
         composable("fullScreenGallery/{initialPage}") {
