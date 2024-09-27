@@ -22,14 +22,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mike.hms.model.houseModel.HouseEntity
-import com.mike.hms.ui.theme.CommonComponents
+import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun HouseCharacteristicsCard(house: HouseEntity) {
     Card(
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(containerColor = CommonComponents.primaryColor()),
+        colors = CardDefaults.cardColors(containerColor = CC.primaryColor()),
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
@@ -90,17 +90,17 @@ fun CharacteristicItem(title: String, value: String) {
             modifier = Modifier
                 .size(8.dp)
                 .clip(CircleShape)
-                .background(CommonComponents.extraPrimaryColor())
+                .background(CC.extraPrimaryColor())
         )
         Column {
             Text(
                 text = title,
-                style = CommonComponents.bodyTextStyle().copy(fontWeight = FontWeight.Medium)
+                style = CC.bodyTextStyle().copy(fontWeight = FontWeight.Medium)
             )
             Text(
                 text = value,
-                style = CommonComponents.bodyTextStyle().copy(
-                    color = CommonComponents.extraPrimaryColor(),
+                style = CC.bodyTextStyle().copy(
+                    color = CC.extraPrimaryColor(),
                     fontWeight = FontWeight.Bold
                 )
             )
