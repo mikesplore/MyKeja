@@ -29,35 +29,40 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun HouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
-        val configuration = LocalConfiguration.current
-        val screenWidth = configuration.screenWidthDp.dp
-        val boxSize = screenWidth * 0.15f
-        val density = LocalDensity.current
-        val textSize = with(density) { (boxSize).toSp() }
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val boxSize = screenWidth * 0.15f
+    val density = LocalDensity.current
+    val textSize = with(density) { (boxSize).toSp() }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(boxSize)
+                .clip(CircleShape)
+                .border(1.dp,
+                    CC
+                        .secondaryColor()
+                        .copy(0.5f),
+                    CircleShape
+                )
         ) {
-            Box(
-                modifier = Modifier
-                    .size(boxSize)
-                    .clip(CircleShape)
-                    .border(1.dp, CC.secondaryColor().copy(0.5f), CircleShape)
-            ) {
-                AsyncImage(
-                    modifier = Modifier.size(boxSize),
-                    model = houseType.houseImageLink.random(),
-                    contentDescription = "House Type Image",
-                    contentScale = ContentScale.Crop,
+            AsyncImage(
+                modifier = Modifier.size(boxSize),
+                model = houseType.houseImageLink.random(),
+                contentDescription = "House Type Image",
+                contentScale = ContentScale.Crop,
 
                 )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = houseType.houseType.name,
-                style = CC.titleTextStyle().copy(fontSize = textSize * 0.2f)
-            )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = houseType.houseType.name,
+            style = CC.titleTextStyle().copy(fontSize = textSize * 0.2f)
+        )
+    }
 
 }
 
