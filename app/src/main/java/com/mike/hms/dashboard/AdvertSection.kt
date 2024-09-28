@@ -1,8 +1,5 @@
 package com.mike.hms.dashboard
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -28,32 +24,31 @@ import com.mike.hms.homeScreen.CarouselItem
 import com.mike.hms.homeScreen.carouselItems
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun CarouselItemCard(carouselItem: CarouselItem) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-        val cardHeight = screenHeight * 0.2f
+    val cardHeight = screenHeight * 0.2f
 
-        // Use Card instead of Box
-        Card(
+    // Use Card instead of Box
+    Card(
+        modifier = Modifier
+            .width(cardHeight * 2.0f)
+            .height(cardHeight)
+            .padding(10.dp),
+        shape = RoundedCornerShape(20.dp),  // Rounded corners
+        elevation = CardDefaults.cardElevation(5.dp)                 // Elevation for shadow
+    ) {
+        AsyncImage(
+            model = carouselItem.itemImageLink,
+            contentDescription = "Carousel Image",
             modifier = Modifier
-                .width(cardHeight * 2.0f)
-                .height(cardHeight)
-                .padding(10.dp),
-            shape = RoundedCornerShape(20.dp),  // Rounded corners
-            elevation = CardDefaults.cardElevation(5.dp)                 // Elevation for shadow
-        ) {
-            AsyncImage(
-                model = carouselItem.itemImageLink,
-                contentDescription = "Carousel Image",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(20.dp)),  // Clip to rounded corners
-                contentScale = ContentScale.Crop
-            )
-        }
+                .fillMaxSize()
+                .clip(RoundedCornerShape(20.dp)),  // Clip to rounded corners
+            contentScale = ContentScale.Crop
+        )
+    }
 
 }
 
