@@ -49,7 +49,6 @@ fun CarouselItemCard(carouselItem: CarouselItem) {
             contentScale = ContentScale.Crop
         )
     }
-
 }
 
 
