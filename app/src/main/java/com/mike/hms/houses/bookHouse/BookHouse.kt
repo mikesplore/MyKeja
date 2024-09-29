@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +38,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun BookingInfoScreen(context: Context
 ) {
-    val house = houseTypes[0]
+    val house = houseTypes.random()
     val user = mockUser
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -45,7 +47,7 @@ fun BookingInfoScreen(context: Context
         listOf(CC.primaryColor(), CC.secondaryColor())
     )
     var showBottomSheet by remember { mutableStateOf(false) }
-    var showReceipt by remember { mutableStateOf(true) }
+    var showReceipt by remember { mutableStateOf(false) }
     var selectedPaymentMethod by remember { mutableStateOf<PaymentMethod?>(PaymentMethod.PAYPAL) }
     var email by remember { mutableStateOf("") }
 
@@ -62,6 +64,7 @@ fun BookingInfoScreen(context: Context
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(paddingValues)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
