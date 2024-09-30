@@ -88,13 +88,13 @@ fun ImageCard(imageUrl: String, onClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullScreenGallery(
-    initialPage: Int,
-    images: List<String>,
-    onNavigateBack: () -> Unit
-) {
+fun FullScreenGallery(navController: NavController, context: Context) {
+    val houseViewModel = getHouseViewModel(context)
+    val house by houseViewModel.house.observeAsState()
+    val images = house?.houseImageLink ?: emptyList()
+    val initialPage = 0
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { images.size })
 
     Scaffold(
@@ -102,7 +102,7 @@ fun FullScreenGallery(
             TopAppBar(
                 title = { Text("${pagerState.currentPage + 1} / ${images.size}") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = {navController.popBackStack()}) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
