@@ -5,14 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.mike.hms.model.bedModel.BedDao
-import com.mike.hms.model.bedModel.BedEntity
 import com.mike.hms.model.houseModel.HouseDao
 import com.mike.hms.model.houseModel.HouseEntity
-import com.mike.hms.model.roomModel.RoomAllocationEntity
-import com.mike.hms.model.roomModel.RoomBookingEntity
-import com.mike.hms.model.roomModel.RoomDao
-import com.mike.hms.model.roomModel.RoomEntity
+import com.mike.hms.model.review.ReviewDao
+import com.mike.hms.model.review.ReviewEntity
 import com.mike.hms.model.tenantModel.TenantDao
 import com.mike.hms.model.tenantModel.TenantEntity
 
@@ -20,10 +16,7 @@ import com.mike.hms.model.tenantModel.TenantEntity
     entities = [
         TenantEntity::class,
         HouseEntity::class,
-        RoomEntity::class,
-        BedEntity::class,
-        RoomAllocationEntity::class,
-        RoomBookingEntity::class
+        ReviewEntity::class
     ],
     version = 2, // Incremented version number
     exportSchema = false
@@ -32,8 +25,7 @@ import com.mike.hms.model.tenantModel.TenantEntity
 abstract class HMSDatabase : RoomDatabase() {
     abstract fun tenantDao(): TenantDao
     abstract fun houseDao(): HouseDao
-    abstract fun roomDao(): RoomDao
-    abstract fun bedDao(): BedDao
+    abstract fun reviewDao(): ReviewDao
 
     companion object {
         @Volatile
