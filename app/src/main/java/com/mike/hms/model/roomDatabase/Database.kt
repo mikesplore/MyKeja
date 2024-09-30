@@ -9,12 +9,12 @@ import com.mike.hms.model.houseModel.HouseDao
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.review.ReviewDao
 import com.mike.hms.model.review.ReviewEntity
-import com.mike.hms.model.tenantModel.TenantDao
-import com.mike.hms.model.tenantModel.TenantEntity
+import com.mike.hms.model.userModel.UserDao
+import com.mike.hms.model.userModel.UserEntity
 
 @Database(
     entities = [
-        TenantEntity::class,
+        UserEntity::class,
         HouseEntity::class,
         ReviewEntity::class
     ],
@@ -23,7 +23,7 @@ import com.mike.hms.model.tenantModel.TenantEntity
 )
 @TypeConverters(Converters::class)
 abstract class HMSDatabase : RoomDatabase() {
-    abstract fun tenantDao(): TenantDao
+    abstract fun userDao(): UserDao
     abstract fun houseDao(): HouseDao
     abstract fun reviewDao(): ReviewDao
 
