@@ -2,8 +2,7 @@ package com.mike.hms.model.houseModel
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.mike.hms.houses.HouseTypes
-import com.mike.hms.model.roomModel.RoomEntity
+
 
 @Entity(tableName = "HouseTable")
 data class HouseEntity(
@@ -16,14 +15,16 @@ data class HouseEntity(
     val houseDescription: String = "",           // Description of the house
     val ownerID: String = "",                    // ID of the house owner: HouseOwner,                  // Link to the owner data class
     val bookingInfoID: String = "",           // Link to the booking information id
-    val rooms: List<String>   = listOf()   ,                 // List of rooms id available in the house
+    val numberOfRooms: Int = 0,                  // Number of rooms in the house    ,                 // List of rooms id available in the house
     val housePrice: Int = 0,                // Price of the house or starting room price
-    val houseReview: List<String> = emptyList(), // List of reviews for the house
+    val houseReview: List<String> = emptyList(), // List of reviewIDs for the house
     val houseAmenities: List<HouseAmenities> = emptyList(),
     val houseAvailable: Boolean = true,
+    val houseCategory: HouseCategory = HouseCategory.ECONOMY,
+    val houseCapacity: Int = 0,
 
 ){
-    constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", emptyList(), 0, emptyList(), emptyList(), true)
+    constructor() : this("","",  HouseType.HOTEL, "", "", emptyList(), "", "", "", 0, 0, emptyList(), emptyList(), true)
 }
 
 data class HouseOwner(
@@ -63,6 +64,14 @@ enum class  HouseAmenities{
     GARDEN,
     WATERFRONT,
     MOUNTAIN_VIEW,
+}
+
+enum class HouseCategory{
+    ECONOMY,
+    STANDARD,
+    FAMILY_SUITE,
+    LUXURY,
+    DELUXE,
 }
 
 
