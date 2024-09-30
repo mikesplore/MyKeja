@@ -1,5 +1,6 @@
 package com.mike.hms.houses
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,17 +24,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.mike.hms.homeScreen.Review
-import com.mike.hms.homeScreen.getMockReviews
+import com.mike.hms.model.getReviewViewModel
+import com.mike.hms.model.review.ReviewsWithUserInfo
 import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HouseReviewsScreen(navController: NavController) {
-    val reviews = getMockReviews()
-    val averageRating = reviews.map { it.rating }.average()
-    val totalReviews = reviews.size
+fun HouseReviewsScreen(navController: NavController, context: Context) {
+    val reviewViewModel = getReviewViewModel(context)
+    val reviews by reviewViewModel.reviews.observeAsState()
+    val averageRating = reviews?.map { it.review.rating }?.average()
+    val totalReviews = reviews?.size
 
     Scaffold(
         topBar = {
@@ -55,12 +59,12 @@ fun HouseReviewsScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            RatingStatistics(averageRating, totalReviews)
+            RatingStatistics(averageRating?:0.0, totalReviews?:0)
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                items(reviews) { review ->
+                items(reviews?: emptyList()) { review ->
                     ReviewItem(review)
                 }
             }
@@ -168,7 +172,7 @@ fun RatingDetails(averageRating: Double, totalReviews: Int) {
 
 
 @Composable
-fun ReviewItem(review: Review) {
+fun ReviewItem(review: ReviewsWithUserInfo) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -189,7 +193,7 @@ fun ReviewItem(review: Review) {
         ) {
             // You can replace this with an actual avatar image if available
             Text(
-                text = review.reviewerName.first().toString(),
+                text = review.tenant.firstName.first().toString(),
                 modifier = Modifier.padding(8.dp),
                 color = CC.textColor()
             )
@@ -199,20 +203,20 @@ fun ReviewItem(review: Review) {
 
         Column {
             Text(
-                text = review.reviewerName,
+                text = review.tenant.firstName,
                 style = CC.contentTextStyle().copy(fontWeight = FontWeight.Bold)
             )
             Text(
-                text = "Rating: ${review.rating} ⭐",
+                text = "Rating: ${review.review.rating} ⭐",
                 style = CC.contentTextStyle()
             )
             Text(
-                text = review.reviewText,
+                text = review.review.reviewText,
                 style = CC.contentTextStyle(),
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = review.timestamp,
+                text = review.review.timestamp,
                 style = CC.contentTextStyle().copy(color = Color.Gray)
             )
         }
