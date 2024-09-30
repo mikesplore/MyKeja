@@ -20,10 +20,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.mike.hms.homeScreen.CarouselItem
-import com.mike.hms.homeScreen.carouselItems
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+data class CarouselItem(
+    val itemImageLink: String
+)
+
+val carouselItems = listOf(
+    CarouselItem("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg"),
+)
 
 @Composable
 fun CarouselItemCard(carouselItem: CarouselItem) {
