@@ -27,9 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.mike.hms.homeScreen.User
 import com.mike.hms.houses.formatNumber
 import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.userModel.UserEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,7 +39,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 fun ReceiptDialog(
     context: Context,
     house: HouseEntity,
-    user: User,
+    user: UserEntity,
     paymentMethod: PaymentMethod?,
     onDismiss: () -> Unit
 ) {
@@ -73,7 +73,7 @@ fun ReceiptDialog(
                 ReceiptItem("House", house.houseName)
                 ReceiptItem("Price", "Ksh. ${formatNumber(house.housePrice)}")
                 ReceiptItem("Payment Method", paymentMethod?.name ?: "N/A")
-                ReceiptItem("Buyer", user.fullName)
+                ReceiptItem("Buyer", user.firstName)
                 ReceiptItem(
                     "Date",
                     SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
@@ -146,14 +146,14 @@ fun ReceiptItem(label: String, value: String) {
     }
 }
 
-fun generateReceiptText(house: HouseEntity, user: User, paymentMethod: PaymentMethod?): String {
+fun generateReceiptText(house: HouseEntity, user: UserEntity, paymentMethod: PaymentMethod?): String {
     return """
         Purchase Receipt
         
         House: ${house.houseName}
         Price: Ksh. ${formatNumber(house.housePrice)}
         Payment Method: ${paymentMethod?.name ?: "N/A"}
-        Buyer: ${user.fullName}
+        Buyer: ${user.firstName}
         Date: ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())}
         
         Thank you for your purchase! Enjoy your time in the house.
