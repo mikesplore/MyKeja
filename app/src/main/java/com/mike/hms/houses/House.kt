@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,7 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.mike.hms.homeScreen.houseTypes
+import com.mike.hms.model.getHouseViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseType
 import java.util.Locale
@@ -69,9 +70,11 @@ fun Houses(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf<HouseType?>(null) }
+    val houseViewModel = getHouseViewModel(context)
+    val houses by houseViewModel.houses.observeAsState()
 
     // Assume this function returns your list of houses
-    val houseList = remember { houseTypes } // Replace with actual data fetching logic
+    val houseList = remember { houses } // Replace with actual data fetching logic
 
     Scaffold { innerPadding ->
         Column(
@@ -146,7 +149,7 @@ fun Houses(
             }
 
             // Filtered and searched houses
-            val filteredHouses = houseList.filter { house ->
+            val filteredHouses = houseList?.filter { house ->
                 // Filter by house type if selected, otherwise show all houses
                 (selectedFilter == null || house.houseType == selectedFilter) &&
                         // Search by house name, type, or location
@@ -159,8 +162,8 @@ fun Houses(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                val groupedHouses = filteredHouses.groupBy { it.houseType }
-                groupedHouses.forEach { (type, housesOfType) ->
+                val groupedHouses = filteredHouses?.groupBy { it.houseType }
+                groupedHouses?.forEach { (type, housesOfType) ->
                     item {
                         Text(
                             text = type.name
