@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,19 +28,25 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.mike.hms.homeScreen.houseTypes
-import com.mike.hms.homeScreen.mockUser
 import com.mike.hms.houses.bookHouse.housePayment.PaymentBottomSheet
 import com.mike.hms.houses.bookHouse.housePayment.PaymentMethod
 import com.mike.hms.houses.bookHouse.housePayment.ReceiptDialog
+import com.mike.hms.model.getHouseViewModel
+import com.mike.hms.model.getUserViewModel
+import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookingInfoScreen(context: Context
+fun BookingInfoScreen(
+    context: Context
 ) {
-    val house = houseTypes.random()
-    val user = mockUser
+    val houseViewModel = getHouseViewModel(context)
+    val userViewModel = getUserViewModel(context)
+    val house by houseViewModel.house.observeAsState()
+    val user by userViewModel.user.observeAsState()
+
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -74,13 +81,13 @@ fun BookingInfoScreen(context: Context
                     Text("Order Details", style = CC.titleTextStyle(), fontWeight = FontWeight.Bold)
                 }
                 // User Card
-                UserDetails(user)
+                UserDetails(user?: UserEntity())
 
                 // House Details Card
-                HouseDetailsCard(house)
+                HouseDetailsCard(house ?: HouseEntity())
 
                 // House Characteristics Card
-                HouseCharacteristicsCard(house)
+                HouseCharacteristicsCard(house ?: HouseEntity())
 
                 // Reschedule Card
                 RescheduleCard()
@@ -122,8 +129,8 @@ fun BookingInfoScreen(context: Context
     if (showReceipt) {
         ReceiptDialog(
             context = context,
-            house = house,
-            user = user,
+            house = house ?: HouseEntity(),
+            user = user?: UserEntity(),
             paymentMethod = selectedPaymentMethod,
             onDismiss = { showReceipt = false }
         )
