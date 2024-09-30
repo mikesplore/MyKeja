@@ -1,4 +1,4 @@
-package com.mike.hms.model.tenantModel
+package com.mike.hms.model.userModel
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,17 +6,17 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
 @Dao
-interface TenantDao {
+interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTenant(tenant: TenantEntity)
+    suspend fun insertUser(user: UserEntity)
 
-    @Query("SELECT * FROM tenantTable WHERE tenantID = :tenantID")
-    suspend fun getTenantByID(tenantID: String): TenantEntity
+    @Query("SELECT * FROM userTable WHERE userID = :userID")
+    suspend fun getUserByID(userID: String): UserEntity
 
-    @Query("SELECT * FROM tenantTable")
-    suspend fun getAllTenants(): List<TenantEntity>
+    @Query("SELECT * FROM userTable")
+    suspend fun getAllUsers(): List<UserEntity>
 
-    @Query("DELETE FROM tenantTable WHERE tenantID = :tenantID")
-    suspend fun deleteTenant(tenantID: String)
+    @Query("DELETE FROM userTable WHERE userID = :userID")
+    suspend fun deleteUser(userID: String)
 
 }
