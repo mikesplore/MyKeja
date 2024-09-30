@@ -6,13 +6,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.review.ReviewViewModel
 import com.mike.hms.model.roomDatabase.HostelManagementSystemApp
-import com.mike.hms.model.tenantModel.TenantViewModel
+import com.mike.hms.model.userModel.UserViewModel
 
 @Composable
-fun getTenantViewModel(context: Context): TenantViewModel {
+fun getUserViewModel(context: Context): UserViewModel {
     val application = context.applicationContext as HostelManagementSystemApp
-    val tenantRepository = application.tenantRepository
-    return viewModel(factory = TenantViewModel.TenantViewModelFactory(tenantRepository))
+    val userRepository = application.userRepository
+    return viewModel(factory = UserViewModel.UserViewModelFactory(userRepository))
 }
 
 @Composable
