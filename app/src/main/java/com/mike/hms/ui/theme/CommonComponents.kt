@@ -2,6 +2,7 @@ package com.mike.hms.ui.theme
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -94,22 +97,6 @@ object CommonComponents{
         )
     }
 
-    @Composable
-    fun MyOutlinedTextField(
-        value: String,
-        placeholder: String,
-        onValueChange: (String) -> Unit,
-        singleLine: Boolean
-    ){
-        OutlinedTextField(
-            value = value,
-            textStyle = contentTextStyle(),
-            onValueChange = {onValueChange(value)},
-            singleLine = singleLine,
-            placeholder = { Text(placeholder, style = contentTextStyle()) },
-            colors = OutlinedTextFieldDefaults.colors()
-        )
-    }
 
     //Search TextField
     @Composable
@@ -190,4 +177,34 @@ object CommonComponents{
             actionIconContentColor = textColor(),
             scrolledContainerColor = primaryColor()
         )
+
+    @Composable
+    fun MyOutlinedTextField(
+        modifier: Modifier = Modifier,
+        value: String,
+        onValueChange: (String) -> Unit,
+        label: String,
+        placeholder: String,
+        singleLine: Boolean = false,
+        keyboardType: KeyboardType = KeyboardType.Text, // Default to text
+        imeAction: ImeAction = ImeAction.Done, // Default to Done
+        trailingIcon: @Composable (() -> Unit)? = null
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label, style = contentTextStyle()) },
+            placeholder = { Text(placeholder, style = contentTextStyle()) },
+            modifier = modifier,
+            colors = outLinedTextFieldColors(),
+            shape = outLinedTextFieldShape(),
+            textStyle = contentTextStyle(),
+            trailingIcon = trailingIcon,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            singleLine = singleLine
+        )
+    }
 }
