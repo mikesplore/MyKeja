@@ -1,18 +1,18 @@
-package com.mike.hms.model.tenantModel
+package com.mike.hms.model.userModel
 
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class TenantRepository(private val tenantDao: TenantDao) {
+class UserRepository(private val userDao: UserDao) {
 
     private val viewmodelScope = CoroutineScope(Dispatchers.IO)
     private val database = FirebaseDatabase.getInstance().reference
 
-    fun insertTenant(tenant: TenantEntity, onSuccess: (Boolean) -> Unit) {
+    fun insertUser(user: UserEntity, onSuccess: (Boolean) -> Unit) {
 
-        insertTenantToFirebase(tenant) { success ->
+        insertUserToFirebase(user) { success ->
             if (success) {
                 onSuccess(true)
             } else {
@@ -20,40 +20,40 @@ class TenantRepository(private val tenantDao: TenantDao) {
             }
         }
         viewmodelScope.launch {
-            tenantDao.insertTenant(tenant)
+            userDao.insertUser(user)
             onSuccess(true)
         }
     }
 
-    fun getTenantByID(tenantID: String, onResult: (TenantEntity) -> Unit) {
+    fun getUserByID(userID: String, onResult: (UserEntity) -> Unit) {
         viewmodelScope.launch {
-            val tenant = tenantDao.getTenantByID(tenantID)
-            onResult(tenant)
+            val user = userDao.getUserByID(userID)
+            onResult(user)
         }
     }
 
-    fun getAllTenants(onResult: (List<TenantEntity>) -> Unit) {
+    fun getAllUsers(onResult: (List<UserEntity>) -> Unit) {
         viewmodelScope.launch {
-            val tenants = tenantDao.getAllTenants()
-            onResult(tenants)
+            val users = userDao.getAllUsers()
+            onResult(users)
         }
-        retrieveTenantsFromFirebase { tenantList ->
+        retrieveUsersFromFirebase { userList ->
             viewmodelScope.launch {
-                tenantList.forEach { tenant ->
-                    tenantDao.insertTenant(tenant)
+                userList.forEach { user ->
+                    userDao.insertUser(user)
                 }
-                onResult(tenantList)
+                onResult(userList)
             }
         }
     }
 
-    fun deleteTenant(tenantID: String, onSuccess: (Boolean) -> Unit) {
+    fun deleteUser(userID: String, onSuccess: (Boolean) -> Unit) {
         viewmodelScope.launch {
-            tenantDao.deleteTenant(tenantID)
+            userDao.deleteUser(userID)
             onSuccess(true)
 
         }
-        deleteTenantFromFirebase(tenantID) { success ->
+        deleteUserFromFirebase(userID) { success ->
             if (success) {
                 onSuccess(true)
             } else {
@@ -63,10 +63,10 @@ class TenantRepository(private val tenantDao: TenantDao) {
     }
 
     //Firebase Functions
-    private fun insertTenantToFirebase(tenant: TenantEntity, onSuccess: (Boolean) -> Unit) {
-        val tenantRef = database.child("Tenants").child(tenant.tenantID)
+    private fun insertUserToFirebase(user: UserEntity, onSuccess: (Boolean) -> Unit) {
+        val userRef = database.child("Users").child(user.userID)
 
-        tenantRef.setValue(tenant).addOnCompleteListener { task ->
+        userRef.setValue(user).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 onSuccess(true)
             } else {
@@ -75,26 +75,26 @@ class TenantRepository(private val tenantDao: TenantDao) {
         }
     }
 
-    private fun retrieveTenantsFromFirebase(onSuccess: (List<TenantEntity>) -> Unit) {
-        val tenantRef = database.child("Tenants")
+    private fun retrieveUsersFromFirebase(onSuccess: (List<UserEntity>) -> Unit) {
+        val userRef = database.child("Users")
 
-        tenantRef.get().addOnSuccessListener { dataSnapshot ->
+        userRef.get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
-                val tenantList = mutableListOf<TenantEntity>()
-                for (tenantSnapshot in dataSnapshot.children) {
-                    val tenant = tenantSnapshot.getValue(TenantEntity::class.java)
-                    tenant?.let { tenantList.add(it) }
+                val userList = mutableListOf<UserEntity>()
+                for (userSnapshot in dataSnapshot.children) {
+                    val user = userSnapshot.getValue(UserEntity::class.java)
+                    user?.let { userList.add(it) }
                 }
-                onSuccess(tenantList)
+                onSuccess(userList)
             } else {
                 onSuccess(emptyList())
             }
         }
     }
 
-    private fun deleteTenantFromFirebase(tenantID: String, onSuccess: (Boolean) -> Unit) {
-        val tenantRef = database.child("Tenants").child(tenantID)
-        tenantRef.removeValue().addOnCompleteListener { task ->
+    private fun deleteUserFromFirebase(userID: String, onSuccess: (Boolean) -> Unit) {
+        val userRef = database.child("Users").child(userID)
+        userRef.removeValue().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 onSuccess(true)
             } else {
