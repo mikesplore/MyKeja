@@ -53,7 +53,7 @@ fun HouseCharacteristicsCard(house: HouseEntity) {
                     title1 = "House Type",
                     value1 = house.houseType.toString(),
                     title2 = "Capacity",
-                    value2 = "${house.rooms.size} Rooms"
+                    value2 = "${house.numberOfRooms} Rooms"
                 )
             }
 
