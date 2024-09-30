@@ -193,7 +193,7 @@ fun ReviewItem(review: ReviewsWithUserInfo) {
         ) {
             // You can replace this with an actual avatar image if available
             Text(
-                text = review.tenant.firstName.first().toString(),
+                text = review.user.firstName.first().toString(),
                 modifier = Modifier.padding(8.dp),
                 color = CC.textColor()
             )
@@ -203,7 +203,7 @@ fun ReviewItem(review: ReviewsWithUserInfo) {
 
         Column {
             Text(
-                text = review.tenant.firstName,
+                text = review.user.firstName,
                 style = CC.contentTextStyle().copy(fontWeight = FontWeight.Bold)
             )
             Text(
