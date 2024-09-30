@@ -86,7 +86,7 @@ fun HouseCard(house: HouseEntity, onHouseClick: () -> Unit) {
                         )
                     )
                     Text(
-                        house.rooms.size.toString() + " Rooms",
+                        house.numberOfRooms.toString() + " Rooms",
                         style = CommonComponents.contentTextStyle().copy(fontSize = 13.sp)
                     )
                 }
