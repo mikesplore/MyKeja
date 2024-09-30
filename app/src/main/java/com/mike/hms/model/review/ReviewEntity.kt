@@ -1,5 +1,6 @@
 package com.mike.hms.model.review
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.mike.hms.model.userModel.UserEntity
@@ -19,7 +20,7 @@ data class ReviewEntity(
 }
 
 data class ReviewsWithUserInfo(
-    val review: ReviewEntity,
-    val user: UserEntity
+    @Embedded val review: ReviewEntity,
+    @Embedded val user: UserEntity
 )
 
