@@ -1,5 +1,6 @@
 package com.mike.hms.houses
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -15,9 +16,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,22 +27,23 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.mike.hms.homeScreen.houseTypes
+import com.mike.hms.model.getHouseViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
 @Composable
-fun HouseDetailScreen(navController: NavController) {
+fun HouseDetailScreen(navController: NavController, context: Context) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
     val density = LocalDensity.current.density
     val textSize = (screenWidth.value / density).sp
     val isHouseFavorite = remember { mutableStateOf(false) }
-    val house = houseTypes[0]
-    var selectedImage by remember { mutableStateOf<String?>(null) }
+    val houseViewModel = getHouseViewModel(context)
+    val house by houseViewModel.house.observeAsState()
+    val selectedImage = remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -51,44 +53,46 @@ fun HouseDetailScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Image Gallery
-        HouseImageOverView(
-            house = house,
-            onImageClick = { selectedImage = it },
-            isHouseFavorite = isHouseFavorite,
-            screenHeight = screenHeight
-        )
+        house?.let {
+            HouseImageOverView(
+                house = it,
+                onImageClick = { imageUrl -> selectedImage.value = imageUrl },
+                isHouseFavorite = isHouseFavorite,
+                screenHeight = screenHeight
+            )
+        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // House Title
-        HouseTitleRow(house = house, textSize = textSize)
+        house?.let { HouseTitleRow(house = it, textSize = textSize) }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Location and Ratings
-        HouseLocationAndRatings(house, navController)
+        house?.let { HouseLocationAndRatings(it, navController) }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // Rooms and Availability
-        RoomsAndAvailability(house)
+        house?.let { RoomsAndAvailability(it) }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         // House Amenities
-        HouseAmenities(house)
+        house?.let { HouseAmenities(it) }
         Spacer(modifier = Modifier.height(10.dp))
 
         // House Description
-        HouseOverview(house)
+        house?.let { HouseOverview(it) }
         Spacer(modifier = Modifier.height(10.dp))
 
         // Available Rooms
-        AvailableRooms(navController)
+        AvailableRooms(navController, context)
         Spacer(modifier = Modifier.height(10.dp))
 
         // Book Now
-        BookNow(house)
+        house?.let { BookNow(it) }
     }
 
 }
