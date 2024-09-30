@@ -29,7 +29,7 @@ interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertReview(review: ReviewEntity)
 
-    @Query("SELECT u.*, r.userId, r.houseId, r.rating, r.reviewText, r.timestamp FROM reviews AS r JOIN tenantTable AS u ON r.userId = u.tenantID WHERE r.houseId = :houseId")
+    @Query("SELECT u.*, r.userId, r.houseId, r.rating, r.reviewText, r.timestamp FROM reviews AS r JOIN userTable AS u ON r.userId = u.userID WHERE r.houseId = :houseId")
     fun getReviewsWithUserInfo(houseId: String): List<ReviewsWithUserInfo>
 
 
