@@ -3,7 +3,7 @@ package com.mike.hms.model.userModel
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "userTable")
+@Entity(tableName = "users")
 data class UserEntity(
     @PrimaryKey val userID: String,
     val firstName: String,
@@ -11,8 +11,9 @@ data class UserEntity(
     val gender: String,
     val phoneNumber: String,
     val role: String,
+    val email: String
 ){
-    constructor() : this("", "", "", "", "", "")
+    constructor() : this("", "", "", "", "", "","")
 }
 
 enum class Gender{
