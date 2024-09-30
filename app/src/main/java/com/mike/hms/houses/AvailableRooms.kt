@@ -1,5 +1,6 @@
 package com.mike.hms.houses
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,12 +14,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,13 +30,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.mike.hms.homeScreen.rooms
-import com.mike.hms.model.roomModel.RoomEntity
+import com.mike.hms.model.getHouseViewModel
+import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun AvailableRooms(navController: NavController) {
-    val rooms = rooms
+fun AvailableRooms(navController: NavController, context: Context) {
+    val houseViewModel = getHouseViewModel(context)
+    val houses by houseViewModel.houses.observeAsState()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,14 +51,14 @@ fun AvailableRooms(navController: NavController) {
             style = CC.titleTextStyle().copy(color = CC.tertiaryColor())
         )
 
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp)
-        ){
-        Text(
-            text = "Open",
-            style = CC.contentTextStyle().copy(color = CC.extraPrimaryColor())
-        )
+        ) {
+            Text(
+                text = "Open",
+                style = CC.contentTextStyle().copy(color = CC.extraPrimaryColor())
+            )
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Open",
@@ -73,9 +77,11 @@ fun AvailableRooms(navController: NavController) {
             .padding(start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(rooms.size) { index ->
-            val room = rooms[index]
-            RoomItem(room)
+        items(houses?.size ?: 0) { index ->
+            val room = houses?.get(index)
+            if (room != null) {
+                RoomItem(room)
+            }
         }
 
     }
@@ -83,7 +89,7 @@ fun AvailableRooms(navController: NavController) {
 
 
 @Composable
-fun RoomItem(room: RoomEntity, modifier: Modifier = Modifier) {
+fun RoomItem(room: HouseEntity, modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val boxWidth = screenWidth * 0.35f
@@ -102,7 +108,7 @@ fun RoomItem(room: RoomEntity, modifier: Modifier = Modifier) {
         Box {
             // Room image
             AsyncImage(
-                model = room.roomImageLink.firstOrNull(),
+                model = room.houseImageLink.firstOrNull(),
                 contentDescription = "Room Image",
                 modifier = Modifier
                     .fillMaxSize()
