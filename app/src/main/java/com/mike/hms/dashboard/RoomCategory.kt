@@ -1,5 +1,6 @@
 package com.mike.hms.dashboard
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,20 +33,20 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.mike.hms.homeScreen.rooms
-import com.mike.hms.model.roomModel.RoomCategory
-import com.mike.hms.model.roomModel.RoomEntity
+import com.mike.hms.model.getHouseViewModel
+import com.mike.hms.model.houseModel.HouseCategory
+import com.mike.hms.model.houseModel.HouseEntity
 import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
-val roomCategory = listOf(
-    RoomCategory.ECONOMY,
-    RoomCategory.STANDARD,
-    RoomCategory.FAMILY_SUITE,
-    RoomCategory.LUXURY,
-    RoomCategory.DELUXE,
-    RoomCategory.EXECUTIVE,
+val houseCategory = listOf(
+    HouseCategory.DELUXE,
+    HouseCategory.ECONOMY,
+    HouseCategory.FAMILY_SUITE,
+    HouseCategory.LUXURY,
+    HouseCategory.STANDARD
+
 )
 
 object FilteredCategory {
@@ -52,7 +54,7 @@ object FilteredCategory {
 }
 
 @Composable
-fun RoomCategoryBox(roomCategory: String, isSelected: Boolean, onClick: () -> Unit) {
+fun HouseCategoryBox(houseCategory: String, isSelected: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .background(
@@ -64,7 +66,7 @@ fun RoomCategoryBox(roomCategory: String, isSelected: Boolean, onClick: () -> Un
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = roomCategory,
+            text = houseCategory,
             style = CC.contentTextStyle().copy(
                 color = if (isSelected) CC.primaryColor() else CC.secondaryColor()
             ),
@@ -74,7 +76,7 @@ fun RoomCategoryBox(roomCategory: String, isSelected: Boolean, onClick: () -> Un
 }
 
 @Composable
-fun RoomsCategory() {
+fun HousesCategory() {
     var selectedIndex by remember { mutableIntStateOf(-1) } // Track the selected index
 
     LazyRow(
@@ -83,15 +85,15 @@ fun RoomsCategory() {
             .padding(start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(roomCategory.size) { index ->
-            val formattedCategory = roomCategory[index]
+        items(houseCategory.size) { index ->
+            val formattedCategory = houseCategory[index]
                 .toString()
                 .replace("_", " ") // Replace underscore with space
                 .lowercase()
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
-            RoomCategoryBox(
-                roomCategory = formattedCategory,
+            HouseCategoryBox(
+                houseCategory = formattedCategory,
                 isSelected = selectedIndex == index, // Check if this box is selected
                 onClick = {
                     FilteredCategory.category.value = formattedCategory
@@ -104,7 +106,7 @@ fun RoomsCategory() {
 
 
 @Composable
-fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
+fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val boxWidth = screenWidth * 0.35f
@@ -112,7 +114,7 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
     val density = LocalDensity.current
     val textSize = with(density) { (boxHeight * 0.1f).toSp() }
 
-    // Card for the room item
+    // Card for the house item
     Card(
         modifier = modifier
             .width(boxWidth)
@@ -121,24 +123,24 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
         elevation = CardDefaults.cardElevation(5.dp)  // Built-in shadow/elevation
     ) {
         Box {
-            // Room image
+            // House image
             AsyncImage(
-                model = room.roomImageLink.firstOrNull(),
-                contentDescription = "Room Image",
+                model = house.houseImageLink.firstOrNull(),
+                contentDescription = "House Image",
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop
             )
 
-            // Display the room price at the bottom end
+            // Display the house price at the bottom end
             Box(
                 modifier = Modifier
                     .background(CC.secondaryColor(), shape = RoundedCornerShape(10.dp))
                     .align(Alignment.TopEnd)  // Align to the bottom end
             ) {
                 Text(
-                    text = String.format(Locale.getDefault(), "Ksh %,d/Night", room.roomPrice),
+                    text = String.format(Locale.getDefault(), "Ksh %,d/Night", house.housePrice),
                     style = CC.bodyTextStyle().copy(
                         fontSize = textSize * 0.7f,
                         color = CC.primaryColor()
@@ -148,7 +150,7 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
                 )
             }
 
-            // Bottom overlay for room details (type, capacity, rating)
+            // Bottom overlay for house details (type, capacity, rating)
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)  // Align the other details to the bottom start
@@ -160,10 +162,10 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
                     )
                     .padding(5.dp)  // Padding for a cleaner layout
             ) {
-                // Room type and capacity
+                // House type and capacity
                 Text(
-                    text = room.roomType.name.first()
-                        .uppercase(Locale.getDefault()) + room.roomType.name.substring(1)
+                    text = house.houseType.name.first()
+                        .uppercase(Locale.getDefault()) + house.houseType.name.substring(1)
                         .lowercase(Locale.getDefault()),
                     style = CC.bodyTextStyle().copy(
                         fontSize = textSize * 0.7f,
@@ -172,7 +174,7 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
                 val guests =
-                    if (room.roomCapacity == 1) " ${room.roomCapacity} Guest" else " ${room.roomCapacity} Guests"
+                    if (house.houseCapacity == 1) " ${house.houseCapacity} Guest" else " ${house.houseCapacity} Guests"
                 Text(
                     text = guests,
                     style = CC.bodyTextStyle().copy(
@@ -188,7 +190,9 @@ fun RoomCategoryItem(room: RoomEntity, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun RecommendedRoomTypeList(modifier: Modifier = Modifier) {
+fun RecommendedHouseTypeList(modifier: Modifier = Modifier, context: Context) {
+    val houseViewModel = getHouseViewModel(context)
+    val houses by houseViewModel.houses.observeAsState()
     LazyRow(
         modifier = modifier
             .padding(start = 20.dp)
@@ -196,19 +200,19 @@ fun RecommendedRoomTypeList(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
 
-        val filteredRooms = if (FilteredCategory.category.value.isEmpty()) {
-            rooms // Don't filter if category is empty
+        val filteredHouses = if (FilteredCategory.category.value.isEmpty()) {
+            houses // Don't filter if category is empty
         } else {
-            rooms.filter { room ->
-                room.roomCategory
+            houses?.filter { house ->
+                house.houseCategory
                     .toString()
                     .replace("_", " ")
                     .lowercase()
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } == FilteredCategory.category.value
             }
         }
-        items(filteredRooms) { houseCategory ->
-            RoomCategoryItem(houseCategory)
+        items(filteredHouses?: emptyList()) { houseCategory ->
+            HouseCategoryItem(houseCategory)
         }
     }
 }
