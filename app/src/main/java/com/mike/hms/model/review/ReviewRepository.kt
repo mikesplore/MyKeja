@@ -54,7 +54,7 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
     }
 
     // Get a specific review by ID from Room
-    fun getReviewById(houseId: Int, onResult: (List<ReviewsWithUserInfo>) -> Unit) {
+    fun getReviewById(houseId: String, onResult: (List<ReviewsWithUserInfo>) -> Unit) {
         viewmodelScope.launch {
             val review = reviewDao.getHouseReviews(houseId)
             onResult(review)
