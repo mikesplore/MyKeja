@@ -1,49 +1,49 @@
-package com.mike.hms.model.tenantModel
+package com.mike.hms.model.userModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class TenantViewModel(private val tenantRepository: TenantRepository): ViewModel() {
-    private val _tenants = MutableLiveData<List<TenantEntity>>()
-    val tenants: LiveData<List<TenantEntity>> = _tenants
+class UserViewModel(private val userRepository: UserRepository): ViewModel() {
+    private val _users = MutableLiveData<List<UserEntity>>()
+    val users: LiveData<List<UserEntity>> = _users
 
-    private val _tenant = MutableLiveData<TenantEntity>()
-    val tenant: LiveData<TenantEntity> = _tenant
+    private val _user = MutableLiveData<UserEntity>()
+    val user: LiveData<UserEntity> = _user
 
-    fun insertTenant(tenant: TenantEntity, onSuccess: (Boolean) -> Unit) {
-        tenantRepository.insertTenant(tenant) {
+    fun insertUser(user: UserEntity, onSuccess: (Boolean) -> Unit) {
+        userRepository.insertUser(user) {
             onSuccess(it)
         }
     }
 
-    fun getTenantByID(tenantID: String) {
-        tenantRepository.getTenantByID(tenantID) {
-            _tenant.value = it
+    fun getUserByID(userID: String) {
+        userRepository.getUserByID(userID) {
+            _user.value = it
         }
     }
 
-    fun getAllTenants() {
-        tenantRepository.getAllTenants {
-            _tenants.value = it
+    fun getAllUsers() {
+        userRepository.getAllUsers {
+            _users.value = it
         }
     }
 
-    fun deleteTenant(tenantID: String, onSuccess: (Boolean) -> Unit) {
-        tenantRepository.deleteTenant(tenantID) {
+    fun deleteUser(userID: String, onSuccess: (Boolean) -> Unit) {
+        userRepository.deleteUser(userID) {
             onSuccess(it)
         }
     }
 
-    class TenantViewModelFactory(private val repository: TenantRepository) :
+    class UserViewModelFactory(private val repository: UserRepository) :
         ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(TenantViewModel::class.java)) {
-                return TenantViewModel(repository) as T
+            if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
+                return UserViewModel(repository) as T
             }
-            throw IllegalArgumentException("Unknown ViewModel class for TenantViewModel")
+            throw IllegalArgumentException("Unknown ViewModel class for UserViewModel")
         }
     }
 
