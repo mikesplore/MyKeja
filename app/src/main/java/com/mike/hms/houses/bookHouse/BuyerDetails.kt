@@ -30,11 +30,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mike.hms.homeScreen.User
+import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun UserDetails(user: User) {
+fun UserDetails(user: UserEntity) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -65,7 +65,7 @@ fun UserDetails(user: User) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = user.fullName.first().toString(),
+                    text = user.firstName.first().toString(),
                     style = CC.titleTextStyle().copy(
                         fontSize = 24.sp, // Larger font for initials
                         fontWeight = FontWeight.Bold,
@@ -82,7 +82,7 @@ fun UserDetails(user: User) {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = user.fullName,
+                    text = user.firstName,
                     style = CC.titleTextStyle().copy(
                         fontSize = 20.sp, // Increased font size for name
                         fontWeight = FontWeight.Bold,
