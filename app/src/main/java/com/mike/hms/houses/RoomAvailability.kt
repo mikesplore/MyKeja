@@ -25,8 +25,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun RoomsAndAvailability(house: HouseEntity) {
-    val rooms = house.rooms.ifEmpty { listOf("No rooms available") }
-    val roomNumber = if (rooms.size == 1) "Room" else "Rooms"
+    val roomNumber = if (house.numberOfRooms == 1) "Room" else "Rooms"
     val roomAvailability = if (house.houseAvailable) "Available" else "Unavailable"
     val availabilityColor = if (house.houseAvailable) Color.Green else Color.Red
 
@@ -56,7 +55,7 @@ fun RoomsAndAvailability(house: HouseEntity) {
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "${rooms.size} $roomNumber",
+                text = "${house.numberOfRooms} $roomNumber",
                 style = CC.contentTextStyle().copy(color = CC.textColor())
             )
         }
