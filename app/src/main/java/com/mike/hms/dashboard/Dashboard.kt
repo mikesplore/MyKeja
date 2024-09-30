@@ -43,11 +43,11 @@ fun DashboardScreen(context: Context, navController: NavController) {
                     .padding(horizontal = 20.dp)
             )
             Spacer(modifier = Modifier.height(30.dp))
-            HouseTypeList()
+            HouseTypeList(context = context)
             Spacer(modifier = Modifier.height(20.dp))
-            RoomsCategory()
+            HousesCategory()
             Spacer(modifier = Modifier.height(20.dp))
-            RecommendedRoomTypeList()
+            RecommendedHouseTypeList(context = context)
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 "Offers for you", style = CC.titleTextStyle().copy(
@@ -77,7 +77,7 @@ fun DashboardScreen(context: Context, navController: NavController) {
 
             }
             Spacer(modifier = Modifier.height(20.dp))
-            PopularHouseTypeList()
+            PopularHouseTypeList(context = context)
             Spacer(modifier = Modifier.height(20.dp))
             Row(
                 modifier = Modifier
