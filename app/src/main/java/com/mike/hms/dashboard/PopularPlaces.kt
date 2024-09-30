@@ -1,5 +1,6 @@
 package com.mike.hms.dashboard
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +32,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.mike.hms.homeScreen.houseTypes
+import com.mike.hms.model.getHouseViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -124,14 +126,16 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun PopularHouseTypeList(modifier: Modifier = Modifier) {
+fun PopularHouseTypeList(modifier: Modifier = Modifier, context: Context) {
+    val houseViewModel = getHouseViewModel(context)
+    val houses = houseViewModel.houses.observeAsState()
     LazyRow(
         modifier = modifier
             .padding(start = 20.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        items(houseTypes) { houseType ->
+        items(houses.value ?: emptyList()) { houseType ->
             PopularHouseItem(houseType)
         }
     }
