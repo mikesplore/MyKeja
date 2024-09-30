@@ -8,16 +8,16 @@ import androidx.room.PrimaryKey
 data class HouseEntity(
     @PrimaryKey val houseID: String,
     val houseName: String = "",
-    val houseType: HouseType = HouseType.HOTEL,                  // Type of house (e.g., villa, apartment)
-    val houseLocation: String = "",              // General location or address
-    val houseRating: String = "5.0",        // Rating of the house
-    val houseImageLink: List<String> = emptyList(),             // Image link for the house
-    val houseDescription: String = "",           // Description of the house
-    val ownerID: String = "",                    // ID of the house owner: HouseOwner,                  // Link to the owner data class
-    val bookingInfoID: String = "",           // Link to the booking information id
-    val numberOfRooms: Int = 0,                  // Number of rooms in the house    ,                 // List of rooms id available in the house
-    val housePrice: Int = 0,                // Price of the house or starting room price
-    val houseReview: List<String> = emptyList(), // List of reviewIDs for the house
+    val houseType: HouseType = HouseType.HOTEL,
+    val houseLocation: String = "",
+    val houseRating: String = "5.0",
+    val houseImageLink: List<String> = emptyList(),
+    val houseDescription: String = "",
+    val ownerID: String = "",
+    val bookingInfoID: String = "",
+    val numberOfRooms: Int = 0,
+    val housePrice: Int = 0,
+    val houseReview: List<String> = emptyList(),
     val houseAmenities: List<HouseAmenities> = emptyList(),
     val houseAvailable: Boolean = true,
     val houseCategory: HouseCategory = HouseCategory.ECONOMY,
