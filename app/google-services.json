@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "295771880605",
+    "firebase_url": "https://hostel-management-system-ddfb7-default-rtdb.firebaseio.com",
     "project_id": "hostel-management-system-ddfb7",
     "storage_bucket": "hostel-management-system-ddfb7.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.mike.hms"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "295771880605-tks33mtllh1gbdi5cuhs5dvtuafjou9r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mike.hms",
+            "certificate_hash": "28334565f0c74775b2f205981d448bcc223c06e8"
+          }
+        },
+        {
+          "client_id": "295771880605-i7e7hfdt68eqnka6v962rnofj6dubkpg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyADVmP-swUjC6tHWFCFC8VMa5NVvlz9sCQ"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295771880605-i7e7hfdt68eqnka6v962rnofj6dubkpg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
