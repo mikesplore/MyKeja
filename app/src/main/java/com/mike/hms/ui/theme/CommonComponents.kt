@@ -1,6 +1,5 @@
 package com.mike.hms.ui.theme
 
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,18 +16,21 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.time.LocalTime
+import java.util.Locale
+import java.util.UUID
 
-object CommonComponents{
+object CommonComponents {
 
     @Composable
     fun primaryColor(): Color {
@@ -36,25 +38,24 @@ object CommonComponents{
     }
 
     @Composable
-    fun secondaryColor(): Color{
+    fun secondaryColor(): Color {
         return MaterialTheme.colorScheme.secondary
     }
 
     @Composable
-    fun extraPrimaryColor(): Color{
+    fun extraPrimaryColor(): Color {
         return MaterialTheme.colorScheme.onPrimary
     }
 
     @Composable
-    fun extraSecondaryColor(): Color{
+    fun extraSecondaryColor(): Color {
         return MaterialTheme.colorScheme.onSecondary
     }
 
     @Composable
-    fun surfaceContainerColor(): Color{
+    fun surfaceContainerColor(): Color {
         return MaterialTheme.colorScheme.onBackground
     }
-
 
 
     @Composable
@@ -68,7 +69,7 @@ object CommonComponents{
     }
 
     @Composable
-    fun titleTextStyle(): TextStyle{
+    fun titleTextStyle(): TextStyle {
         return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
             color = textColor(),
@@ -78,7 +79,7 @@ object CommonComponents{
     }
 
     @Composable
-    fun contentTextStyle(): TextStyle{
+    fun contentTextStyle(): TextStyle {
         return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
             color = textColor(),
@@ -88,7 +89,7 @@ object CommonComponents{
     }
 
     @Composable
-    fun bodyTextStyle(): TextStyle{
+    fun bodyTextStyle(): TextStyle {
         return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
             color = textColor(),
@@ -123,8 +124,9 @@ object CommonComponents{
             }
         )
     }
+
     @Composable
-    fun outLinedTextFieldColors(): TextFieldColors{
+    fun outLinedTextFieldColors(): TextFieldColors {
         return OutlinedTextFieldDefaults.colors(
             focusedBorderColor = secondaryColor(),
             unfocusedBorderColor = textColor(),
@@ -135,26 +137,10 @@ object CommonComponents{
     }
 
     @Composable
-    fun outLinedTextFieldShape(): RoundedCornerShape{
+    fun outLinedTextFieldShape(): RoundedCornerShape {
         return RoundedCornerShape(20.dp)
     }
 
-
-    @Composable
-    fun AdaptiveSizes(
-        modifier: Modifier = Modifier,
-        textFraction: Float = 1.0f, // Fraction for text size
-        dpFraction: Float = 1.0f,   // Fraction for DP size
-        content: @Composable (textSize: TextUnit, dpSize: Dp) -> Unit
-    ) {
-        BoxWithConstraints(modifier = modifier) {
-            val columnWidth = maxWidth
-            val density = LocalDensity.current
-            val textSize = with(density) { (columnWidth * textFraction).toSp() }
-            val dpSize = columnWidth * dpFraction
-            content(textSize, dpSize)
-        }
-    }
 
     @Composable
     fun greeting(): String {
@@ -164,7 +150,7 @@ object CommonComponents{
             in 12..16 -> "Good afternoon"
             else -> "Good evening"
         }
-       return greeting
+        return greeting
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -207,4 +193,57 @@ object CommonComponents{
             singleLine = singleLine
         )
     }
+
+    @Composable
+    fun transformText(text: String): String {
+        return if (text.length > 1) {
+            text.replaceFirstChar { it.uppercase() }
+                .replace("_", " ")
+                .substring(1)
+                .lowercase(Locale.getDefault())
+                .let { text.first().uppercase() + it }
+        } else {
+            text.replaceFirstChar { it.uppercase() }.replace("_", " ")
+        }
+
+    }
+
+    data class MyCode(
+        val id: String = UUID.randomUUID().toString(),
+        var code: Int = 0
+    )
+
+    // Code Generator
+    private fun updateAndGetCode(path: String, onCodeUpdated: (Int) -> Unit) {
+        val database = FirebaseDatabase.getInstance().getReference("Codes").child(path)
+
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val myCode = snapshot.getValue(MyCode::class.java)!!
+                    myCode.code += 1
+                    database.setValue(myCode).addOnSuccessListener {
+                        onCodeUpdated(myCode.code) // Pass the incremented code to the callback
+                    }
+                } else {
+                    val newCode = MyCode(code = 1)
+                    database.setValue(newCode).addOnSuccessListener {
+                        onCodeUpdated(newCode.code) // Pass the initial code to the callback
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle the error appropriately (e.g., log it or notify the user)
+            }
+        })
+    }
+
+    fun generateHouseId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("House"){code ->
+            val houseId = "H$code"
+            onCodeUpdated(houseId)
+        }
+    }
+    
 }
