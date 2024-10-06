@@ -34,13 +34,15 @@ import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun UserDetails(user: UserEntity) {
+fun UserDetails(user: UserEntity = UserEntity()) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
     val brush = Brush.horizontalGradient(
         listOf(CC.primaryColor(), CC.secondaryColor().copy(alpha = 0.5f), CC.primaryColor())
     )
+
+
 
     Card(
         shape = RoundedCornerShape(12.dp),
