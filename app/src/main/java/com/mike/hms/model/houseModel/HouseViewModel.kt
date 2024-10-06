@@ -1,5 +1,6 @@
 package com.mike.hms.model.houseModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,9 @@ class HouseViewModel(private val houseRepository: HouseRepository) : ViewModel()
 
     private val _houses = MutableLiveData<List<HouseEntity>>()
     val houses: LiveData<List<HouseEntity>> = _houses
+
+    private val _housesLoading = MutableLiveData(true)
+    val housesLoading: LiveData<Boolean> = _housesLoading
 
     private val _house = MutableLiveData<HouseEntity>()
     val house: LiveData<HouseEntity> = _house
@@ -21,13 +25,17 @@ class HouseViewModel(private val houseRepository: HouseRepository) : ViewModel()
 
     fun getHouseByID(houseID: String) {
         houseRepository.getHouseByID(houseID) {
-            _house.value = it
+            _house.postValue(it)
         }
     }
 
     fun getAllHouses() {
         houseRepository.getAllHouses {
-            _houses.value = it
+            _housesLoading.postValue(true)
+            _houses.postValue(it)
+            Log.d("HouseViewModel", "Fetched ${houses.value?.size} houses")
+            _housesLoading.postValue(false)
+
         }
     }
 
