@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +36,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 
 @Composable
-fun HouseDetailScreen(navController: NavController, context: Context) {
+fun HouseInfoScreen(navController: NavController, context: Context, houseID: String) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -45,8 +47,13 @@ fun HouseDetailScreen(navController: NavController, context: Context) {
     val house by houseViewModel.house.observeAsState()
     val selectedImage = remember { mutableStateOf<String?>(null) }
 
+
+    LaunchedEffect(houseID) {
+        houseViewModel.getHouseByID(houseID)
+    }
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .background(CC.primaryColor())
             .padding(top = 16.dp, bottom = 10.dp)
             .verticalScroll(rememberScrollState()),
@@ -88,13 +95,12 @@ fun HouseDetailScreen(navController: NavController, context: Context) {
         Spacer(modifier = Modifier.height(10.dp))
 
         // Available Rooms
-        AvailableRooms(navController, context)
+        InsideView(navController, context, houseID)
         Spacer(modifier = Modifier.height(10.dp))
 
         // Book Now
         house?.let { BookNow(it) }
     }
-
 }
 
 
