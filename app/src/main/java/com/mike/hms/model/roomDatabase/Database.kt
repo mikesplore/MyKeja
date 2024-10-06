@@ -18,7 +18,7 @@ import com.mike.hms.model.userModel.UserEntity
         HouseEntity::class,
         ReviewEntity::class
     ],
-    version = 2, // Incremented version number
+    version = 1,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,8 +37,7 @@ abstract class HMSDatabase : RoomDatabase() {
                     context.applicationContext,
                     HMSDatabase::class.java,
                     "MyDatabase"
-                )
-                    .build()
+                ).build()
                 INSTANCE = instance
                 instance
             }
