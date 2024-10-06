@@ -1,12 +1,20 @@
 package com.mike.hms.houses
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -48,10 +56,17 @@ fun Houses(
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf<HouseType?>(null) }
     val houseViewModel = getHouseViewModel(context)
-    val houses by houseViewModel.houses.observeAsState()
 
-    // Assume this function returns your list of houses
-    val houseList = remember { houses } // Replace with actual data fetching logic
+    // Observe LiveData directly
+    val houses by houseViewModel.houses.observeAsState()
+    val refresh by houseViewModel.housesLoading.observeAsState(true)
+
+    // LaunchedEffect for fetching houses initially
+    LaunchedEffect(refresh) {
+        if (refresh) {
+            houseViewModel.getAllHouses()
+        }
+    }
 
     Scaffold { innerPadding ->
         Column(
@@ -74,8 +89,6 @@ fun Houses(
                     )
                 },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-                colors = CC.outLinedTextFieldColors(),
-                shape = CC.outLinedTextFieldShape()
             )
 
             // Filter chips
@@ -119,14 +132,13 @@ fun Houses(
                                 )
                             )
                         },
-                        // Displaying enum name
                         modifier = Modifier.padding(end = 8.dp)
                     )
                 }
             }
 
             // Filtered and searched houses
-            val filteredHouses = houseList?.filter { house ->
+            val filteredHouses = houses?.filter { house ->
                 // Filter by house type if selected, otherwise show all houses
                 (selectedFilter == null || house.houseType == selectedFilter) &&
                         // Search by house name, type, or location
@@ -135,32 +147,39 @@ fun Houses(
                                 house.houseLocation.contains(searchQuery, ignoreCase = true))
             }
 
-            // House listings grouped by type
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                val groupedHouses = filteredHouses?.groupBy { it.houseType }
-                groupedHouses?.forEach { (type, housesOfType) ->
-                    item {
-                        Text(
-                            text = type.name
-                                .first().uppercase(Locale.getDefault()) + type.name.substring(1)
-                                .lowercase(Locale.getDefault())
-                                .plus("s"), // Use the enum name for the title
-                            style = CC.titleTextStyle(),
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    item {
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(horizontal = 16.dp)
-                        ) {
-                            items(housesOfType) { house ->
-                                HouseCard(
-                                    house = house,
-                                    onHouseClick = { navController.navigate("houseDetail/${house.houseID}") }
-                                )
+            if (filteredHouses.isNullOrEmpty()) {
+                NoHouse(refresh, onRefresh = {
+                    houseViewModel.getAllHouses()
+                    Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show()
+                })
+            } else {
+                // House listings grouped by type
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    val groupedHouses = filteredHouses.groupBy { it.houseType }
+                    groupedHouses.forEach { (type, housesOfType) ->
+                        item {
+                            Text(
+                                text = type.name
+                                    .first().uppercase(Locale.getDefault()) + type.name.substring(1)
+                                    .lowercase(Locale.getDefault())
+                                    .plus("s"), // Use the enum name for the title
+                                style = CC.titleTextStyle(),
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                        item {
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(horizontal = 16.dp)
+                            ) {
+                                items(housesOfType) { house ->
+                                    HouseCard(
+                                        house = house,
+                                        onHouseClick = { navController.navigate("houseDetails/${house.houseID}") }
+                                    )
+                                }
                             }
                         }
                     }
@@ -169,6 +188,7 @@ fun Houses(
         }
     }
 }
+
 
 
 @Composable
@@ -228,6 +248,34 @@ fun BookNow(house: HouseEntity) {
     }
 }
 
+@Composable
+fun NoHouse(
+    refresh: Boolean,
+    onRefresh: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (refresh) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = CC.extraPrimaryColor(),
+                    strokeWidth = 4.dp
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
+            Text("No houses found", style = CC.contentTextStyle())
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(onClick = onRefresh) {
+                Text("Refresh", style = CC.contentTextStyle())
+            }
+        }
+    }
+}
 
 
