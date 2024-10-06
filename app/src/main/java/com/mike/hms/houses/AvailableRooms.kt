@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -54,12 +55,7 @@ fun InsideView(navController: NavController, context: Context, houseID: String) 
             style = CC.titleTextStyle().copy(color = CC.tertiaryColor())
         )
 
-        Button(
-            onClick = { navController.navigate("houseGallery/$houseID") },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-            )
-        ) {
+        TextButton(onClick = { navController.navigate("houseGallery/${houseID}") }) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
