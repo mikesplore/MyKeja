@@ -1,11 +1,8 @@
 package com.mike.hms.houses
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -192,7 +189,7 @@ fun Houses(
 
 
 @Composable
-fun BookNow(house: HouseEntity) {
+fun BookNow(house: HouseEntity, navController: NavController) {
     // Define a small size for the card
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -226,7 +223,7 @@ fun BookNow(house: HouseEntity) {
             )
 
             Button(
-                onClick = { /* Handle book now action */ },
+                onClick = { navController.navigate("bookHouse/${house.houseID}") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp), // Add space above the button
