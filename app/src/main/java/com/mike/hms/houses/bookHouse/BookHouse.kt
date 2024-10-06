@@ -17,6 +17,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,12 +41,21 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingInfoScreen(
-    context: Context
+    context: Context,
+    houseID: String
 ) {
     val houseViewModel = getHouseViewModel(context)
     val userViewModel = getUserViewModel(context)
     val house by houseViewModel.house.observeAsState()
-    val user by userViewModel.user.observeAsState()
+    val user  = UserEntity(
+        userID = "",
+        firstName = "Michael",
+        lastName = "Odhiambo",
+        gender = "Male",
+        phoneNumber = "",
+        role = "Tenant",
+        email = "mikepremium8@gmail.com"
+    )
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -57,6 +67,10 @@ fun BookingInfoScreen(
     var showReceipt by remember { mutableStateOf(false) }
     var selectedPaymentMethod by remember { mutableStateOf<PaymentMethod?>(PaymentMethod.PAYPAL) }
     var email by remember { mutableStateOf("") }
+
+    LaunchedEffect(houseID) {
+        houseViewModel.getHouseByID(houseID)
+    }
 
     // Scaffold with a top app bar titled "Ticket"
     Scaffold(
