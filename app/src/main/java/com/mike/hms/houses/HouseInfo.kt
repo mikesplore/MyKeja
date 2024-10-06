@@ -99,7 +99,7 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
         Spacer(modifier = Modifier.height(10.dp))
 
         // Book Now
-        house?.let { BookNow(it) }
+        house?.let { BookNow(it, navController) }
     }
 }
 
