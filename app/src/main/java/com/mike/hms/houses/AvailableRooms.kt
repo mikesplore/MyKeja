@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,6 +26,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -35,9 +38,9 @@ import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun AvailableRooms(navController: NavController, context: Context) {
+fun InsideView(navController: NavController, context: Context, houseID: String) {
     val houseViewModel = getHouseViewModel(context)
-    val houses by houseViewModel.houses.observeAsState()
+    val house by houseViewModel.house.observeAsState()
 
     Row(
         modifier = Modifier
@@ -51,22 +54,26 @@ fun AvailableRooms(navController: NavController, context: Context) {
             style = CC.titleTextStyle().copy(color = CC.tertiaryColor())
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        Button(
+            onClick = { navController.navigate("houseGallery/$houseID") },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+            )
         ) {
-            Text(
-                text = "Open",
-                style = CC.contentTextStyle().copy(color = CC.extraPrimaryColor())
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = "Open",
-                tint = CC.extraPrimaryColor(),
-                modifier = Modifier.clickable {
-                    navController.navigate("houseGallery")
-                }
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                Text(
+                    text = "Open",
+                    style = CC.contentTextStyle().copy(color = CC.extraPrimaryColor())
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "Open",
+                    tint = CC.extraPrimaryColor()
+                )
+            }
         }
 
 
@@ -77,44 +84,22 @@ fun AvailableRooms(navController: NavController, context: Context) {
             .padding(start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        items(houses?.size ?: 0) { index ->
-            val room = houses?.get(index)
-            if (room != null) {
-                RoomItem(room)
-            }
-        }
+        items(house?.houseImageLink?.size ?: 0) {
+            val imageUrl = house?.houseImageLink?.get(it)
 
-    }
-}
-
-
-@Composable
-fun RoomItem(room: HouseEntity, modifier: Modifier = Modifier) {
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val boxWidth = screenWidth * 0.35f
-    val boxHeight = boxWidth * 1.3f
-    val density = LocalDensity.current
-    val textSize = with(density) { (boxHeight * 0.1f).toSp() }
-
-    // Card for the room item
-    Card(
-        modifier = modifier
-            .width(boxWidth)
-            .height(boxHeight),
-        shape = RoundedCornerShape(20.dp),  // Rounded corners
-        elevation = CardDefaults.cardElevation(5.dp)  // Built-in shadow/elevation
-    ) {
-        Box {
-            // Room image
             AsyncImage(
-                model = room.houseImageLink.firstOrNull(),
-                contentDescription = "Room Image",
+                model = imageUrl,
+                contentDescription = "House Image",
                 modifier = Modifier
-                    .fillMaxSize()
+                    .width(300.dp)
+                    .height(200.dp)
                     .clip(RoundedCornerShape(20.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center
             )
+
         }
+
     }
 }
+
