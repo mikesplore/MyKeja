@@ -2,49 +2,57 @@ package com.mike.hms
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.homeScreen.HomeScreen
-import com.mike.hms.houses.bookHouse.BookingInfoScreen
 import com.mike.hms.houses.FullScreenGallery
-import com.mike.hms.houses.HouseDetailScreen
-import com.mike.hms.houses.addHouse.HouseForm
 import com.mike.hms.houses.HouseGallery
+import com.mike.hms.houses.HouseInfoScreen
 import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
+import com.mike.hms.houses.addHouse.HouseForm
+import com.mike.hms.houses.bookHouse.BookingInfoScreen
 
 @Composable
-fun NavGraph(context: Context){
+fun NavGraph(context: Context) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "addHouse"){
-        composable("dashboard"){
+    NavHost(navController = navController, startDestination = "houses") {
+        composable("dashboard") {
             DashboardScreen(context, navController)
         }
 
-        composable("homeScreen"){
+        composable("homeScreen") {
             HomeScreen(navController, context)
         }
 
-        composable("houses"){
+        composable("houses") {
             Houses(navController, context)
         }
 
-        composable("houseDetails"){
-            HouseDetailScreen(navController,context)
+        composable(
+            "houseDetails/{houseID}", arguments = listOf(navArgument("houseID") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val houseID = backStackEntry.arguments?.getString("houseID")
+            HouseInfoScreen(navController, context, houseID!!)
+
         }
 
-        composable("houseReviews"){
-            HouseReviewsScreen(navController,context)
+        composable("houseReviews") {
+            HouseReviewsScreen(navController, context)
         }
 
-        composable("houseGallery"){
-            HouseGallery(navController,context)
+        composable("houseGallery") {
+            HouseGallery(navController, context)
         }
 
-        composable("booking"){
+        composable("booking") {
             BookingInfoScreen(context)
         }
 
@@ -52,8 +60,12 @@ fun NavGraph(context: Context){
             HouseForm(context)
         }
 
-        composable("fullScreenGallery/{initialPage}") {
-            FullScreenGallery(navController,context)
+        composable("houseGallery/{houseID}", arguments = listOf(navArgument("houseID") {
+            type = NavType.StringType
+        })) { backStackEntry ->
+            val houseID = backStackEntry.arguments?.getString("houseID")
+            FullScreenGallery(navController, context, houseID!!)
         }
     }
+
 }
