@@ -90,12 +90,16 @@ fun ImageCard(imageUrl: String, onClick: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FullScreenGallery(navController: NavController, context: Context) {
+fun FullScreenGallery(navController: NavController, context: Context, houseID: String) {
     val houseViewModel = getHouseViewModel(context)
     val house by houseViewModel.house.observeAsState()
     val images = house?.houseImageLink ?: emptyList()
     val initialPage = 0
     val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { images.size })
+
+    LaunchedEffect(houseID) {
+        houseViewModel.getHouseByID(houseID)
+    }
 
     Scaffold(
         topBar = {
