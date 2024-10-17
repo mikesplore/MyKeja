@@ -18,13 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mike.hms.model.userModel.CreditCardWithUser
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun CreditCard(
-    cardHolderName: String,
-    cardNumber: String,
-    expiryDate: String,
+    creditCardWithUser: CreditCardWithUser
 ) {
     Card(
         modifier = Modifier
@@ -44,7 +43,7 @@ fun CreditCard(
         ) {
             // Card Number
             Text(
-                text = cardNumber,
+                text = creditCardWithUser.creditCard.cardNumber,
                 fontSize = 24.sp,
                 color = CC.textColor(),
                 modifier = Modifier.padding(bottom = 16.dp),
@@ -66,7 +65,7 @@ fun CreditCard(
                         color = CC.textColor().copy(alpha = 0.7f)
                     )
                     Text(
-                        text = cardHolderName,
+                        text = "${creditCardWithUser.user.firstName} ${creditCardWithUser.user.lastName}",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = CC.textColor()
@@ -81,7 +80,7 @@ fun CreditCard(
                         color = CC.textColor().copy(alpha = 0.7f)
                     )
                     Text(
-                        text = expiryDate,
+                        text = creditCardWithUser.creditCard.expiryDate,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = CC.textColor()
