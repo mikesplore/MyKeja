@@ -79,13 +79,15 @@ fun Houses(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
                 placeholder = {
                     Text(
                         "Search by name, type, or location...",
                         style = CC.contentTextStyle()
                     )
                 },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                colors = CC.outLinedTextFieldColors(),
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = CC.textColor()) },
             )
 
             // Filter chips
