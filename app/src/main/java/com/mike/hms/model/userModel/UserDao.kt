@@ -19,4 +19,14 @@ interface UserDao {
     @Query("DELETE FROM users WHERE userID = :userID")
     suspend fun deleteUser(userID: String)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCreditCard(creditCard: CreditCard)
+
+    @Query("SELECT * FROM credit_cards WHERE userId = :userId")
+    suspend fun getCreditCardByUserId(userId: String): CreditCard?
+
+    @Query("DELETE FROM credit_cards WHERE cardId = :cardId")
+    suspend fun deleteCreditCard(cardId: Int)
+
+
 }
