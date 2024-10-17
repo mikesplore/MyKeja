@@ -28,9 +28,6 @@ sealed class Screen(
         Icons.Filled.Favorite, Icons.Outlined.Favorite, "Favourites"
     )
 
-    data object Payment : Screen(
-        Icons.Filled.Payment, Icons.Outlined.Payment, "Payment"
-    )
 
     data object Chat : Screen(
         Icons.AutoMirrored.Filled.Chat, Icons.AutoMirrored.Outlined.Chat, "Chat"
