@@ -4,11 +4,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBarColors
@@ -74,7 +78,25 @@ object CommonComponents {
             fontFamily = LibreFranklin,
             color = textColor(),
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
+            fontSize = 18.sp,
+
+        )
+    }
+
+    @Composable
+    fun radioButtonColors(): RadioButtonColors {
+        return RadioButtonDefaults.colors(
+            selectedColor = tertiaryColor(),
+            unselectedColor = textColor()
+        )
+
+    }
+
+    @Composable
+    fun buttonColors(): ButtonColors {
+        return ButtonDefaults.buttonColors(
+            containerColor = tertiaryColor(),
+            contentColor = secondaryColor()
         )
     }
 
