@@ -1,7 +1,6 @@
 package com.mike.hms.profile
 
 import android.content.Context
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,14 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,19 +30,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.google.firebase.auth.FirebaseUser
 import com.mike.hms.HMSPreferences
 import com.mike.hms.model.getUserViewModel
-import com.mike.hms.model.userModel.CreditCard
-import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AuthenticatedUser(
     context: Context,
-    creditCard: CreditCard,
     firstName: String,
     onFirstNameChange: (String) -> Unit,
     lastName: String,
@@ -62,10 +56,20 @@ fun AuthenticatedUser(
     onEditModeChange: (Boolean) -> Unit,
     paymentMethod: String,
     onPaymentMethodChange: (String) -> Unit,
-    user: FirebaseUser?,
 ) {
     val userViewModel = getUserViewModel(context)
     val userID = HMSPreferences.userId.value
+    val user by userViewModel.user.observeAsState()
+    val creditCard by userViewModel.creditCard.observeAsState()
+
+    LaunchedEffect (Unit){
+        userViewModel.getCreditCard(userID)
+    }
+
+
+    LaunchedEffect(Unit) {
+        userViewModel.getUserByID(userID)
+    }
 
     Column(
         modifier = Modifier
@@ -112,7 +116,7 @@ fun AuthenticatedUser(
             )
 
         } else {
-
+            user?.let { UserCard(it) }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -137,6 +141,14 @@ fun AuthenticatedUser(
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+        creditCard?.let {
+            CreditCard(
+                holderFirstName = it.cardNumber,
+                holderLastName = it.cardNumber,
+                cardNumber = it.cardNumber,
+                expiryDate = it.expiryDate
+            )
+        }
 
         // Payment Method Section
         Text(
@@ -168,34 +180,14 @@ fun AuthenticatedUser(
         // Payment Method Input Fields
         when (paymentMethod) {
             "credit_card" -> {
-                CC.MyOutlinedTextField(
-                    value = cardNumber,
-                    onValueChange = { onCardNumberChange(it) },
-                    label = "Card Number",
-                    keyboardType = KeyboardType.Number,
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = "1234 5678 9012 3456"
+                AddCreditCard(
+                    cardNumber = cardNumber,
+                    onCardNumberChange = onCardNumberChange,
+                    expiryDate = expiryDate,
+                    onExpiryDateChange = onExpiryDateChange,
+                    cvv = cvv,
+                    onCvvChange = onCvvChange
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    CC.MyOutlinedTextField(
-                        value = expiryDate,
-                        onValueChange = { onExpiryDateChange(it) },
-                        label = "Expiry Date",
-                        keyboardType = KeyboardType.Number,
-                        modifier = Modifier.weight(1f),
-                        placeholder = "MM/YY"
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    CC.MyOutlinedTextField(
-                        value = cvv,
-                        onValueChange = { onCvvChange(it) },
-                        label = "CVV",
-                        keyboardType = KeyboardType.Number,
-                        modifier = Modifier.weight(1f),
-                        placeholder = "123"
-                    )
-                }
             }
 
             "phone_number" -> {
@@ -226,6 +218,45 @@ fun AuthenticatedUser(
     }
 }
 
+
+@Composable
+fun AddCreditCard(
+    cardNumber: String,
+    onCardNumberChange: (String) -> Unit,
+    expiryDate: String,
+    onExpiryDateChange: (String) -> Unit,
+    cvv: String,
+    onCvvChange: (String) -> Unit,
+){
+    CC.MyOutlinedTextField(
+        value = cardNumber,
+        onValueChange = { onCardNumberChange(it) },
+        label = "Card Number",
+        keyboardType = KeyboardType.Number,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = "1234 5678 9012 3456"
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        CC.MyOutlinedTextField(
+            value = expiryDate,
+            onValueChange = { onExpiryDateChange(it) },
+            label = "Expiry Date",
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.weight(1f),
+            placeholder = "MM/YY"
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        CC.MyOutlinedTextField(
+            value = cvv,
+            onValueChange = { onCvvChange(it) },
+            label = "CVV",
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.weight(1f),
+            placeholder = "123"
+        )
+    }
+}
 
 
 
