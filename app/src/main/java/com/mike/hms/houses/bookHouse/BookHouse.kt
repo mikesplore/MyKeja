@@ -54,7 +54,8 @@ fun BookingInfoScreen(
         gender = "Male",
         phoneNumber = "",
         role = "Tenant",
-        email = "mikepremium8@gmail.com"
+        email = "mikepremium8@gmail.com",
+        photoUrl = ""
     )
 
     val configuration = LocalConfiguration.current
