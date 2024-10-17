@@ -73,7 +73,3 @@ enum class HouseCategory{
     LUXURY,
     DELUXE,
 }
-
-
-
-
