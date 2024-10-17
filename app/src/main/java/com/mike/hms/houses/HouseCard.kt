@@ -48,9 +48,10 @@ fun HouseCard(house: HouseEntity, onHouseClick: () -> Unit) {
             .clickable(onClick = onHouseClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
+        val link  = if(house.houseImageLink.isNotEmpty()) house.houseImageLink[0] else ""
         Column {
             AsyncImage(
-                model = house.houseImageLink.random(),
+                model = link,
                 contentDescription = "House Image",
                 modifier = Modifier
                     .height(cardHeight * 0.59f)
@@ -86,7 +87,7 @@ fun HouseCard(house: HouseEntity, onHouseClick: () -> Unit) {
                         )
                     )
                     Text(
-                        house.numberOfRooms.toString() + " Rooms",
+                        house.numberOfRooms.toString() + if (house.numberOfRooms == 1) " room" else " rooms",
                         style = CommonComponents.contentTextStyle().copy(fontSize = 13.sp)
                     )
                 }
