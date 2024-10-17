@@ -102,4 +102,56 @@ class UserRepository(private val userDao: UserDao) {
             }
         }
     }
+
+    //Credit Card Functions
+    fun insertCreditCard(creditCard: CreditCard, onSuccess: (Boolean) -> Unit) {
+        viewmodelScope.launch {
+            userDao.insertCreditCard(creditCard)
+            onSuccess(true)
+        }
+        insertCreditCardToFirebase(creditCard) { success ->
+            if (success) {
+                onSuccess(true)
+            } else {
+                onSuccess(false)
+            }
+        }
+    }
+
+    private fun insertCreditCardToFirebase(creditCard: CreditCard, onSuccess: (Boolean) -> Unit) {
+        val creditCardRef = database.child("CreditCards").child(creditCard.userId)
+
+        creditCardRef.setValue(creditCard).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSuccess(true)
+            } else {
+                onSuccess(false)
+            }
+        }
+    }
+
+    fun retrieveCreditCardByUserId(userId: String, onResult: (CreditCard?) -> Unit) {
+        viewmodelScope.launch {
+            val creditCard = userDao.getCreditCardByUserId(userId)
+            onResult(creditCard)
+        }
+        retrieveCreditCardFromFirebase(userId) { creditCard ->
+            viewmodelScope.launch {
+                creditCard?.let { userDao.insertCreditCard(it) }
+                onResult(creditCard)
+            }
+        }
+    }
+
+    private fun retrieveCreditCardFromFirebase(userId: String, onSuccess: (CreditCard?) -> Unit) {
+        val creditCardRef = database.child("CreditCards").child(userId)
+        creditCardRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val creditCard = dataSnapshot.getValue(CreditCard::class.java)
+                onSuccess(creditCard)
+            } else {
+                onSuccess(null)
+            }
+        }
+    }
 }
