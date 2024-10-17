@@ -9,6 +9,9 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
     private val _users = MutableLiveData<List<UserEntity>>()
     val users: LiveData<List<UserEntity>> = _users
 
+    private val _creditCard = MutableLiveData<CreditCard>()
+    val creditCard: LiveData<CreditCard> = _creditCard
+
     private val _user = MutableLiveData<UserEntity>()
     val user: LiveData<UserEntity> = _user
 
@@ -32,6 +35,24 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
 
     fun deleteUser(userID: String, onSuccess: (Boolean) -> Unit) {
         userRepository.deleteUser(userID) {
+            onSuccess(it)
+        }
+    }
+
+    fun insertCreditCard(creditCard: CreditCard, onSuccess: (Boolean) -> Unit) {
+        userRepository.insertCreditCard(creditCard) {
+            onSuccess(it)
+        }
+    }
+
+    fun getCreditCard(userId: String) {
+        userRepository.retrieveCreditCardByUserId(userId) {
+            _creditCard.postValue(it)
+        }
+    }
+
+    fun deleteCreditCard(userId: String, onSuccess: (Boolean) -> Unit) {
+        userRepository.deleteCreditCard(userId) {
             onSuccess(it)
         }
     }
