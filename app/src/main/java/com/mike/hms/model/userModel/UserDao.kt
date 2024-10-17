@@ -26,7 +26,7 @@ interface UserDao {
     suspend fun getCreditCardByUserId(userId: String): CreditCard?
 
     @Query("DELETE FROM credit_cards WHERE cardId = :cardId")
-    suspend fun deleteCreditCard(cardId: Int)
+    suspend fun deleteCreditCard(cardId: String)
 
 
 }
