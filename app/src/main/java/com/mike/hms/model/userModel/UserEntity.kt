@@ -3,6 +3,7 @@ package com.mike.hms.model.userModel
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 @Entity(tableName = "users")
 data class UserEntity(
@@ -25,9 +26,15 @@ data class CreditCard(
     val cardNumber: String,
     val expiryDate: String,
     val cvv: String
-)
+){
+    constructor() : this(0, "", "", "", "")
+}
 
 data class CreditCardWithUser(
     @Embedded val creditCard: CreditCard,
-    @Embedded val user: UserEntity
+    @Relation(
+        parentColumn = "userId", // Column in CreditCard
+        entityColumn = "userID" // Column in UserEntity
+    )
+    val user: UserEntity
 )
