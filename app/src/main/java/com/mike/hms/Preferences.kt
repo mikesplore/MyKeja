@@ -11,6 +11,8 @@ object HMSPreferences {
     // Keys for SharedPreferences
     private const val PREF_KEY_DARK_MODE = "dark_mode_key"
     private const val LOCATION_KEY = "location_key"
+    private const val PREF_KEY_USER_ID = "user_id_key"
+
 
 
 
@@ -20,6 +22,7 @@ object HMSPreferences {
     // MutableStates to hold preference values
     val darkMode: MutableState<Boolean> = mutableStateOf(false)
     val location: MutableState<String> = mutableStateOf("")
+    val userId: MutableState<String> = mutableStateOf("")
 
 
     // Initialize preferences and load stored values
@@ -29,6 +32,7 @@ object HMSPreferences {
 
         darkMode.value = preferences.getBoolean(PREF_KEY_DARK_MODE, true)
         location.value = preferences.getString(LOCATION_KEY, "") ?: ""
+        userId.value = preferences.getString(PREF_KEY_USER_ID, "") ?: ""
 
     }
 
@@ -40,18 +44,26 @@ object HMSPreferences {
         Log.d("HMSPreferences", "Dark mode saved: $isDarkMode")
     }
 
+    // Save location preference
     fun saveLocation(location: String) {
         this.location.value = location
         preferences.edit().putString(LOCATION_KEY, location).apply()
         Log.d("HMSPreferences", "Location saved: $location")
     }
 
+    // Save user ID preference
+    fun saveUserId(userId: String) {
+        this.userId.value = userId
+        preferences.edit().putString(PREF_KEY_USER_ID, userId).apply()
+        Log.d("HMSPreferences", "User ID saved: $userId")
+    }
+
 
 
     fun clearAllData() {
-
         darkMode.value = true
         location.value = ""
+        userId.value = ""
 
         preferences.edit().clear().apply()
         Log.d("HMSPreferences", "All preferences cleared")

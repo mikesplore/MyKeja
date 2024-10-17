@@ -65,7 +65,8 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
                 house = it,
                 onImageClick = { imageUrl -> selectedImage.value = imageUrl },
                 isHouseFavorite = isHouseFavorite,
-                screenHeight = screenHeight
+                screenHeight = screenHeight,
+                navController = navController
             )
         }
 
@@ -116,6 +117,7 @@ fun HouseTitleRow(house: HouseEntity, textSize: TextUnit) {
         Text(
             text = house.houseName,
             style = CC.titleTextStyle().copy(fontSize = textSize * 0.15f),
+            maxLines = 1,
             modifier = Modifier.weight(1f)
         )
 
