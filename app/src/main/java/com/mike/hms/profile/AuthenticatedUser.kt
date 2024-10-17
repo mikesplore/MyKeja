@@ -62,10 +62,9 @@ fun AuthenticatedUser(
     val user by userViewModel.user.observeAsState()
     val creditCard by userViewModel.creditCard.observeAsState()
 
-    LaunchedEffect (Unit){
+    LaunchedEffect(Unit) {
         userViewModel.getCreditCard(userID)
     }
-
 
     LaunchedEffect(Unit) {
         userViewModel.getUserByID(userID)
@@ -143,10 +142,7 @@ fun AuthenticatedUser(
         Spacer(modifier = Modifier.height(32.dp))
         creditCard?.let {
             CreditCard(
-                holderFirstName = it.cardNumber,
-                holderLastName = it.cardNumber,
-                cardNumber = it.cardNumber,
-                expiryDate = it.expiryDate
+                creditCardWithUser = it
             )
         }
 
@@ -227,7 +223,7 @@ fun AddCreditCard(
     onExpiryDateChange: (String) -> Unit,
     cvv: String,
     onCvvChange: (String) -> Unit,
-){
+) {
     CC.MyOutlinedTextField(
         value = cardNumber,
         onValueChange = { onCardNumberChange(it) },
