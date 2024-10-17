@@ -12,9 +12,10 @@ data class UserEntity(
     val gender: String,
     val phoneNumber: String,
     val role: String,
-    val email: String
+    val email: String,
+    val photoUrl: String,
 ){
-    constructor() : this("", "", "", "", "", "","")
+    constructor() : this("", "", "", "", "", "","","")
 }
 
 @Entity(tableName = "credit_cards")
@@ -24,4 +25,9 @@ data class CreditCard(
     val cardNumber: String,
     val expiryDate: String,
     val cvv: String
+)
+
+data class CreditCardWithUser(
+    @Embedded val creditCard: CreditCard,
+    @Embedded val user: UserEntity
 )
