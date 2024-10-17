@@ -84,6 +84,7 @@ fun Profile(context: Context) {
             } else {
                 // Authenticated user
                 AuthenticatedUser(
+                    context = context,
                     firstName = firstName,
                     onFirstNameChange = { firstName = it },
                     lastName = lastName,
@@ -102,7 +103,6 @@ fun Profile(context: Context) {
                     onEditModeChange = { isEditMode = it },
                     paymentMethod = paymentMethod,
                     onPaymentMethodChange = { paymentMethod = it },
-                    user = user
                 )
             }
         }
