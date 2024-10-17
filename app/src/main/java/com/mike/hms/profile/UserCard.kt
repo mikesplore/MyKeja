@@ -63,7 +63,7 @@ fun UserCard(
                 )
         )
         Text(
-            text = user?.email ?: "N/A",
+            text = user.email,
             style = CC.contentTextStyle()
                 .copy(color = CC.tertiaryColor())
         )
@@ -113,7 +113,7 @@ fun EditDetails(
         onValueChange = { onFirstNameChange(it) },
         label = "First Name",
         modifier = Modifier.fillMaxWidth(),
-        placeholder = "John"
+        placeholder = "Enter First Name"
     )
     Spacer(modifier = Modifier.height(8.dp))
     CC.MyOutlinedTextField(
@@ -121,7 +121,7 @@ fun EditDetails(
         onValueChange = { onLastNameChange(it) },
         label = "Last Name",
         modifier = Modifier.fillMaxWidth(),
-        placeholder = "Doe"
+        placeholder = "Enter Last Name"
     )
     Spacer(modifier = Modifier.height(8.dp))
     CC.MyOutlinedTextField(
@@ -129,7 +129,7 @@ fun EditDetails(
         onValueChange = { onPhoneNumberChange(it) },
         label = "Phone Number",
         keyboardType = KeyboardType.Phone,
-        placeholder = "+254",
+        placeholder = "Enter Phone Number",
         modifier = Modifier.fillMaxWidth()
     )
 }
