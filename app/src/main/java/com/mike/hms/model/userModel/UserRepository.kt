@@ -154,4 +154,30 @@ class UserRepository(private val userDao: UserDao) {
             }
         }
     }
+
+    fun deleteCreditCard(userId: String, onSuccess: (Boolean) -> Unit) {
+        viewmodelScope.launch {
+            userDao.deleteCreditCard(userId)
+        }
+        deleteCreditCardFromFirebase(userId) { success ->
+            if (success) {
+                onSuccess(true)
+            } else {
+                onSuccess(false)
+            }
+        }
+
+    }
+
+    private fun deleteCreditCardFromFirebase(userId: String, onSuccess: (Boolean) -> Unit) {
+        val creditCardRef = database.child("CreditCards").child(userId)
+        creditCardRef.removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSuccess(true)
+            } else {
+                onSuccess(false)
+            }
+        }
+
+    }
 }
