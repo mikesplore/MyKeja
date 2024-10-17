@@ -9,6 +9,7 @@ import com.mike.hms.model.houseModel.HouseDao
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.review.ReviewDao
 import com.mike.hms.model.review.ReviewEntity
+import com.mike.hms.model.userModel.CreditCard
 import com.mike.hms.model.userModel.UserDao
 import com.mike.hms.model.userModel.UserEntity
 
@@ -16,9 +17,10 @@ import com.mike.hms.model.userModel.UserEntity
     entities = [
         UserEntity::class,
         HouseEntity::class,
-        ReviewEntity::class
+        ReviewEntity::class,
+        CreditCard::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -37,7 +39,8 @@ abstract class HMSDatabase : RoomDatabase() {
                     context.applicationContext,
                     HMSDatabase::class.java,
                     "MyDatabase"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
