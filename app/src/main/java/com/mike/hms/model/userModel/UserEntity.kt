@@ -1,5 +1,6 @@
 package com.mike.hms.model.userModel
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -16,12 +17,11 @@ data class UserEntity(
     constructor() : this("", "", "", "", "", "","")
 }
 
-enum class Gender{
-    MALE,
-    FEMALE
-}
-
-enum class Role{
-    TENANT,
-    OWNER
-}
+@Entity(tableName = "credit_cards")
+data class CreditCard(
+    @PrimaryKey(autoGenerate = true) val cardId: Int = 0,
+    val userId: String,
+    val cardNumber: String,
+    val expiryDate: String,
+    val cvv: String
+)
