@@ -28,7 +28,9 @@ class UserRepository(private val userDao: UserDao) {
     fun getUserByID(userID: String, onResult: (UserEntity) -> Unit) {
         viewmodelScope.launch {
             val user = userDao.getUserByID(userID)
-            onResult(user)
+            if (user != null) {
+                onResult(user)
+            }
         }
     }
 
@@ -130,27 +132,30 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
-    fun retrieveCreditCardByUserId(userId: String, onResult: (CreditCard?) -> Unit) {
+    fun retrieveCreditCardByUserId(userId: String, onResult: (CreditCardWithUser) -> Unit) {
         viewmodelScope.launch {
-            val creditCard = userDao.getCreditCardByUserId(userId)
-            onResult(creditCard)
-        }
-        retrieveCreditCardFromFirebase(userId) { creditCard ->
-            viewmodelScope.launch {
-                creditCard?.let { userDao.insertCreditCard(it) }
+            val creditCard = userDao.getCreditCardWithUser(userId)
+            if (creditCard != null) {
                 onResult(creditCard)
+            }
+        }
+        retrieveCreditCardFromFirebase { creditCard ->
+            viewmodelScope.launch {
+                userDao.insertCreditCard(creditCard)
             }
         }
     }
 
-    private fun retrieveCreditCardFromFirebase(userId: String, onSuccess: (CreditCard?) -> Unit) {
-        val creditCardRef = database.child("CreditCards").child(userId)
+    private fun retrieveCreditCardFromFirebase(onSuccess: (CreditCard) -> Unit) {
+        val creditCardRef = database.child("CreditCards")
         creditCardRef.get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
                 val creditCard = dataSnapshot.getValue(CreditCard::class.java)
-                onSuccess(creditCard)
+                if (creditCard != null) {
+                    onSuccess(creditCard)
+                }
             } else {
-                onSuccess(null)
+                onSuccess(CreditCard())
             }
         }
     }
