@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 
 @Dao
 interface UserDao {
@@ -11,7 +12,7 @@ interface UserDao {
     suspend fun insertUser(user: UserEntity)
 
     @Query("SELECT * FROM users WHERE userID = :userID")
-    suspend fun getUserByID(userID: String): UserEntity
+    suspend fun getUserByID(userID: String): UserEntity?
 
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<UserEntity>
@@ -22,8 +23,9 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCreditCard(creditCard: CreditCard)
 
+    @Transaction
     @Query("SELECT * FROM credit_cards WHERE userId = :userId")
-    suspend fun getCreditCardByUserId(userId: String): CreditCard?
+    fun getCreditCardWithUser(userId: String): CreditCardWithUser?
 
     @Query("DELETE FROM credit_cards WHERE cardId = :cardId")
     suspend fun deleteCreditCard(cardId: String)
