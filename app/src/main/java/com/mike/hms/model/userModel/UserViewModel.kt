@@ -9,8 +9,8 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
     private val _users = MutableLiveData<List<UserEntity>>()
     val users: LiveData<List<UserEntity>> = _users
 
-    private val _creditCard = MutableLiveData<CreditCard>()
-    val creditCard: LiveData<CreditCard> = _creditCard
+    private val _creditCard = MutableLiveData<CreditCardWithUser>()
+    val creditCard: LiveData<CreditCardWithUser> = _creditCard
 
     private val _user = MutableLiveData<UserEntity>()
     val user: LiveData<UserEntity> = _user
