@@ -3,6 +3,7 @@ package com.mike.hms.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mike.hms.dashboard.DashboardScreen
+import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -47,7 +49,7 @@ fun HomeScreen(
     context: Context,
 ) {
     val screens = listOf(
-        Screen.Home, Screen.Favourites, Screen.Payment, Screen.Chat, Screen.Profile
+        Screen.Home, Screen.Favourites, Screen.Chat, Screen.Profile
     )
     val coroutineScope = rememberCoroutineScope()
 
@@ -56,8 +58,9 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-
     val pagerState = rememberPagerState(pageCount = { screens.size })
+
+
 
     // Main content starts here
     if (showBottomSheet) {
@@ -119,7 +122,6 @@ fun HomeScreen(
                     when (screens[page]) {
                         Screen.Home -> DashboardScreen(context, navController)
                         Screen.Favourites -> Favourites(context)
-                        Screen.Payment -> Payment(context)
                         Screen.Chat -> Chat(context)
                         Screen.Profile -> Profile(context)
                     }
@@ -142,35 +144,20 @@ fun Favourites(context: Context) {
     }
 }
 
-@Composable
-fun Payment(context: Context) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Payment", style = CC.titleTextStyle())
-    }
-}
 
 @Composable
 fun Chat(context: Context) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+           
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(text = "Chat", style = CC.titleTextStyle())
     }
 }
 
-@Composable
-fun Profile(context: Context) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Profile", style = CC.titleTextStyle())
-    }
-}
+
 
 
 
