@@ -14,14 +14,14 @@ import com.mike.hms.houses.HouseGallery
 import com.mike.hms.houses.HouseInfoScreen
 import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
-import com.mike.hms.houses.addHouse.HouseForm
+import com.mike.hms.houses.addOrEditHouse.HouseForm
 import com.mike.hms.houses.bookHouse.BookingInfoScreen
 
 @Composable
 fun NavGraph(context: Context) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "houses") {
+    NavHost(navController = navController, startDestination = "homeScreen") {
         composable("dashboard") {
             DashboardScreen(context, navController)
         }
