@@ -25,7 +25,7 @@ interface UserDao {
 
     @Transaction
     @Query("SELECT * FROM credit_cards WHERE userId = :userId")
-    fun getCreditCardWithUser(userId: String): CreditCardWithUser?
+    fun getCreditCardWithUser(userId: String): CreditCardWithUser
 
     @Query("DELETE FROM credit_cards WHERE cardId = :cardId")
     suspend fun deleteCreditCard(cardId: String)
