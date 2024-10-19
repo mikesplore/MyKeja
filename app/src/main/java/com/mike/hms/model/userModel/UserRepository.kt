@@ -106,7 +106,7 @@ class UserRepository(private val userDao: UserDao) {
     }
 
     //Credit Card Functions
-    fun insertCreditCard(creditCard: CreditCard, onSuccess: (Boolean) -> Unit) {
+    fun insertCreditCard(creditCard: CreditCardEntity, onSuccess: (Boolean) -> Unit) {
         viewmodelScope.launch {
             userDao.insertCreditCard(creditCard)
             onSuccess(true)
@@ -120,7 +120,7 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
-    private fun insertCreditCardToFirebase(creditCard: CreditCard, onSuccess: (Boolean) -> Unit) {
+    private fun insertCreditCardToFirebase(creditCard: CreditCardEntity, onSuccess: (Boolean) -> Unit) {
         val creditCardRef = database.child("CreditCards").child(creditCard.userId)
 
         creditCardRef.setValue(creditCard).addOnCompleteListener { task ->
@@ -134,10 +134,8 @@ class UserRepository(private val userDao: UserDao) {
 
     fun retrieveCreditCardByUserId(userId: String, onResult: (CreditCardWithUser) -> Unit) {
         viewmodelScope.launch {
-            val creditCard = userDao.getCreditCardWithUser(userId)
-            if (creditCard != null) {
-                onResult(creditCard)
-            }
+           // val creditCard = userDao.getCreditCardWithUser(userId)
+          //  onResult(creditCard)
         }
         retrieveCreditCardFromFirebase { creditCard ->
             viewmodelScope.launch {
@@ -146,16 +144,16 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
-    private fun retrieveCreditCardFromFirebase(onSuccess: (CreditCard) -> Unit) {
+    private fun retrieveCreditCardFromFirebase(onSuccess: (CreditCardEntity) -> Unit) {
         val creditCardRef = database.child("CreditCards")
         creditCardRef.get().addOnSuccessListener { dataSnapshot ->
             if (dataSnapshot.exists()) {
-                val creditCard = dataSnapshot.getValue(CreditCard::class.java)
+                val creditCard = dataSnapshot.getValue(CreditCardEntity::class.java)
                 if (creditCard != null) {
                     onSuccess(creditCard)
                 }
             } else {
-                onSuccess(CreditCard())
+                onSuccess(CreditCardEntity())
             }
         }
     }
