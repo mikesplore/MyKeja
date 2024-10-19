@@ -21,7 +21,7 @@ interface UserDao {
     suspend fun deleteUser(userID: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCreditCard(creditCard: CreditCard)
+    suspend fun insertCreditCard(creditCard: CreditCardEntity)
 
     @Transaction
     @Query("SELECT * FROM credit_cards WHERE userId = :userId")
