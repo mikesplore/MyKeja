@@ -27,12 +27,6 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 fun Profile(context: Context) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var cardNumber by remember { mutableStateOf("") }
-    var expiryDate by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
     var paymentPhoneNumber by remember { mutableStateOf("") }
     var isEditMode by remember { mutableStateOf(false) }
     var paymentMethod by remember { mutableStateOf("") }
@@ -43,9 +37,7 @@ fun Profile(context: Context) {
         if (auth.currentUser != null) {
             // Fetch user details from Firebase and populate the variables
             // This is a placeholder. You should implement the actual fetching logic.
-            firstName = "John"
-            lastName = "Doe"
-            phoneNumber = "+1234567890"
+
         }
     }
 
@@ -84,19 +76,6 @@ fun Profile(context: Context) {
             } else {
                 // Authenticated user
                 AuthenticatedUser(
-                    context = context,
-                    firstName = firstName,
-                    onFirstNameChange = { firstName = it },
-                    lastName = lastName,
-                    onLastNameChange = { lastName = it },
-                    phoneNumber = phoneNumber,
-                    onPhoneNumberChange = { phoneNumber = it },
-                    cardNumber = cardNumber,
-                    onCardNumberChange = { cardNumber = it },
-                    expiryDate = expiryDate,
-                    onExpiryDateChange = { expiryDate = it },
-                    cvv = cvv,
-                    onCvvChange = { cvv = it },
                     paymentPhoneNumber = paymentPhoneNumber,
                     onPaymentPhoneNumberChange = { paymentPhoneNumber = it },
                     isEditMode = isEditMode,
