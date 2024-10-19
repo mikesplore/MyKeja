@@ -20,7 +20,7 @@ data class UserEntity(
 }
 
 @Entity(tableName = "credit_cards")
-data class CreditCard(
+data class CreditCardEntity(
     @PrimaryKey(autoGenerate = true) val cardId: Int = 0,
     val userId: String,
     val cardNumber: String,
@@ -31,10 +31,13 @@ data class CreditCard(
 }
 
 data class CreditCardWithUser(
-    @Embedded val creditCard: CreditCard,
+    @Embedded val creditCard: CreditCardEntity,
     @Relation(
         parentColumn = "userId", // Column in CreditCard
         entityColumn = "userID" // Column in UserEntity
     )
     val user: UserEntity
-)
+){
+    constructor() : this(CreditCardEntity(), UserEntity())
+
+}
