@@ -39,7 +39,7 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
         }
     }
 
-    fun insertCreditCard(creditCard: CreditCard, onSuccess: (Boolean) -> Unit) {
+    fun insertCreditCard(creditCard: CreditCardEntity, onSuccess: (Boolean) -> Unit) {
         userRepository.insertCreditCard(creditCard) {
             onSuccess(it)
         }
