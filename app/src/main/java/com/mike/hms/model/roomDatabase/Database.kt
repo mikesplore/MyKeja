@@ -9,7 +9,7 @@ import com.mike.hms.model.houseModel.HouseDao
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.review.ReviewDao
 import com.mike.hms.model.review.ReviewEntity
-import com.mike.hms.model.userModel.CreditCard
+import com.mike.hms.model.userModel.CreditCardEntity
 import com.mike.hms.model.userModel.UserDao
 import com.mike.hms.model.userModel.UserEntity
 
@@ -18,7 +18,7 @@ import com.mike.hms.model.userModel.UserEntity
         UserEntity::class,
         HouseEntity::class,
         ReviewEntity::class,
-        CreditCard::class
+        CreditCardEntity::class
     ],
     version = 2,
     exportSchema = false
