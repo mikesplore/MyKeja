@@ -1,7 +1,7 @@
 package com.mike.hms.profile
 
 import android.content.Context
-import androidx.compose.foundation.border
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.RadioButton
@@ -23,33 +21,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.mike.hms.HMSPreferences
 import com.mike.hms.model.getUserViewModel
+import com.mike.hms.model.userModel.CreditCardEntity
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AuthenticatedUser(
-    context: Context,
-    firstName: String,
-    onFirstNameChange: (String) -> Unit,
-    lastName: String,
-    onLastNameChange: (String) -> Unit,
-    phoneNumber: String,
-    onPhoneNumberChange: (String) -> Unit,
-    cardNumber: String,
-    onCardNumberChange: (String) -> Unit,
-    expiryDate: String,
-    onExpiryDateChange: (String) -> Unit,
-    cvv: String,
-    onCvvChange: (String) -> Unit,
     paymentPhoneNumber: String,
     onPaymentPhoneNumberChange: (String) -> Unit,
     isEditMode: Boolean,
@@ -57,6 +45,7 @@ fun AuthenticatedUser(
     paymentMethod: String,
     onPaymentMethodChange: (String) -> Unit,
 ) {
+    val context = LocalContext.current
     val userViewModel = getUserViewModel(context)
     val userID = HMSPreferences.userId.value
     val user by userViewModel.user.observeAsState()
@@ -64,11 +53,9 @@ fun AuthenticatedUser(
 
     LaunchedEffect(Unit) {
         userViewModel.getCreditCard(userID)
-    }
-
-    LaunchedEffect(Unit) {
         userViewModel.getUserByID(userID)
     }
+
 
     Column(
         modifier = Modifier
@@ -77,22 +64,7 @@ fun AuthenticatedUser(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Profile Image
-        AsyncImage(
-            model = user?.photoUrl,
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .border(
-                    width = 2.dp,
-                    color = CC.textColor(),
-                    shape = CircleShape
-                )
-                .size(140.dp)
-                .clip(CircleShape)
-                .align(Alignment.CenterHorizontally),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(24.dp))
+
 
         // User Details Section
         Text(
@@ -104,39 +76,10 @@ fun AuthenticatedUser(
 
         // Editable or non-editable user information
         if (isEditMode) {
-            // Editable fields
-            EditDetails(
-                firstName = firstName,
-                onFirstNameChange = onFirstNameChange,
-                lastName = lastName,
-                onLastNameChange = onLastNameChange,
-                phoneNumber = phoneNumber,
-                onPhoneNumberChange = onPhoneNumberChange
-            )
+            EditDetails()
 
         } else {
             user?.let { UserCard(it) }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Update Profile Button
-        if (isEditMode) {
-            Button(
-                onClick = {
-                    // TODO: Implement logic to update user details
-                    onEditModeChange(false)
-                },
-                colors = CC.buttonColors(),
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text(
-                    "Save Changes", style = CC.contentTextStyle().copy(
-                        fontWeight = FontWeight.Bold,
-                        color = CC.primaryColor()
-                    )
-                )
-            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -154,48 +97,9 @@ fun AuthenticatedUser(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Payment Method Radio Buttons
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(
-                selected = paymentMethod == "credit_card",
-                onClick = { onPaymentMethodChange("credit_card") },
-                colors = CC.radioButtonColors()
-            )
-            Text("Credit Card", style = CC.contentTextStyle())
-            Spacer(modifier = Modifier.width(16.dp))
-            RadioButton(
-                selected = paymentMethod == "phone_number",
-                onClick = { onPaymentMethodChange("phone_number") },
-                colors = CC.radioButtonColors()
-            )
-            Text("Phone Number", style = CC.contentTextStyle())
-        }
+        // Payment Method
+        if (creditCard != null) {
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Payment Method Input Fields
-        when (paymentMethod) {
-            "credit_card" -> {
-                AddCreditCard(
-                    cardNumber = cardNumber,
-                    onCardNumberChange = onCardNumberChange,
-                    expiryDate = expiryDate,
-                    onExpiryDateChange = onExpiryDateChange,
-                    cvv = cvv,
-                    onCvvChange = onCvvChange
-                )
-            }
-
-            "phone_number" -> {
-                CC.MyOutlinedTextField(
-                    value = paymentPhoneNumber,
-                    onValueChange = { onPaymentPhoneNumberChange(it) },
-                    label = "Phone Number",
-                    keyboardType = KeyboardType.Phone,
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = "+254"
-                )
-            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -217,16 +121,18 @@ fun AuthenticatedUser(
 
 @Composable
 fun AddCreditCard(
-    cardNumber: String,
-    onCardNumberChange: (String) -> Unit,
-    expiryDate: String,
-    onExpiryDateChange: (String) -> Unit,
-    cvv: String,
-    onCvvChange: (String) -> Unit,
+    context: Context,
+    userViewModel: UserViewModel
 ) {
+    var cardNumber by remember { mutableStateOf("") }
+    var expiryDate by remember { mutableStateOf("") }
+    var cvv by remember { mutableStateOf("") }
+    val userID = HMSPreferences.userId.value
+
+    Text("Add Credit Card", style = CC.titleTextStyle())
     CC.MyOutlinedTextField(
         value = cardNumber,
-        onValueChange = { onCardNumberChange(it) },
+        onValueChange = { cardNumber = it },
         label = "Card Number",
         keyboardType = KeyboardType.Number,
         modifier = Modifier.fillMaxWidth(),
@@ -236,7 +142,7 @@ fun AddCreditCard(
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         CC.MyOutlinedTextField(
             value = expiryDate,
-            onValueChange = { onExpiryDateChange(it) },
+            onValueChange = { expiryDate = it },
             label = "Expiry Date",
             keyboardType = KeyboardType.Number,
             modifier = Modifier.weight(1f),
@@ -245,12 +151,30 @@ fun AddCreditCard(
         Spacer(modifier = Modifier.width(16.dp))
         CC.MyOutlinedTextField(
             value = cvv,
-            onValueChange = { onCvvChange(it) },
+            onValueChange = { cvv = it },
             label = "CVV",
             keyboardType = KeyboardType.Number,
             modifier = Modifier.weight(1f),
             placeholder = "123"
         )
+        Spacer(modifier = Modifier.width(16.dp))
+        Button(onClick = {
+            val card = CreditCardEntity(
+                userId = userID,
+                cardNumber = cardNumber,
+                expiryDate = expiryDate,
+                cvv = cvv
+            )
+            userViewModel.insertCreditCard(card) {
+                if (it) {
+                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }) {
+            Text("Save Card", style = CC.contentTextStyle().copy(fontWeight = FontWeight.Bold))
+        }
     }
 }
 
