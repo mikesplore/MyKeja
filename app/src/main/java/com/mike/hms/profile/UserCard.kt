@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -140,6 +141,20 @@ fun EditDetails(){
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Edit Details",
+            style = CC.titleTextStyle().copy(
+                color = CC.extraPrimaryColor()
+            ),
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
     CC.MyOutlinedTextField(
         value = firstName,
@@ -149,6 +164,7 @@ fun EditDetails(){
         placeholder = "Enter First Name"
     )
     Spacer(modifier = Modifier.height(8.dp))
+
     CC.MyOutlinedTextField(
         value = lastName,
         onValueChange = { lastName = it },
@@ -157,6 +173,7 @@ fun EditDetails(){
         placeholder = "Enter Last Name"
     )
     Spacer(modifier = Modifier.height(8.dp))
+
     CC.MyOutlinedTextField(
         value = phoneNumber,
         onValueChange = { phoneNumber = it },
@@ -168,14 +185,15 @@ fun EditDetails(){
     Spacer(modifier = Modifier.height(8.dp))
 
     CC.MyOutlinedTextField(
-        value = "",
-        onValueChange = {  },
+        value = email,
+        onValueChange = { email = it },
         label = "Email",
         keyboardType = KeyboardType.Email,
         placeholder = "Enter Email",
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(modifier = Modifier.height(8.dp))
+     AddCreditCard()
 
     Button(
         onClick = { /* Handle save button click */ },
@@ -188,5 +206,7 @@ fun EditDetails(){
         )
     ) {
         Text("Save", style = CC.contentTextStyle())
+    }
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
