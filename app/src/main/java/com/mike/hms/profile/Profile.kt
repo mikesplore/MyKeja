@@ -15,11 +15,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.firebase.auth.FirebaseAuth
+import com.mike.hms.HMSPreferences
+import com.mike.hms.houses.bookHouse.housePayment.PaymentMethod
+import com.mike.hms.model.getUserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,9 +32,13 @@ fun Profile(context: Context) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
-    var paymentMethod by remember { mutableStateOf("") }
+    val userViewModel = getUserViewModel(context)
+    val user by  userViewModel.user.observeAsState()
+    val userId = HMSPreferences.userId.value
+
 
     LaunchedEffect(Unit) {
+        userViewModel.getUserByID(userId)
         if (auth.currentUser != null) {
             isAuthenticated = true
         }
@@ -60,6 +68,7 @@ fun Profile(context: Context) {
             if (!isAuthenticated) {
                 // Handle unauthenticated user
                 UnauthenticatedUser(
+                    context,
                     onSignInSuccess = {
                         isAuthenticated = true
                     },
@@ -71,11 +80,9 @@ fun Profile(context: Context) {
             } else {
                 // Authenticated user
 
-                EditDetails()
-//                AuthenticatedUser(
-//                    isEditMode = isEditMode,
-//                    paymentMethod = paymentMethod,
-//                )
+                AuthenticatedUser(
+                    isEditMode = isEditMode,
+                )
             }
         }
     }
