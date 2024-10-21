@@ -188,7 +188,7 @@ fun UnauthenticatedUser(
                             addUserLoading = true
                             if (firstName.isNotEmpty() && lastName.isNotEmpty() && phoneNumber.isNotEmpty()) {
                                 CC.generateUserId { id ->
-                                    val user = UserEntity(
+                                    val newUser = UserEntity(
                                         userID = id,
                                         firstName = firstName,
                                         lastName = lastName,
@@ -198,7 +198,7 @@ fun UnauthenticatedUser(
                                         photoUrl = authenticatedUser?.photoUrl.toString(),
                                         role = "user"
                                     )
-                                    userViewModel.insertUser(user) { success ->
+                                    userViewModel.insertUser(newUser) { success ->
                                         if (success) {
                                             HMSPreferences.saveUserId(userID)
                                             onSignInSuccess()
