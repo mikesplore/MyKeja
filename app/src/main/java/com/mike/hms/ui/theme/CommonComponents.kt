@@ -267,5 +267,12 @@ object CommonComponents {
             onCodeUpdated(houseId)
         }
     }
+
+    fun generateUserId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("Users"){code ->
+            val userId = "User$code"
+            onCodeUpdated(userId)
+        }
+    }
     
 }
