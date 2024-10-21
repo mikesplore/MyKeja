@@ -38,14 +38,10 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AuthenticatedUser(
-    paymentPhoneNumber: String,
-    onPaymentPhoneNumberChange: (String) -> Unit,
     isEditMode: Boolean,
-    onEditModeChange: (Boolean) -> Unit,
     paymentMethod: String,
-    onPaymentMethodChange: (String) -> Unit,
+    context: Context = LocalContext.current
 ) {
-    val context = LocalContext.current
     val userViewModel = getUserViewModel(context)
     val userID = HMSPreferences.userId.value
     val user by userViewModel.user.observeAsState()
