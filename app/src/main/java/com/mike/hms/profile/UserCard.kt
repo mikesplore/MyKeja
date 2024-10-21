@@ -137,11 +137,11 @@ fun UserCard(
 
 
 @Composable
-fun EditDetails(){
+fun EditDetails(user: UserEntity){
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    val email by remember { mutableStateOf(user.email) }
 
     Column(
         modifier = Modifier
@@ -186,7 +186,7 @@ fun EditDetails(){
 
     CC.MyOutlinedTextField(
         value = email,
-        onValueChange = { email = it },
+        onValueChange = {},
         label = "Email",
         keyboardType = KeyboardType.Email,
         placeholder = "Enter Email",
