@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,17 +38,19 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun AuthenticatedUser(
     isEditMode: Boolean,
-    paymentMethod: String,
+    paymentMethod: String = "",
     context: Context = LocalContext.current
 ) {
     val userViewModel = getUserViewModel(context)
-    val userID = HMSPreferences.userId.value
+    val userID = "User6"
     val user by userViewModel.user.observeAsState()
     val creditCard by userViewModel.creditCard.observeAsState()
 
     LaunchedEffect(Unit) {
+        Toast.makeText(context, "fetching user with user id: $userID", Toast.LENGTH_SHORT).show()
         userViewModel.getCreditCard(userID)
         userViewModel.getUserByID(userID)
+        Toast.makeText(context,"${user?.firstName}", Toast.LENGTH_SHORT).show()
     }
 
 
@@ -72,7 +73,7 @@ fun AuthenticatedUser(
 
         // Editable or non-editable user information
         if (isEditMode) {
-            EditDetails()
+            user?.let { EditDetails(it) }
 
         } else {
             user?.let { UserCard(it) }
