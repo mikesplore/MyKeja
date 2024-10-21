@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -122,12 +123,11 @@ fun HomeScreen(
                     Screen.Home -> Profile(context)
                     Screen.Favourites -> Favourites(context)
                     Screen.Chat -> Chat(context)
-                    Screen.Profile -> Profile(context)
+                    Screen.Profile -> DashboardScreen(context,navController)
                 }
             }
         }
     }
-
 }
 
 
