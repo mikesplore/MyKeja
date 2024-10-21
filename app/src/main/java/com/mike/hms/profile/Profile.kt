@@ -27,24 +27,19 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 fun Profile(context: Context) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
-    var paymentPhoneNumber by remember { mutableStateOf("") }
     var isEditMode by remember { mutableStateOf(false) }
     var paymentMethod by remember { mutableStateOf("") }
-    val user = auth.currentUser
 
     LaunchedEffect(Unit) {
-        isAuthenticated = auth.currentUser != null
         if (auth.currentUser != null) {
-            // Fetch user details from Firebase and populate the variables
-            // This is a placeholder. You should implement the actual fetching logic.
-
+            isAuthenticated = true
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile", style = CC.titleTextStyle()) },
+                title = { Text("My Profile", style = CC.titleTextStyle()) },
                 actions = {
                     if (isAuthenticated) {
                         IconButton(onClick = { isEditMode = !isEditMode }) {
@@ -75,14 +70,12 @@ fun Profile(context: Context) {
 
             } else {
                 // Authenticated user
-                AuthenticatedUser(
-                    paymentPhoneNumber = paymentPhoneNumber,
-                    onPaymentPhoneNumberChange = { paymentPhoneNumber = it },
-                    isEditMode = isEditMode,
-                    onEditModeChange = { isEditMode = it },
-                    paymentMethod = paymentMethod,
-                    onPaymentMethodChange = { paymentMethod = it },
-                )
+
+                EditDetails()
+//                AuthenticatedUser(
+//                    isEditMode = isEditMode,
+//                    paymentMethod = paymentMethod,
+//                )
             }
         }
     }
