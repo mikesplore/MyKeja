@@ -126,7 +126,7 @@ fun CreditCard(
 }
 
 @Composable
-fun AddCreditCard(onAddCard: (CreditCardEntity) -> Unit) {
+fun AddCreditCard() {
     var cardNumber by remember { mutableStateOf("") }
     var cardHolderName by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
