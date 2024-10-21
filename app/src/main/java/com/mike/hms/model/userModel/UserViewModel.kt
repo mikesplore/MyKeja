@@ -23,13 +23,13 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
 
     fun getUserByID(userID: String) {
         userRepository.getUserByID(userID) {
-            _user.value = it
+            _user.postValue(it)
         }
     }
 
     fun getAllUsers() {
         userRepository.getAllUsers {
-            _users.value = it
+            _users.postValue(it)
         }
     }
 

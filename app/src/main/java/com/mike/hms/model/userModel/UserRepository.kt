@@ -1,9 +1,13 @@
 package com.mike.hms.model.userModel
 
+import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
+import com.mike.hms.HMSPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 class UserRepository(private val userDao: UserDao) {
 
@@ -11,17 +15,19 @@ class UserRepository(private val userDao: UserDao) {
     private val database = FirebaseDatabase.getInstance().reference
 
     fun insertUser(user: UserEntity, onSuccess: (Boolean) -> Unit) {
-
+        // Inserting into Firebase (Runs on the main thread)
         insertUserToFirebase(user) { success ->
-            if (success) {
-                onSuccess(true)
-            } else {
-                onSuccess(false)
+            CoroutineScope(Dispatchers.Main).launch {
+                onSuccess(success)
             }
         }
+
+        // Inserting into Room (Runs in the background)
         viewmodelScope.launch {
             userDao.insertUser(user)
-            onSuccess(true)
+            withContext(Dispatchers.Main) {
+                onSuccess(true)
+            }
         }
     }
 
@@ -30,6 +36,7 @@ class UserRepository(private val userDao: UserDao) {
             val user = userDao.getUserByID(userID)
             if (user != null) {
                 onResult(user)
+                Log.d("UserRepository", "$user with userID ${HMSPreferences.userId.value}")
             }
         }
     }
@@ -50,16 +57,18 @@ class UserRepository(private val userDao: UserDao) {
     }
 
     fun deleteUser(userID: String, onSuccess: (Boolean) -> Unit) {
+        // Deleting from Room (Runs in the background)
         viewmodelScope.launch {
             userDao.deleteUser(userID)
-            onSuccess(true)
-
-        }
-        deleteUserFromFirebase(userID) { success ->
-            if (success) {
+            withContext(Dispatchers.Main) {
                 onSuccess(true)
-            } else {
-                onSuccess(false)
+            }
+        }
+
+        // Deleting from Firebase (Runs on the main thread)
+        deleteUserFromFirebase(userID) { success ->
+            CoroutineScope(Dispatchers.Main).launch {
+                onSuccess(success)
             }
         }
     }
