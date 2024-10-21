@@ -138,7 +138,7 @@ fun AddCreditCard() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Add New Credit Card",
+            text = "Add A Credit Card",
             style = CC.titleTextStyle(),
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -167,20 +167,22 @@ fun AddCreditCard() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            OutlinedTextField(
+            CC.MyOutlinedTextField(
                 value = expiryDate,
                 onValueChange = { expiryDate = it },
-                label = { Text("Expiry Date") },
-                modifier = Modifier.weight(1f)
+                label =  "Expiry Date",
+                modifier = Modifier.weight(1f),
+                placeholder = "MM/YY"
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            OutlinedTextField(
+            CC.MyOutlinedTextField(
                 value = cvv,
                 onValueChange = { cvv = it },
-                label = { Text("CVV") },
-                modifier = Modifier.weight(1f)
+                label = "CVV",
+                modifier = Modifier.weight(1f),
+                placeholder = "123"
             )
         }
 
