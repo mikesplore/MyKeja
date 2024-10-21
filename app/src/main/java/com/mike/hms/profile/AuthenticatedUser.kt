@@ -42,7 +42,7 @@ fun AuthenticatedUser(
     context: Context = LocalContext.current
 ) {
     val userViewModel = getUserViewModel(context)
-    val userID = "User6"
+    val userID = HMSPreferences.userId.value
     val user by userViewModel.user.observeAsState()
     val creditCard by userViewModel.creditCard.observeAsState()
 
