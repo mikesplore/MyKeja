@@ -96,7 +96,7 @@ object CommonComponents {
     fun buttonColors(): ButtonColors {
         return ButtonDefaults.buttonColors(
             containerColor = tertiaryColor(),
-            contentColor = secondaryColor()
+            contentColor = primaryColor()
         )
     }
 
@@ -196,7 +196,8 @@ object CommonComponents {
         singleLine: Boolean = false,
         keyboardType: KeyboardType = KeyboardType.Text, // Default to text
         imeAction: ImeAction = ImeAction.Done, // Default to Done
-        trailingIcon: @Composable (() -> Unit)? = null
+        trailingIcon: @Composable (() -> Unit)? = null,
+        isError: Boolean = false,
     ) {
         OutlinedTextField(
             value = value,
@@ -212,7 +213,9 @@ object CommonComponents {
                 keyboardType = keyboardType,
                 imeAction = imeAction
             ),
-            singleLine = singleLine
+            singleLine = singleLine,
+            isError = isError,
+
         )
     }
 
@@ -272,6 +275,20 @@ object CommonComponents {
         updateAndGetCode("Users"){code ->
             val userId = "User$code"
             onCodeUpdated(userId)
+        }
+    }
+
+    fun generateUserId(onCodeUpdated: (String) -> Unit, path: String) {
+        updateAndGetCode(path){code ->
+            val userId = "User$code"
+            onCodeUpdated(userId)
+        }
+    }
+
+    fun generateCardId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("Cards"){code ->
+            val cardId = "Card$code"
+            onCodeUpdated(cardId)
         }
     }
     
