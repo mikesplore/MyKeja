@@ -29,21 +29,23 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.mike.hms.model.getHouseViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.houseModel.HouseViewModel
 import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
 @Composable
 fun HouseInfoScreen(navController: NavController, context: Context, houseID: String) {
+    val houseViewModel: HouseViewModel = hiltViewModel()
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
     val density = LocalDensity.current.density
     val textSize = (screenWidth.value / density).sp
     val isHouseFavorite = remember { mutableStateOf(false) }
-    val houseViewModel = getHouseViewModel(context)
+
     val house by houseViewModel.house.observeAsState()
     val selectedImage = remember { mutableStateOf<String?>(null) }
 
