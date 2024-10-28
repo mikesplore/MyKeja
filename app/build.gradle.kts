@@ -50,6 +50,12 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
 
+    //Hilt Dependencies
+    implementation (libs.hilt.android)
+    ksp (libs.hilt.android.compiler)
+    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+
     implementation(libs.androidx.appcompat)
     implementation(libs.coil.compose)
     implementation(libs.gson)
