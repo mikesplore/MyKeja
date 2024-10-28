@@ -21,13 +21,13 @@ data class UserEntity(
 
 @Entity(tableName = "credit_cards")
 data class CreditCardEntity(
-    @PrimaryKey(autoGenerate = true) val cardId: Int = 0,
+    @PrimaryKey val cardId: String,
     val userId: String,
     val cardNumber: String,
     val expiryDate: String,
     val cvv: String
 ){
-    constructor() : this(0, "", "", "", "")
+    constructor() : this("", "", "", "", "")
 }
 
 data class CreditCardWithUser(
