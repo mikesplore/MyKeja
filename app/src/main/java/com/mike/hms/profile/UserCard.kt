@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -40,25 +43,27 @@ fun UserCard(
     user: UserEntity,
 ) {
     val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = CC.surfaceContainerColor()
 
+        ),
+        elevation = CardDefaults.elevatedCardElevation(4.dp)
+    ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = CC.surfaceContainerColor(),
-                shape = RoundedCornerShape(12.dp)
-            )
             .padding(16.dp)
     ) {
         //Image Box
         Box(
             modifier = Modifier
-                .size(screenHeight * 0.2f)
+                .size(screenHeight * 0.15f)
                 .border(
                     1.dp, CC.textColor(), CircleShape
                 )
+                .align(Alignment.CenterHorizontally)
         ){
             AsyncImage(
                 model = user.photoUrl,
@@ -69,6 +74,8 @@ fun UserCard(
                     .fillMaxSize()
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Name Section
         Text(
             text = "Name",
@@ -133,6 +140,7 @@ fun UserCard(
             thickness = 0.5.dp
         )
     }
+}
 }
 
 
