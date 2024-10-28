@@ -143,8 +143,8 @@ class UserRepository(private val userDao: UserDao) {
 
     fun retrieveCreditCardByUserId(userId: String, onResult: (CreditCardWithUser) -> Unit) {
         viewmodelScope.launch {
-           // val creditCard = userDao.getCreditCardWithUser(userId)
-          //  onResult(creditCard)
+            val creditCard = userDao.getCreditCardWithUser(userId)
+            onResult(creditCard)
         }
         retrieveCreditCardFromFirebase { creditCard ->
             viewmodelScope.launch {
