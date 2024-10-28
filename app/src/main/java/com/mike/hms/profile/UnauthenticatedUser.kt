@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
@@ -127,7 +128,8 @@ fun UnauthenticatedUser(
                         value = firstName,
                         onValueChange = { firstName = it },
                         label = "First Name",
-                        placeholder = "Doe"
+                        placeholder = "Doe",
+                        keyboardType = KeyboardType.Text
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -135,7 +137,8 @@ fun UnauthenticatedUser(
                         value = lastName,
                         onValueChange = { lastName = it },
                         label = "Last Name",
-                        placeholder = "Doe"
+                        placeholder = "Doe",
+                        keyboardType = KeyboardType.Text
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -143,7 +146,8 @@ fun UnauthenticatedUser(
                         value = phoneNumber,
                         onValueChange = { phoneNumber = it },
                         label = "Phone Number",
-                        placeholder = "+254"
+                        placeholder = "+254",
+                        keyboardType = KeyboardType.Phone
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
