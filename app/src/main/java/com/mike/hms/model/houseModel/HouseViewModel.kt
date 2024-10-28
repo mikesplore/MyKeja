@@ -5,8 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import javax.inject.Inject
 
-class HouseViewModel(private val houseRepository: HouseRepository) : ViewModel() {
+class HouseViewModel @Inject constructor(private val houseRepository: HouseRepository) : ViewModel() {
 
     private val _houses = MutableLiveData<List<HouseEntity>>()
     val houses: LiveData<List<HouseEntity>> = _houses
