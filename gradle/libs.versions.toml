@@ -7,6 +7,8 @@ coilCompose = "2.4.0"
 coilVersion = "2.5.0"
 coreSplashscreen = "1.0.1"
 gson = "2.10.1"
+hiltAndroid = "2.42"
+hiltAndroidCompiler = "2.42"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -39,6 +41,8 @@ coil = { module = "io.coil.kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 coil-kt-coil = { module = "io.coil-kt:coil", version.ref = "coilVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
