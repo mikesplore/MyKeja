@@ -1,5 +1,6 @@
 package com.mike.hms.model.userModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,6 +23,7 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
     }
 
     fun getUserByID(userID: String) {
+        Log.d("UserViewModel", "Getting user by ID: $userID")
         userRepository.getUserByID(userID) {
             _user.postValue(it)
         }
@@ -41,12 +43,16 @@ class UserViewModel(private val userRepository: UserRepository): ViewModel() {
 
     fun insertCreditCard(creditCard: CreditCardEntity, onSuccess: (Boolean) -> Unit) {
         userRepository.insertCreditCard(creditCard) {
+            Log.d("UserViewModel", "Inserted credit card: $creditCard")
             onSuccess(it)
+            getCreditCard(creditCard.userId)
         }
     }
 
     fun getCreditCard(userId: String) {
+        Log.d("UserViewModel", "Getting credit card for user: $userId")
         userRepository.retrieveCreditCardByUserId(userId) {
+            Log.d("UserViewModel", "Retrieved credit card: $it")
             _creditCard.postValue(it)
         }
     }
