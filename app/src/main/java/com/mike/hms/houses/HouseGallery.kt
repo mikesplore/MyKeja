@@ -48,9 +48,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.mike.hms.model.getHouseViewModel
+import com.mike.hms.model.houseModel.HouseViewModel
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -60,7 +61,7 @@ fun HouseGallery(
     navController: NavController,
     context: Context
 ) {
-    val houseViewModel = getHouseViewModel(context)
+    val houseViewModel: HouseViewModel = hiltViewModel()
     val house by houseViewModel.house.observeAsState()
 
     Scaffold(
@@ -119,7 +120,7 @@ fun ImageCard(imageUrl: String, onClick: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullScreenGallery(navController: NavController, context: Context, houseID: String) {
-    val houseViewModel = getHouseViewModel(context)
+    val houseViewModel: HouseViewModel = hiltViewModel()
     val house by houseViewModel.house.observeAsState()
     val images = house?.houseImageLink ?: emptyList()
     val pagerState = rememberPagerState(initialPage = 0) { images.size }
