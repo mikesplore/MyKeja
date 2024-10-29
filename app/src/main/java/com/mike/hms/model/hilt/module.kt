@@ -2,6 +2,7 @@ package com.mike.hms.model.hilt
 
 import android.content.Context
 import androidx.room.Room
+import com.mike.hms.model.creditCardModel.CreditCardRepository
 import com.mike.hms.model.houseModel.HouseRepository
 import com.mike.hms.model.review.ReviewRepository
 import com.mike.hms.model.roomDatabase.HMSDatabase
@@ -23,7 +24,7 @@ object AppModule {
         return Room.databaseBuilder(
             context,
             HMSDatabase::class.java,
-            "hms_database" // Name of your database
+            "hms_database"
         ).build()
     }
 
@@ -43,5 +44,11 @@ object AppModule {
     @Singleton
     fun provideReviewRepository(database: HMSDatabase): ReviewRepository {
         return ReviewRepository(database.reviewDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreditCardRepository(database: HMSDatabase): CreditCardRepository {
+        return CreditCardRepository(database.creditCardDao())
     }
 }
