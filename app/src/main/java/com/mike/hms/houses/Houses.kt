@@ -57,9 +57,8 @@ fun Houses(
     val houseViewModel: HouseViewModel = hiltViewModel()
     // Observe LiveData directly
     val houses by houseViewModel.houses.collectAsState()
-    val statement by remember { mutableStateOf("") }
     var refresh by remember { mutableStateOf(true) }
-    var timer by remember { mutableStateOf(0) }
+    var timer by remember { mutableIntStateOf(0) }
 
     // LaunchedEffect for fetching houses initially
     LaunchedEffect(refresh) {
@@ -69,12 +68,9 @@ fun Houses(
                 while (timer < 10) {
                     timer++
                     delay(1000)
-                }
-                when (timer) {
-                    1 -> "Loading..."
-                    2 -> "Contacting Cloud database..."
-                    3 -> "Taking Longer than expected..."
-                    4 -> "OO"
+                    if (timer == 10) {
+                        refresh = false
+                    }
                 }
             }
         }
