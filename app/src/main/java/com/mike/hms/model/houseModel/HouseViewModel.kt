@@ -4,9 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+@HiltViewModel
 class HouseViewModel @Inject constructor(private val houseRepository: HouseRepository) : ViewModel() {
 
     private val _houses = MutableLiveData<List<HouseEntity>>()
@@ -43,17 +44,6 @@ class HouseViewModel @Inject constructor(private val houseRepository: HouseRepos
     fun deleteHouse(houseID: String, onSuccess: (Boolean) -> Unit) {
         houseRepository.deleteHouse(houseID) {
             onSuccess(it)
-        }
-    }
-
-    class HouseViewModelFactory(private val repository: HouseRepository) :
-        ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(HouseViewModel::class.java)) {
-                return HouseViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class for HouseViewModel")
         }
     }
 }
