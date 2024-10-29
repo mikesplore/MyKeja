@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -191,9 +192,9 @@ fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun RecommendedHouseTypeList(modifier: Modifier = Modifier, context: Context) {
+fun RecommendedHouseTypeList(modifier: Modifier = Modifier) {
     val houseViewModel: HouseViewModel = hiltViewModel()
-    val houses by houseViewModel.houses.observeAsState()
+    val houses by houseViewModel.houses.collectAsState()
     LazyRow(
         modifier = modifier
             .padding(start = 20.dp)
@@ -204,7 +205,7 @@ fun RecommendedHouseTypeList(modifier: Modifier = Modifier, context: Context) {
         val filteredHouses = if (FilteredCategory.category.value.isEmpty()) {
             houses // Don't filter if category is empty
         } else {
-            houses?.filter { house ->
+            houses.filter { house ->
                 house.houseCategory
                     .toString()
                     .replace("_", " ")
@@ -212,7 +213,7 @@ fun RecommendedHouseTypeList(modifier: Modifier = Modifier, context: Context) {
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } == FilteredCategory.category.value
             }
         }
-        items(filteredHouses?: emptyList()) { houseCategory ->
+        items(filteredHouses) { houseCategory ->
             HouseCategoryItem(houseCategory)
         }
     }
