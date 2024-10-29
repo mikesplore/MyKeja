@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -35,27 +36,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mike.hms.HMSPreferences
-import com.mike.hms.model.getUserViewModel
-import com.mike.hms.model.userModel.CreditCardEntity
+import com.mike.hms.model.creditCardModel.CreditCardEntity
+import com.mike.hms.model.creditCardModel.CreditCardViewModel
+import com.mike.hms.model.creditCardModel.CreditCardWithUser
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AuthenticatedUser(
     isEditMode: Boolean,
-    paymentMethod: String = "",
     context: Context = LocalContext.current
 ) {
-    val userViewModel = getUserViewModel(context)
-    val userID = "User7"
-    val user by userViewModel.user.observeAsState()
-    val creditCard by userViewModel.creditCard.observeAsState()
+    val userViewModel: UserViewModel = hiltViewModel()
+    val creditCardViewModel: CreditCardViewModel = hiltViewModel()
+    val userID = HMSPreferences.userId.value
+    val user by userViewModel.user.collectAsState(null)
+    val creditCard = CreditCardWithUser()
 
     LaunchedEffect(Unit) {
-        userViewModel.getCreditCard(userID)
-        Toast.makeText(context,"Searching credit card of user $userID", Toast.LENGTH_SHORT).show()
+        creditCardViewModel.getCreditCard(userID)
+        Toast.makeText(context, "Searching credit card of user $userID", Toast.LENGTH_SHORT).show()
         userViewModel.getUserByID(userID)
     }
 
@@ -89,13 +92,13 @@ fun AuthenticatedUser(
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (creditCard == null) {
+        if (false) {
             Text("You don't have a saved credit card yet", style = CC.contentTextStyle())
             Spacer(modifier = Modifier.height(16.dp))
-            AddCreditCard(context, userViewModel)
+            AddCreditCard(context, creditCardViewModel)
             Spacer(modifier = Modifier.height(20.dp))
         } else {
-            CreditCard(creditCard!!)
+            CreditCard(creditCard)
         }
         Spacer(modifier = Modifier.height(20.dp))
         // Danger Zone Section
@@ -107,7 +110,7 @@ fun AuthenticatedUser(
 @Composable
 fun AddCreditCard(
     context: Context,
-    userViewModel: UserViewModel
+    creditCardViewModel: CreditCardViewModel
 ) {
     var cardNumber by remember { mutableStateOf("") }
     var expiryDate by remember { mutableStateOf("") }
@@ -136,8 +139,8 @@ fun AddCreditCard(
     AnimatedVisibility(visible = !showAddCard) {
         Button(
             onClick = {
-                userViewModel.getCreditCard(userID)
-               // showAddCard = !showAddCard
+                creditCardViewModel.getCreditCard(userID)
+                // showAddCard = !showAddCard
             },
             colors = CC.buttonColors(),
             shape = RoundedCornerShape(8.dp)
@@ -215,20 +218,21 @@ fun AddCreditCard(
                     onClick = {
                         if (validateInput()) {
                             CC.generateCardId { id ->
-                            val card = CreditCardEntity(
-                                cardId = id,
-                                userId = userID,
-                                cardNumber = cardNumber,
-                                expiryDate = expiryDate,
-                                cvv = cvv
-                            )
-                            userViewModel.insertCreditCard(card) { success ->
-                                if (success) {
-                                    showToast("Success!")
-                                } else {
-                                    showToast("Failure!")
+                                val card = CreditCardEntity(
+                                    cardId = id,
+                                    userId = userID,
+                                    cardNumber = cardNumber,
+                                    expiryDate = expiryDate,
+                                    cvv = cvv
+                                )
+                                creditCardViewModel.insertCreditCard(card) { success ->
+                                    if (success) {
+                                        showToast("Success!")
+                                    } else {
+                                        showToast("Failure!")
+                                    }
                                 }
-                            }}
+                            }
                         }
                     },
                     shape = RoundedCornerShape(8.dp),
@@ -331,7 +335,7 @@ fun ShowDeleteDialog(
 ) {
     val userID = HMSPreferences.userId.value
     BasicAlertDialog(
-        onDismissRequest = {onDismiss(false)}
+        onDismissRequest = { onDismiss(false) }
     ) {
         Column(
             modifier = Modifier
@@ -361,12 +365,16 @@ fun ShowDeleteDialog(
                 }
                 Button(
                     onClick = {
-                        userViewModel.deleteUser(userID){ success ->
-                            if (success){
+                        userViewModel.deleteUser(userID) { success ->
+                            if (success) {
                                 Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
                                 onDismiss(true)
                             } else {
-                                Toast.makeText(context, "Failed, please try again", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Failed, please try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 onDismiss(false)
                             }
 
