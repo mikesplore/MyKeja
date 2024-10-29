@@ -25,11 +25,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mike.hms.model.getHouseViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mike.hms.model.houseModel.HouseAmenities
 import com.mike.hms.model.houseModel.HouseCategory
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseType
+import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
@@ -49,7 +50,7 @@ fun HouseForm(context: Context) {
     var imageLinks by remember { mutableStateOf(listOf<String>()) }
     var currentImageLink by remember { mutableStateOf("") }
 
-    val houseViewModel = getHouseViewModel(context)
+    val houseViewModel: HouseViewModel = hiltViewModel()
     val onSubmit: (houseEntity: HouseEntity, onComplete: (Boolean) -> Unit) -> Unit =
         { house, onComplete -> houseViewModel.insertHouse(house) { complete -> onComplete(complete) } }
 
