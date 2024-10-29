@@ -23,8 +23,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.mike.hms.model.getReviewViewModel
+import com.mike.hms.model.review.ReviewViewModel
 import com.mike.hms.model.review.ReviewsWithUserInfo
 import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -32,7 +33,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HouseReviewsScreen(navController: NavController, context: Context) {
-    val reviewViewModel = getReviewViewModel(context)
+    val reviewViewModel: ReviewViewModel = hiltViewModel()
     val reviews by reviewViewModel.reviews.observeAsState()
     val averageRating = reviews?.map { it.review.rating }?.average()
     val totalReviews = reviews?.size
