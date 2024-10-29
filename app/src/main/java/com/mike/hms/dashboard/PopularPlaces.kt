@@ -31,9 +31,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.mike.hms.model.getHouseViewModel
 import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.houseModel.HouseViewModel
 import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -127,7 +128,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
 
 @Composable
 fun PopularHouseTypeList(modifier: Modifier = Modifier, context: Context) {
-    val houseViewModel = getHouseViewModel(context)
+    val houseViewModel: HouseViewModel = hiltViewModel()
     val houses = houseViewModel.houses.observeAsState()
     LazyRow(
         modifier = modifier
