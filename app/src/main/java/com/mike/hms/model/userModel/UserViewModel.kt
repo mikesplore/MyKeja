@@ -1,77 +1,62 @@
 package com.mike.hms.model.userModel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class UserViewModel(private val userRepository: UserRepository): ViewModel() {
-    private val _users = MutableLiveData<List<UserEntity>>()
-    val users: LiveData<List<UserEntity>> = _users
+@HiltViewModel
+class UserViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
-    private val _creditCard = MutableLiveData<CreditCardWithUser>()
-    val creditCard: LiveData<CreditCardWithUser> = _creditCard
+    private val _user = MutableStateFlow<UserEntity?>(null)
+    val user: StateFlow<UserEntity?> = _user.asStateFlow()
 
-    private val _user = MutableLiveData<UserEntity>()
-    val user: LiveData<UserEntity> = _user
+    private val _userList = MutableStateFlow<List<UserEntity>>(emptyList())
+    val userList: StateFlow<List<UserEntity>> = _userList.asStateFlow()
 
-    fun insertUser(user: UserEntity, onSuccess: (Boolean) -> Unit) {
-        userRepository.insertUser(user) {
-            onSuccess(it)
+    private val _insertResult = MutableStateFlow<Boolean?>(null)
+    val insertResult: StateFlow<Boolean?> = _insertResult.asStateFlow()
+
+    private val _deleteResult = MutableStateFlow<Boolean?>(null)
+    val deleteResult: StateFlow<Boolean?> = _deleteResult.asStateFlow()
+
+    fun insertUser(user: UserEntity, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            userRepository.insertUser(user)
+                .onEach { success ->
+                    callback(success)
+                    _insertResult.value = success }
+                .launchIn(viewModelScope)
         }
     }
 
     fun getUserByID(userID: String) {
-        Log.d("UserViewModel", "Getting user by ID: $userID")
-        userRepository.getUserByID(userID) {
-            _user.postValue(it)
-        }
+        userRepository.getUserByID(userID)
+            .onEach { userEntity -> _user.value = userEntity }
+            .launchIn(viewModelScope)
     }
 
     fun getAllUsers() {
-        userRepository.getAllUsers {
-            _users.postValue(it)
-        }
+        userRepository.getAllUsers()
+            .onEach { userEntities -> _userList.value = userEntities }
+            .launchIn(viewModelScope)
     }
 
-    fun deleteUser(userID: String, onSuccess: (Boolean) -> Unit) {
-        userRepository.deleteUser(userID) {
-            onSuccess(it)
+    fun deleteUser(userID: String, callback: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            userRepository.deleteUser(userID)
+                .onEach { success ->
+                    callback(success)
+                    _deleteResult.value = success }
+                .launchIn(viewModelScope)
         }
     }
-
-    fun insertCreditCard(creditCard: CreditCardEntity, onSuccess: (Boolean) -> Unit) {
-        userRepository.insertCreditCard(creditCard) {
-            Log.d("UserViewModel", "Inserted credit card: $creditCard")
-            onSuccess(it)
-            getCreditCard(creditCard.userId)
-        }
-    }
-
-    fun getCreditCard(userId: String) {
-        Log.d("UserViewModel", "Getting credit card for user: $userId")
-        userRepository.retrieveCreditCardByUserId(userId) {
-            Log.d("UserViewModel", "Retrieved credit card: $it")
-            _creditCard.postValue(it)
-        }
-    }
-
-    fun deleteCreditCard(userId: String, onSuccess: (Boolean) -> Unit) {
-        userRepository.deleteCreditCard(userId) {
-            onSuccess(it)
-        }
-    }
-
-    class UserViewModelFactory(private val repository: UserRepository) :
-        ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
-                return UserViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class for UserViewModel")
-        }
-    }
-
 }
