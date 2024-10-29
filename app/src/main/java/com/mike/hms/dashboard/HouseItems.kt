@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,16 +73,16 @@ fun HouseItem(houseType: HouseEntity) {
 
 
 @Composable
-fun HouseTypeList(modifier: Modifier = Modifier,context: Context) {
+fun HouseTypeList(modifier: Modifier = Modifier) {
     val houseViewModel: HouseViewModel = hiltViewModel()
-    val houses = houseViewModel.houses.observeAsState()
+    val houses = houseViewModel.houses.collectAsState()
     LazyRow(
         modifier = modifier
             .padding(start = 20.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        items(houses.value ?: emptyList()) { houses ->
+        items(houses.value) { houses ->
             HouseItem(houses)
         }
     }
