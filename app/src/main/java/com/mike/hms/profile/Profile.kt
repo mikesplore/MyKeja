@@ -1,7 +1,6 @@
 package com.mike.hms.profile
 
 import android.content.Context
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,10 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
-import com.mike.hms.houses.bookHouse.housePayment.PaymentMethod
-import com.mike.hms.model.getUserViewModel
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,8 +34,7 @@ fun Profile(context: Context) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
-    val userViewModel = getUserViewModel(context)
-    val user by  userViewModel.user.observeAsState()
+    val userViewModel: UserViewModel = hiltViewModel()
     val userId = HMSPreferences.userId.value
 
 
@@ -63,7 +61,7 @@ fun Profile(context: Context) {
         },
         containerColor = CC.primaryColor()
     ) { paddingValues ->
-        Column (
+        Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
