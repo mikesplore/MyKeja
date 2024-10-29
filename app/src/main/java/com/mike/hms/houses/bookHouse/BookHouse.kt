@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,8 +47,7 @@ fun BookingInfoScreen(
     houseID: String
 ) {
     val houseViewModel: HouseViewModel = hiltViewModel()
-    val userViewModel: UserViewModel = hiltViewModel()
-    val house by houseViewModel.house.observeAsState()
+    val house by houseViewModel.house.collectAsState()
     val user  = UserEntity(
         userID = "",
         firstName = "Michael",
@@ -97,7 +97,7 @@ fun BookingInfoScreen(
                     Text("Order Details", style = CC.titleTextStyle(), fontWeight = FontWeight.Bold)
                 }
                 // User Card
-                UserDetails(user?: UserEntity())
+                UserDetails(user)
 
                 // House Details Card
                 HouseDetailsCard(house ?: HouseEntity())
@@ -146,7 +146,7 @@ fun BookingInfoScreen(
         ReceiptDialog(
             context = context,
             house = house ?: HouseEntity(),
-            user = user?: UserEntity(),
+            user = user,
             paymentMethod = selectedPaymentMethod,
             onDismiss = { showReceipt = false }
         )
