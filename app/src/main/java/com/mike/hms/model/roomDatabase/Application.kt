@@ -7,9 +7,6 @@ import com.mike.hms.model.userModel.UserRepository
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class HostelManagementSystemApp () : Application() {
-
-
-
+class HostelManagementSystemApp () : Application(){
 
 }
