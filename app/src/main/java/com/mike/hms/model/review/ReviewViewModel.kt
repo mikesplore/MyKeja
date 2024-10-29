@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ReviewViewModel(private val reviewRepository: ReviewRepository): ViewModel() {
+@HiltViewModel
+class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRepository): ViewModel() {
     private val _reviews = MutableLiveData<List<ReviewsWithUserInfo>>()
     val reviews: LiveData<List<ReviewsWithUserInfo>> = _reviews
 
@@ -32,14 +35,4 @@ class ReviewViewModel(private val reviewRepository: ReviewRepository): ViewModel
         reviewRepository.getAllReviews()
     }
 
-    class ReviewViewModelFactory(private val repository: ReviewRepository) :
-        ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(ReviewViewModel::class.java)) {
-                return ReviewViewModel(repository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class for ReviewViewModel")
-        }
-    }
 }
