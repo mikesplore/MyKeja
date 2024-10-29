@@ -17,8 +17,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mike.hms.model.userModel.CreditCardEntity
-import com.mike.hms.model.userModel.CreditCardWithUser
+import com.mike.hms.model.creditCardModel.CreditCardWithUser
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
