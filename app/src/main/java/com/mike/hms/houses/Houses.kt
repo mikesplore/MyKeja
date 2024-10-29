@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseType
 import com.mike.hms.model.houseModel.HouseViewModel
+import kotlinx.coroutines.delay
 import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -55,13 +56,27 @@ fun Houses(
     var selectedFilter by remember { mutableStateOf<HouseType?>(null) }
     val houseViewModel: HouseViewModel = hiltViewModel()
     // Observe LiveData directly
-    val houses by houseViewModel.houses.observeAsState()
-    val refresh by houseViewModel.housesLoading.observeAsState(true)
+    val houses by houseViewModel.houses.collectAsState()
+    val statement by remember { mutableStateOf("") }
+    var refresh by remember { mutableStateOf(true) }
+    var timer by remember { mutableStateOf(0) }
 
     // LaunchedEffect for fetching houses initially
     LaunchedEffect(refresh) {
         if (refresh) {
             houseViewModel.getAllHouses()
+            if (houses.isNotEmpty()) {
+                while (timer < 10) {
+                    timer++
+                    delay(1000)
+                }
+                when (timer) {
+                    1 -> "Loading..."
+                    2 -> "Contacting Cloud database..."
+                    3 -> "Taking Longer than expected..."
+                    4 -> "OO"
+                }
+            }
         }
     }
 
@@ -155,6 +170,7 @@ fun Houses(
             if (filteredHouses.isNullOrEmpty()) {
                 NoHouse(refresh, onRefresh = {
                     houseViewModel.getAllHouses()
+                    refresh = true
                     Toast.makeText(context, "Refreshing...", Toast.LENGTH_SHORT).show()
                 })
             } else {
