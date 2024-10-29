@@ -29,13 +29,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mike.hms.houses.bookHouse.housePayment.PaymentBottomSheet
 import com.mike.hms.houses.bookHouse.housePayment.PaymentMethod
 import com.mike.hms.houses.bookHouse.housePayment.ReceiptDialog
-import com.mike.hms.model.getHouseViewModel
-import com.mike.hms.model.getUserViewModel
 import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.userModel.UserEntity
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,8 +45,8 @@ fun BookingInfoScreen(
     context: Context,
     houseID: String
 ) {
-    val houseViewModel = getHouseViewModel(context)
-    val userViewModel = getUserViewModel(context)
+    val houseViewModel: HouseViewModel = hiltViewModel()
+    val userViewModel: UserViewModel = hiltViewModel()
     val house by houseViewModel.house.observeAsState()
     val user  = UserEntity(
         userID = "",
