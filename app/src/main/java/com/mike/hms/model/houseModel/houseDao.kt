@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HouseDao {
@@ -11,12 +12,11 @@ interface HouseDao {
     suspend fun insertHouse(house: HouseEntity)
 
     @Query("SELECT * FROM HouseTable WHERE houseID = :houseID")
-    suspend fun getHouseByID(houseID: String): HouseEntity
+    fun getHouseByID(houseID: String): Flow<HouseEntity?>
 
     @Query("SELECT * FROM HouseTable")
-    suspend fun getAllHouses(): List<HouseEntity>
+    fun getAllHouses(): Flow<List<HouseEntity>>
 
     @Query("DELETE FROM HouseTable WHERE houseID = :houseID")
     suspend fun deleteHouse(houseID: String)
-
 }
