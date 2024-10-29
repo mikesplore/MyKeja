@@ -27,10 +27,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.mike.hms.model.getHouseViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseType
+import com.mike.hms.model.houseModel.HouseViewModel
 import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -52,8 +53,7 @@ fun Houses(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf<HouseType?>(null) }
-    val houseViewModel = getHouseViewModel(context)
-
+    val houseViewModel: HouseViewModel = hiltViewModel()
     // Observe LiveData directly
     val houses by houseViewModel.houses.observeAsState()
     val refresh by houseViewModel.housesLoading.observeAsState(true)
@@ -87,7 +87,13 @@ fun Houses(
                     )
                 },
                 colors = CC.outLinedTextFieldColors(),
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = CC.textColor()) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = CC.textColor()
+                    )
+                },
             )
 
             // Filter chips
@@ -187,7 +193,6 @@ fun Houses(
         }
     }
 }
-
 
 
 @Composable
