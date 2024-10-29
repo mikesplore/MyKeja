@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
@@ -62,7 +63,7 @@ fun HouseGallery(
     context: Context
 ) {
     val houseViewModel: HouseViewModel = hiltViewModel()
-    val house by houseViewModel.house.observeAsState()
+    val house by houseViewModel.house.collectAsState()
 
     Scaffold(
         topBar = {
@@ -121,7 +122,7 @@ fun ImageCard(imageUrl: String, onClick: () -> Unit) {
 @Composable
 fun FullScreenGallery(navController: NavController, context: Context, houseID: String) {
     val houseViewModel: HouseViewModel = hiltViewModel()
-    val house by houseViewModel.house.observeAsState()
+    val house by houseViewModel.house.collectAsState()
     val images = house?.houseImageLink ?: emptyList()
     val pagerState = rememberPagerState(initialPage = 0) { images.size }
     val scope = rememberCoroutineScope()
