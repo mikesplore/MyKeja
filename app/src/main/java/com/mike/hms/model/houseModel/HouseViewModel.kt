@@ -1,49 +1,56 @@
 package com.mike.hms.model.houseModel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HouseViewModel @Inject constructor(private val houseRepository: HouseRepository) : ViewModel() {
+class HouseViewModel @Inject constructor(
+    private val houseRepository: HouseRepository
+) : ViewModel() {
 
-    private val _houses = MutableLiveData<List<HouseEntity>>()
-    val houses: LiveData<List<HouseEntity>> = _houses
+    private val _house = MutableStateFlow<HouseEntity?>(null)
+    val house: StateFlow<HouseEntity?> = _house.asStateFlow()
 
-    private val _housesLoading = MutableLiveData(true)
-    val housesLoading: LiveData<Boolean> = _housesLoading
+    private val _houses = MutableStateFlow<List<HouseEntity>>(emptyList())
+    val houses: StateFlow<List<HouseEntity>> = _houses.asStateFlow()
 
-    private val _house = MutableLiveData<HouseEntity>()
-    val house: LiveData<HouseEntity> = _house
+    private val _insertResult = MutableStateFlow<Boolean?>(null)
+    val insertResult: StateFlow<Boolean?> = _insertResult.asStateFlow()
 
-    fun insertHouse(house: HouseEntity, onSuccess: (Boolean) -> Unit) {
-        houseRepository.insertHouse(house) {
-            onSuccess(it)
+    private val _deleteResult = MutableStateFlow<Boolean?>(null)
+    val deleteResult: StateFlow<Boolean?> = _deleteResult.asStateFlow()
+
+    fun insertHouse(house: HouseEntity, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            houseRepository.insertHouse(house)
+                .onEach { success ->
+                    onComplete(success)
+                    _insertResult.value = success }
+                .launchIn(viewModelScope)
         }
     }
 
     fun getHouseByID(houseID: String) {
-        houseRepository.getHouseByID(houseID) {
-            _house.postValue(it)
-        }
+        houseRepository.getHouseByID(houseID)
+            .onEach { houseEntity -> _house.value = houseEntity }
+            .launchIn(viewModelScope)
     }
 
     fun getAllHouses() {
-        houseRepository.getAllHouses {
-            _housesLoading.postValue(true)
-            _houses.postValue(it)
-            Log.d("HouseViewModel", "Fetched ${houses.value?.size} houses")
-            _housesLoading.postValue(false)
-
-        }
+        houseRepository.getAllHouses()
+            .onEach { houseEntities -> _houses.value = houseEntities }
+            .launchIn(viewModelScope)
     }
 
-    fun deleteHouse(houseID: String, onSuccess: (Boolean) -> Unit) {
-        houseRepository.deleteHouse(houseID) {
-            onSuccess(it)
+    fun deleteHouse(houseID: String) {
+        viewModelScope.launch {
+            houseRepository.deleteHouse(houseID)
+                .onEach { success -> _deleteResult.value = success }
+                .launchIn(viewModelScope)
         }
     }
 }
