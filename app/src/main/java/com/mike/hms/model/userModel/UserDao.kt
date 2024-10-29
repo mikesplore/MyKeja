@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -12,23 +12,11 @@ interface UserDao {
     suspend fun insertUser(user: UserEntity)
 
     @Query("SELECT * FROM users WHERE userID = :userID")
-    suspend fun getUserByID(userID: String): UserEntity?
+    fun getUserByID(userID: String): Flow<UserEntity?>
 
     @Query("SELECT * FROM users")
-    suspend fun getAllUsers(): List<UserEntity>
+    fun getAllUsers(): Flow<List<UserEntity>>
 
     @Query("DELETE FROM users WHERE userID = :userID")
     suspend fun deleteUser(userID: String)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCreditCard(creditCard: CreditCardEntity)
-
-    @Transaction
-    @Query("SELECT * FROM credit_cards WHERE userId = :userId")
-    fun getCreditCardWithUser(userId: String): CreditCardWithUser
-
-    @Query("DELETE FROM credit_cards WHERE cardId = :cardId")
-    suspend fun deleteCreditCard(cardId: String)
-
-
 }
