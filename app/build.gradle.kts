@@ -2,8 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") version "2.0.20-1.0.25" // Use the latest 2.0.x version
-
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
     alias(libs.plugins.google.gms.google.services)
 }
 
@@ -40,6 +41,12 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
+    }
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
 dependencies {
@@ -51,9 +58,9 @@ dependencies {
     implementation(libs.androidx.room.ktx)
 
     //Hilt Dependencies
-    implementation (libs.hilt.android)
-    ksp (libs.hilt.android.compiler)
-    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+    kapt(libs.hilt.android.compiler.v2481)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.android.v2481)
 
 
     implementation(libs.androidx.appcompat)
