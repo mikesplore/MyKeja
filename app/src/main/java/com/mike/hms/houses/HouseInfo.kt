@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,7 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
     val textSize = (screenWidth.value / density).sp
     val isHouseFavorite = remember { mutableStateOf(false) }
 
-    val house by houseViewModel.house.observeAsState()
+    val house by houseViewModel.house.collectAsState()
     val selectedImage = remember { mutableStateOf<String?>(null) }
 
 
