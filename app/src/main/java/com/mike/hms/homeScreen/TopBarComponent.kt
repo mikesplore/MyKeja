@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -31,6 +32,9 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun TopAppBarComponent(context: Context){
     val location = HMSPreferences.location.value
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val currentUser = auth.currentUser
+
     TopAppBar(
         title = {
             Column {
@@ -49,7 +53,7 @@ fun TopAppBarComponent(context: Context){
                     .clip(CircleShape)
                 ){
                     ProfilePicture(
-                        imageUrl = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&",
+                        imageUrl = currentUser?.photoUrl.toString(),
                         size = maxWidth * 0.10f,
                         onClick = {
                             HMSPreferences.darkMode.value = !HMSPreferences.darkMode.value
