@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -31,7 +32,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun InsideView(navController: NavController, context: Context, houseID: String) {
     val houseViewModel: HouseViewModel = hiltViewModel()
-    val house by houseViewModel.house.observeAsState()
+    val house by houseViewModel.house.collectAsState()
 
     Row(
         modifier = Modifier
