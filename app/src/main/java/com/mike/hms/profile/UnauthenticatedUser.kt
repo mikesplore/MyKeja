@@ -19,6 +19,7 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -28,11 +29,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
 import com.mike.hms.authentication.GoogleAuth
-import com.mike.hms.model.getUserViewModel
 import com.mike.hms.model.userModel.UserEntity
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
@@ -53,9 +55,9 @@ fun UnauthenticatedUser(
     var isAuthenticated by remember { mutableStateOf(false) }
     var addUserLoading by remember { mutableStateOf(false) }
 
-    val userViewModel = getUserViewModel(context)
+    val userViewModel: UserViewModel = hiltViewModel()
     val userID by remember { mutableStateOf(HMSPreferences.userId.value) }
-    val user by userViewModel.user.observeAsState()
+    val user by userViewModel.user.collectAsState()
     val authenticatedUser = FirebaseAuth.getInstance().currentUser
 
 
