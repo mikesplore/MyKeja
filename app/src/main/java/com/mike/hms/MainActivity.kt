@@ -2,7 +2,6 @@ package com.mike.hms
 
 import android.app.Activity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,9 +41,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            HostelManagementSystemTheme(darkTheme = HMSPreferences.darkMode.value, dynamicColor = false) {
+            HostelManagementSystemTheme(
+                darkTheme = HMSPreferences.darkMode.value,
+                dynamicColor = false
+            ) {
                 val window = (LocalView.current.context as Activity).window
-                WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = !HMSPreferences.darkMode.value
+                WindowCompat.getInsetsController(
+                    window,
+                    window.decorView
+                ).isAppearanceLightStatusBars = !HMSPreferences.darkMode.value
                 // Your content goes here
                 NavGraph(this)
             }
