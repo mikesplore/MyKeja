@@ -291,5 +291,12 @@ object CommonComponents {
             onCodeUpdated(cardId)
         }
     }
+
+    fun generateFavouriteId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("Favorites"){code ->
+            val favouriteId = "Fav$code"
+            onCodeUpdated(favouriteId)
+        }
+    }
     
 }
