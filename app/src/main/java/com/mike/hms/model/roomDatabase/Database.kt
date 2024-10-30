@@ -5,6 +5,8 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.mike.hms.model.creditCardModel.CreditCardDao
 import com.mike.hms.model.creditCardModel.CreditCardEntity
+import com.mike.hms.model.favorites.FavoriteDao
+import com.mike.hms.model.favorites.FavouriteEntity
 import com.mike.hms.model.houseModel.HouseDao
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.review.ReviewDao
@@ -17,7 +19,8 @@ import com.mike.hms.model.userModel.UserEntity
         UserEntity::class,
         HouseEntity::class,
         ReviewEntity::class,
-        CreditCardEntity::class
+        CreditCardEntity::class,
+        FavouriteEntity:: class
     ],
     version = 2,
     exportSchema = false
@@ -28,4 +31,6 @@ abstract class HMSDatabase : RoomDatabase() {
     abstract fun houseDao(): HouseDao
     abstract fun reviewDao(): ReviewDao
     abstract fun creditCardDao(): CreditCardDao
+    abstract fun favoriteDao(): FavoriteDao
+
 }
