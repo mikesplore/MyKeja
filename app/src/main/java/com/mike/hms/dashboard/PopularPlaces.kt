@@ -2,6 +2,7 @@ package com.mike.hms.dashboard
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
@@ -41,7 +43,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 
 @Composable
-fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
+fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navController: NavController) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val boxWidth = screenWidth * 0.35f
@@ -52,6 +54,9 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
     // Card for the house item
     Card(
         modifier = modifier
+            .clickable{
+                navController.navigate("houseDetail/${houseType.houseID}")
+            }
             .width(boxWidth)
             .height(boxHeight),
         shape = RoundedCornerShape(20.dp),  // Rounded corners
@@ -128,7 +133,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun PopularHouseTypeList(modifier: Modifier = Modifier) {
+fun PopularHouseTypeList(modifier: Modifier = Modifier, navController: NavController) {
     val houseViewModel: HouseViewModel = hiltViewModel()
     val houses = houseViewModel.houses.collectAsState()
     LazyRow(
@@ -138,7 +143,7 @@ fun PopularHouseTypeList(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         items(houses.value) { houseType ->
-            PopularHouseItem(houseType)
+            PopularHouseItem(houseType, navController = navController)
         }
     }
 }
