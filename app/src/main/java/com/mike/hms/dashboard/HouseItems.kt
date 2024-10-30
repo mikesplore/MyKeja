@@ -51,7 +51,7 @@ fun HouseItem(houseType: HouseEntity) {
         ) {
             AsyncImage(
                 modifier = Modifier.size(boxSize),
-                model = houseType.houseImageLink.random(),
+                model = houseType.houseImageLink.randomOrNull(),
                 contentDescription = "House Type Image",
                 contentScale = ContentScale.Crop,
 
