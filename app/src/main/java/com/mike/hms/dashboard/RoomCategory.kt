@@ -49,7 +49,6 @@ val houseCategory = listOf(
     HouseCategory.FAMILY_SUITE,
     HouseCategory.LUXURY,
     HouseCategory.STANDARD
-
 )
 
 object FilteredCategory {
