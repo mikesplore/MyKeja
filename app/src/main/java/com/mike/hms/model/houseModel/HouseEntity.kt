@@ -50,7 +50,11 @@ enum class HouseType {
     HOTEL,
     BUNGALOW,
     CONDOMINIUM,
-    BOUTIQUE
+    BOUTIQUE,
+    PENTHOUSE,
+    CHALET,
+    COTTAGE,
+    CABIN
 }
 
 enum class  HouseAmenities{
@@ -64,6 +68,7 @@ enum class  HouseAmenities{
     GARDEN,
     WATERFRONT,
     MOUNTAIN_VIEW,
+    WIFI
 }
 
 enum class HouseCategory{
