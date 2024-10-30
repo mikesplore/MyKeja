@@ -3,6 +3,8 @@ package com.mike.hms.model.hilt
 import android.content.Context
 import androidx.room.Room
 import com.mike.hms.model.creditCardModel.CreditCardRepository
+import com.mike.hms.model.favorites.FavoriteDao
+import com.mike.hms.model.favorites.FavoriteRepository
 import com.mike.hms.model.houseModel.HouseRepository
 import com.mike.hms.model.review.ReviewRepository
 import com.mike.hms.model.roomDatabase.HMSDatabase
@@ -50,5 +52,11 @@ object AppModule {
     @Singleton
     fun provideCreditCardRepository(database: HMSDatabase): CreditCardRepository {
         return CreditCardRepository(database.creditCardDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteRepository(database: HMSDatabase): FavoriteRepository {
+        return FavoriteRepository(database.favoriteDao())
     }
 }
