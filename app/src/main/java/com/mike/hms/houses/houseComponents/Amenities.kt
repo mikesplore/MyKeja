@@ -1,4 +1,4 @@
-package com.mike.hms.houses
+package com.mike.hms.houses.houseComponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
