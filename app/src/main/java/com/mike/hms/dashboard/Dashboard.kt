@@ -90,7 +90,7 @@ fun DashboardScreen(context: Context, navController: NavController) {
 
             }
             Spacer(modifier = Modifier.height(20.dp))
-            PopularHouseTypeList()
+            PopularHouseTypeList(navController = navController)
             Spacer(modifier = Modifier.height(20.dp))
             Row(
                 modifier = Modifier
