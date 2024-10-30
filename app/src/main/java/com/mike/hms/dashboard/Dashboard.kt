@@ -1,6 +1,7 @@
 package com.mike.hms.dashboard
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,14 +15,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mike.hms.homeScreen.TopAppBarComponent
+import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun DashboardScreen(context: Context, navController: NavController) {
+    val houseViewModel: HouseViewModel = hiltViewModel()
+    val houses = houseViewModel.houses.collectAsState()
+
+    LaunchedEffect(Unit) {
+        houseViewModel.getAllHouses()
+        Toast.makeText(context, houses.value.size.toString(), Toast.LENGTH_SHORT).show()
+    }
+
     Scaffold(
         topBar = {
             TopAppBarComponent(context)
@@ -43,11 +56,11 @@ fun DashboardScreen(context: Context, navController: NavController) {
                     .padding(horizontal = 20.dp)
             )
             Spacer(modifier = Modifier.height(30.dp))
-            HouseTypeList()
+            HouseTypeList(houses = houses.value)
             Spacer(modifier = Modifier.height(20.dp))
             HousesCategory()
             Spacer(modifier = Modifier.height(20.dp))
-            RecommendedHouseTypeList()
+            RecommendedHouseTypeList(navController = navController)
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 "Offers for you", style = CC.titleTextStyle().copy(
