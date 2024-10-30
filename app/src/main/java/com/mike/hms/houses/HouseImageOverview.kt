@@ -32,8 +32,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.mike.hms.model.favorites.FavoriteViewModel
+import com.mike.hms.model.favorites.FavouriteEntity
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -44,13 +47,14 @@ fun HouseImageOverView(
     onImageClick: (String?) -> Unit,
     isHouseFavorite: MutableState<Boolean>,
     screenHeight: Dp,
-    navController: NavController
+    navController: NavController,
+    favoriteViewModel: FavoriteViewModel = hiltViewModel()
 ) {
     // State for the current page index
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { house.houseImageLink.size })
 
     // Image index state that updates when pager changes
-    val currentImageIndex by  derivedStateOf { pagerState.currentPage }
+    val currentImageIndex by derivedStateOf { pagerState.currentPage }
 
     Box(
         modifier = Modifier
@@ -106,7 +110,22 @@ fun HouseImageOverView(
                 )
             }
 
-            IconButton(onClick = { isHouseFavorite.value = !isHouseFavorite.value }) {
+            IconButton(onClick = {
+                isHouseFavorite.value = !isHouseFavorite.value
+                if (isHouseFavorite.value) {
+                    // Add to favorites
+                    CC.generateFavouriteId { favId ->
+                        val favouriteEntity = FavouriteEntity(
+                            favId,
+                            house.houseID
+                        )
+                        favoriteViewModel.addFavorite(favouriteEntity)
+                    }
+                } else {
+                    // Remove from favorites
+                    favoriteViewModel.removeFavorite(house.houseID)
+                }
+            }) {
                 Icon(
                     if (isHouseFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite",
