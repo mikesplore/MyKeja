@@ -58,22 +58,11 @@ fun Houses(
     // Observe LiveData directly
     val houses by houseViewModel.houses.collectAsState()
     var refresh by remember { mutableStateOf(true) }
-    var timer by remember { mutableIntStateOf(0) }
 
     // LaunchedEffect for fetching houses initially
-    LaunchedEffect(refresh) {
-        if (refresh) {
-            houseViewModel.getAllHouses()
-            if (houses.isNotEmpty()) {
-                while (timer < 10) {
-                    timer++
-                    delay(1000)
-                    if (timer == 10) {
-                        refresh = false
-                    }
-                }
-            }
-        }
+    LaunchedEffect(Unit) {
+        Toast.makeText(context, "Loading...", Toast.LENGTH_SHORT).show()
+        houseViewModel.getAllHouses()
     }
 
     Scaffold { innerPadding ->
