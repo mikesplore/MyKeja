@@ -1,10 +1,12 @@
 package com.mike.hms.model.houseModel
 
 import android.util.Log
+import androidx.compose.ui.geometry.isEmpty
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
@@ -28,11 +30,20 @@ class HouseRepository(private val houseDao: HouseDao) {
             }
 
     fun getAllHouses(): Flow<List<HouseEntity>> = flow {
-        val roomHouses = houseDao.getAllHouses()
-        emitAll(roomHouses) // Emit Room data first
+        val roomHouses = houseDao.getAllHouses().first() // Get the first emission from Room Flow
+        emit(roomHouses) // Emit Room data first
 
-        val firebaseHouses = retrieveHousesFromFirebase()
-        firebaseHouses.forEach { houseDao.insertHouse(it) } // Update Room with Firebase data
+        if (roomHouses.isEmpty()) { // Check if Room database is empty
+            Log.d("HouseRepository", "Fetching houses from Firebase since Room is empty")
+            val firebaseHouses = retrieveHousesFromFirebase()
+            if (firebaseHouses.isNotEmpty()) {
+                firebaseHouses.forEach { houseDao.insertHouse(it) } // Update Room with Firebase data
+                Log.d("HouseRepository", "Inserted ${firebaseHouses.size} houses from Firebase into Room")
+            } else {
+                Log.d("HouseRepository", "No houses found in Firebase")
+            }
+        }
+
         emitAll(houseDao.getAllHouses()) // Emit updated Room data
     }.catch { e ->
         Log.e("HouseRepository", "Error getting all houses: ${e.message}")
