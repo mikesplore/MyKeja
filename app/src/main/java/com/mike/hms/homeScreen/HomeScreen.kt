@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mike.hms.dashboard.DashboardScreen
+import com.mike.hms.houses.favorites.Favourites
 import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -122,23 +123,12 @@ fun HomeScreen(
             ) { page ->
                 when (screens[page]) {
                     Screen.Home -> DashboardScreen(context, navController)
-                    Screen.Favourites -> Favourites(context)
+                    Screen.Favourites -> Favourites(navController)
                     Screen.Chat -> Chat(context)
                     Screen.Profile -> Profile(context)
                 }
             }
         }
-    }
-}
-
-
-@Composable
-fun Favourites(context: Context) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Favourites", style = CC.titleTextStyle())
     }
 }
 
