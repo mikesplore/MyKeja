@@ -71,6 +71,7 @@ fun HomeScreen(
             sheetState = sheetState,
             content = {
                 // Add your bottom sheet content here
+                Text(text = "Bottom Sheet Content")
             }
         )
     }
