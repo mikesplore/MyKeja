@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mike.hms.model.houseModel.HouseCategory
 import com.mike.hms.model.houseModel.HouseEntity
@@ -108,7 +109,7 @@ fun HousesCategory() {
 
 
 @Composable
-fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier) {
+fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier, navController: NavController) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val boxWidth = screenWidth * 0.35f
@@ -127,9 +128,12 @@ fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier) {
         Box {
             // House image
             AsyncImage(
-                model = house.houseImageLink.firstOrNull(),
+                model = house.houseImageLink.randomOrNull(),
                 contentDescription = "House Image",
                 modifier = Modifier
+                    .clickable{
+                        navController.navigate("houseDetails/${house.houseID}")
+                    }
                     .fillMaxSize()
                     .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop
@@ -192,7 +196,7 @@ fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier) {
 
 
 @Composable
-fun RecommendedHouseTypeList(modifier: Modifier = Modifier) {
+fun RecommendedHouseTypeList(modifier: Modifier = Modifier, navController: NavController) {
     val houseViewModel: HouseViewModel = hiltViewModel()
     val houses by houseViewModel.houses.collectAsState()
     LazyRow(
@@ -214,7 +218,7 @@ fun RecommendedHouseTypeList(modifier: Modifier = Modifier) {
             }
         }
         items(filteredHouses) { houseCategory ->
-            HouseCategoryItem(houseCategory)
+            HouseCategoryItem(houseCategory, navController = navController)
         }
     }
 }
