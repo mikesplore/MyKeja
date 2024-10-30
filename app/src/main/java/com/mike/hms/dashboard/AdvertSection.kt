@@ -28,7 +28,10 @@ data class CarouselItem(
 )
 
 val carouselItems = listOf(
-    CarouselItem("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg"),
+    CarouselItem("https://t4.ftcdn.net/jpg/01/90/38/79/240_F_190387968_wQdmFhMiZSnzHloQVa0MBgJSNstpPNFB.jpg"),
+    CarouselItem("https://t4.ftcdn.net/jpg/02/45/74/65/240_F_245746541_w73mctgROl6puYGTZly2U87sPvn11mdn.jpg"),
+    CarouselItem("https://t4.ftcdn.net/jpg/01/15/98/69/240_F_115986933_INnPudkCBGrZ1Da6MBmazBw2HrP7nsBv.jpg"),
+    CarouselItem("https://t4.ftcdn.net/jpg/04/30/95/25/240_F_430952551_UiNxAU6GWyv4hBvuexCnJoC6poV8YxGs.jpg")
 )
 
 @Composable
