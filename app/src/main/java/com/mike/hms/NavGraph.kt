@@ -21,7 +21,7 @@ import com.mike.hms.houses.bookHouse.BookingInfoScreen
 fun NavGraph(context: Context) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "houses") {
+    NavHost(navController = navController, startDestination = "homeScreen") {
         composable("dashboard") {
             DashboardScreen(context, navController)
         }
