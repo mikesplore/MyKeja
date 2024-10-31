@@ -1,6 +1,11 @@
 package com.mike.hms.houses
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +22,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,23 +44,36 @@ import coil.compose.AsyncImage
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.favorites.FavouriteEntity
 import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun HouseImageOverView(
+    context: Context,
     house: HouseEntity,
     onImageClick: (String?) -> Unit,
     isHouseFavorite: MutableState<Boolean>,
     screenHeight: Dp,
     navController: NavController,
-    favoriteViewModel: FavoriteViewModel = hiltViewModel()
-) {
+    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
+    houseViewModel: HouseViewModel = hiltViewModel(),
+
+    ) {
     // State for the current page index
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { house.houseImageLink.size })
 
     // Image index state that updates when pager changes
     val currentImageIndex by derivedStateOf { pagerState.currentPage }
+
+    val isFavorite by houseViewModel.isFavorite.collectAsState()
+
+    LaunchedEffect(key1 = isFavorite) {
+        houseViewModel.isFavorite(house.houseID)
+        isHouseFavorite.value = isFavorite
+    }
+
+
 
     Box(
         modifier = Modifier
@@ -79,37 +98,28 @@ fun HouseImageOverView(
         }
 
         // Image Counter
-        Box(
-            modifier = Modifier
-                .padding(8.dp)
-                .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-                .align(Alignment.TopEnd)
-        ) {
-            Text(
-                text = "${currentImageIndex + 1}/${house.houseImageLink.size}",
-                color = Color.White,
-                fontSize = 14.sp
-            )
-        }
-
-        // Bottom Action Bar
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(CC.primaryColor().copy(alpha = 0.6f))
-                .align(Alignment.BottomCenter),
+                .background(Color.Black.copy(alpha = 0.4f))
+                .align(Alignment.TopCenter)
+                .padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .background(
+                        Color.Transparent
+                    )
+            ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = CC.textColor()
+                    tint = Color.White,
                 )
             }
-
             IconButton(onClick = {
                 isHouseFavorite.value = !isHouseFavorite.value
                 if (isHouseFavorite.value) {
@@ -120,6 +130,8 @@ fun HouseImageOverView(
                             house.houseID
                         )
                         favoriteViewModel.addFavorite(favouriteEntity)
+                        Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
+
                     }
                 } else {
                     // Remove from favorites
@@ -127,19 +139,32 @@ fun HouseImageOverView(
                 }
             }) {
                 Icon(
-                    if (isHouseFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    imageVector = if (isHouseFavorite.value) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Favorite",
-                    tint = CC.textColor()
+                    tint = if (isHouseFavorite.value) Color.Green else Color.White,
+                    modifier = Modifier.animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    )
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = "${currentImageIndex + 1}/${house.houseImageLink.size}",
+                    color = Color.White,
+                    fontSize = 14.sp
                 )
             }
 
-            IconButton(onClick = { /* Handle share action */ }) {
-                Icon(
-                    Icons.Default.Share,
-                    contentDescription = "Share",
-                    tint = CC.textColor()
-                )
-            }
+
         }
+
     }
 }
