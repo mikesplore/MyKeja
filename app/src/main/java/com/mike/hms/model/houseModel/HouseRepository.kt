@@ -92,4 +92,13 @@ class HouseRepository(private val houseDao: HouseDao) {
             false
         }
     }
+
+    fun isFavorite(houseID: String): Flow<Boolean> = flow {
+        val isFavorite = houseDao.isFavorite(houseID)
+        emit(isFavorite)
+        Log.d("HouseRepository", "House with ID $houseID is favorite: $isFavorite")
+        }.catch { e ->
+        Log.e("HouseRepository", "Error checking if house is favorite: ${e.message}")
+        emit(false)
+    }
 }

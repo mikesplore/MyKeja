@@ -1,5 +1,6 @@
 package com.mike.hms.model.houseModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,21 +16,19 @@ class HouseViewModel @Inject constructor(
     private val _house = MutableStateFlow<HouseEntity?>(null)
     val house: StateFlow<HouseEntity?> = _house.asStateFlow()
 
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
+
     private val _houses = MutableStateFlow<List<HouseEntity>>(emptyList())
     val houses: StateFlow<List<HouseEntity>> = _houses.asStateFlow()
 
-    private val _insertResult = MutableStateFlow<Boolean?>(null)
-    val insertResult: StateFlow<Boolean?> = _insertResult.asStateFlow()
-
-    private val _deleteResult = MutableStateFlow<Boolean?>(null)
-    val deleteResult: StateFlow<Boolean?> = _deleteResult.asStateFlow()
 
     fun insertHouse(house: HouseEntity, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             houseRepository.insertHouse(house)
                 .onEach { success ->
                     onComplete(success)
-                    _insertResult.value = success }
+                     }
                 .launchIn(viewModelScope)
         }
     }
@@ -49,8 +48,21 @@ class HouseViewModel @Inject constructor(
     fun deleteHouse(houseID: String) {
         viewModelScope.launch {
             houseRepository.deleteHouse(houseID)
-                .onEach { success -> _deleteResult.value = success }
+                .onEach {
+                    getAllHouses()
+                }
                 .launchIn(viewModelScope)
         }
     }
+
+     fun isFavorite(houseID: String) {
+         viewModelScope.launch {
+             houseRepository.isFavorite(houseID)
+                 .onEach { isFavorite ->
+                     _isFavorite.value = isFavorite
+                     Log.d("HouseViewModel", "House with ID $houseID is favorite: ${_isFavorite.value}")
+                 }
+                 .launchIn(viewModelScope)
+         }
+     }
 }
