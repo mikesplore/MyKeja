@@ -1,6 +1,11 @@
 package com.mike.hms.dashboard
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,10 +45,13 @@ import com.mike.hms.model.houseModel.HouseCategory
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
 import java.util.Locale
+import kotlin.text.category
+import kotlin.toString
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
 val houseCategory = listOf(
+    HouseCategory.ALL,
     HouseCategory.DELUXE,
     HouseCategory.ECONOMY,
     HouseCategory.FAMILY_SUITE,
@@ -198,26 +206,47 @@ fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier, navCont
 fun RecommendedHouseTypeList(modifier: Modifier = Modifier, navController: NavController) {
     val houseViewModel: HouseViewModel = hiltViewModel()
     val houses by houseViewModel.houses.collectAsState()
+    val configuration = LocalConfiguration.current
+
+    val filteredHouses = if (FilteredCategory.category.value.isEmpty() || FilteredCategory.category.value.toString() == "All") {
+        houses // Don't filter if category is empty
+    } else {
+        houses.filter { house ->
+            house.houseCategory
+                .toString()
+                .replace("_", " ")
+                .lowercase()
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } == FilteredCategory.category.value
+        }
+    }
+
     LazyRow(
         modifier = modifier
+            .animateContentSize()
             .padding(start = 20.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-
-        val filteredHouses = if (FilteredCategory.category.value.isEmpty()) {
-            houses // Don't filter if category is empty
-        } else {
-            houses.filter { house ->
-                house.houseCategory
-                    .toString()
-                    .replace("_", " ")
-                    .lowercase()
-                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } == FilteredCategory.category.value
+        if (filteredHouses.isEmpty() && !(FilteredCategory.category.value.isEmpty() || FilteredCategory.category.value.toString() == "All")) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(configuration.screenHeightDp.dp * 0.15f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "Sorry, no houses found in this category", style = CC.titleTextStyle())
+                }
             }
-        }
-        items(filteredHouses) { houseCategory ->
-            HouseCategoryItem(houseCategory, navController = navController)
+        } else {
+            items(filteredHouses) { houseCategory ->
+                AnimatedVisibility(visible = filteredHouses.isNotEmpty(),
+                    exit = fadeOut(animationSpec = tween(500)),
+                    enter = fadeIn(animationSpec = tween(500))
+                ) {
+                HouseCategoryItem(houseCategory, navController = navController)
+                }
+            }
         }
     }
 }
