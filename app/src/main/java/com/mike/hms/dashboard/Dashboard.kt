@@ -1,7 +1,6 @@
 package com.mike.hms.dashboard
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +31,6 @@ fun DashboardScreen(context: Context, navController: NavController) {
 
     LaunchedEffect(Unit) {
         houseViewModel.getAllHouses()
-        Toast.makeText(context, houses.value.size.toString(), Toast.LENGTH_SHORT).show()
     }
 
     Scaffold(
@@ -47,15 +45,6 @@ fun DashboardScreen(context: Context, navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            CC.SearchTextField(
-                value = "",
-                onValueChange = { /* Handle search query change */ },
-                placeholder = "Search destination...",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-            )
-            Spacer(modifier = Modifier.height(30.dp))
             HouseTypeList(houses = houses.value)
             Spacer(modifier = Modifier.height(20.dp))
             HousesCategory()
