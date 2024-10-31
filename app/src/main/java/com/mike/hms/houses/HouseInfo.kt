@@ -66,6 +66,7 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
         // Image Gallery
         house?.let {
             HouseImageOverView(
+                context = context,
                 house = it,
                 onImageClick = { imageUrl -> selectedImage.value = imageUrl },
                 isHouseFavorite = isHouseFavorite,
