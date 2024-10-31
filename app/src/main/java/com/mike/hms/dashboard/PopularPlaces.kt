@@ -55,7 +55,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navC
     Card(
         modifier = modifier
             .clickable{
-                navController.navigate("houseDetail/${houseType.houseID}")
+                navController.navigate("houseDetails/${houseType.houseID}")
             }
             .width(boxWidth)
             .height(boxHeight),
