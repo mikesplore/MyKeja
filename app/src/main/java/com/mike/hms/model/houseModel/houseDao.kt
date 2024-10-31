@@ -19,4 +19,7 @@ interface HouseDao {
 
     @Query("DELETE FROM HouseTable WHERE houseID = :houseID")
     suspend fun deleteHouse(houseID: String)
+    //Check if a house with the given id exists in the favorites table
+    @Query("SELECT EXISTS(SELECT * FROM favouriteEntity WHERE houseID = :houseID)")
+            suspend fun isFavorite(houseID : String) : Boolean
 }
