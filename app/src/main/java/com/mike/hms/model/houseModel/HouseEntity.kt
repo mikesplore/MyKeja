@@ -72,6 +72,7 @@ enum class  HouseAmenities{
 }
 
 enum class HouseCategory{
+    ALL,
     ECONOMY,
     STANDARD,
     FAMILY_SUITE,
