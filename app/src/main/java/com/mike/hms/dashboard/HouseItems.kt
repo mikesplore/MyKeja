@@ -20,9 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.mike.hms.model.houseModel.HouseEntity
+import java.util.Locale
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
@@ -59,7 +61,7 @@ fun HouseItem(houseType: HouseEntity) {
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = houseType.houseType.name,
+            text = houseType.houseType.name.lowercase().capitalize(Locale.ROOT),
             style = CC.titleTextStyle().copy(fontSize = textSize * 0.2f)
         )
     }
