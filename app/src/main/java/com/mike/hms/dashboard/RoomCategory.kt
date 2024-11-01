@@ -1,6 +1,5 @@
 package com.mike.hms.dashboard
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -24,9 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,15 +35,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mike.hms.model.houseModel.HouseCategory
 import com.mike.hms.model.houseModel.HouseEntity
-import com.mike.hms.model.houseModel.HouseViewModel
 import java.util.Locale
-import kotlin.text.category
-import kotlin.toString
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 
@@ -116,7 +109,11 @@ fun HousesCategory() {
 
 
 @Composable
-fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier, navController: NavController) {
+fun HouseCategoryItem(
+    house: HouseEntity,
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val boxWidth = screenWidth * 0.35f
@@ -138,7 +135,7 @@ fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier, navCont
                 model = house.houseImageLink.randomOrNull(),
                 contentDescription = "House Image",
                 modifier = Modifier
-                    .clickable{
+                    .clickable {
                         navController.navigate("houseDetails/${house.houseID}")
                     }
                     .fillMaxSize()
@@ -203,22 +200,26 @@ fun HouseCategoryItem(house: HouseEntity, modifier: Modifier = Modifier, navCont
 
 
 @Composable
-fun RecommendedHouseTypeList(modifier: Modifier = Modifier, navController: NavController) {
-    val houseViewModel: HouseViewModel = hiltViewModel()
-    val houses by houseViewModel.houses.collectAsState()
+fun RecommendedHouseTypeList(
+    modifier: Modifier = Modifier,
+    houses: List<HouseEntity>,
+    navController: NavController
+) {
+
     val configuration = LocalConfiguration.current
 
-    val filteredHouses = if (FilteredCategory.category.value.isEmpty() || FilteredCategory.category.value.toString() == "All") {
-        houses // Don't filter if category is empty
-    } else {
-        houses.filter { house ->
-            house.houseCategory
-                .toString()
-                .replace("_", " ")
-                .lowercase()
-                .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } == FilteredCategory.category.value
+    val filteredHouses =
+        if (FilteredCategory.category.value.isEmpty() || FilteredCategory.category.value.toString() == "All") {
+            houses // Don't filter if category is empty
+        } else {
+            houses.filter { house ->
+                house.houseCategory
+                    .toString()
+                    .replace("_", " ")
+                    .lowercase()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } == FilteredCategory.category.value
+            }
         }
-    }
 
     LazyRow(
         modifier = modifier
@@ -235,16 +236,20 @@ fun RecommendedHouseTypeList(modifier: Modifier = Modifier, navController: NavCo
                         .height(configuration.screenHeightDp.dp * 0.15f),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "Sorry, no houses found in this category", style = CC.titleTextStyle())
+                    Text(
+                        text = "Sorry, no houses found in this category",
+                        style = CC.titleTextStyle()
+                    )
                 }
             }
         } else {
             items(filteredHouses) { houseCategory ->
-                AnimatedVisibility(visible = filteredHouses.isNotEmpty(),
+                AnimatedVisibility(
+                    visible = filteredHouses.isNotEmpty(),
                     exit = fadeOut(animationSpec = tween(500)),
                     enter = fadeIn(animationSpec = tween(500))
                 ) {
-                HouseCategoryItem(houseCategory, navController = navController)
+                    HouseCategoryItem(houseCategory, navController = navController)
                 }
             }
         }
