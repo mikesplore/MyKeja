@@ -15,19 +15,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mike.hms.homeScreen.TopAppBarComponent
+import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun DashboardScreen(context: Context, navController: NavController) {
-    val houseViewModel: HouseViewModel = hiltViewModel()
-    val houses = houseViewModel.houses.collectAsState()
+fun DashboardScreen(
+    context: Context,
+    houses: List<HouseEntity>,
+    navController: NavController,
+    houseViewModel: HouseViewModel
+) {
+
 
     LaunchedEffect(Unit) {
         houseViewModel.getAllHouses()
@@ -45,11 +48,11 @@ fun DashboardScreen(context: Context, navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            HouseTypeList(houses = houses.value)
+            HouseTypeList(houses = houses)
             Spacer(modifier = Modifier.height(20.dp))
             HousesCategory()
             Spacer(modifier = Modifier.height(20.dp))
-            RecommendedHouseTypeList(navController = navController)
+            RecommendedHouseTypeList(houses = houses, navController = navController)
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 "Offers for you", style = CC.titleTextStyle().copy(
