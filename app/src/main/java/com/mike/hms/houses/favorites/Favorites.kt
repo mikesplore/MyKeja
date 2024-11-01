@@ -46,10 +46,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.mike.hms.model.favorites.FavoriteViewModel
@@ -59,8 +59,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Favourites(navController: NavController) {
-    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewModel) {
     val favorites = favoriteViewModel.favorites.collectAsState(initial = emptyList())
 
     fun fetchFavoriteHouses() {
@@ -78,19 +77,22 @@ fun Favourites(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Favorites") },
+                title = { Text(text = "Favorites", style = CC.titleTextStyle()) },
                 actions = {
                     Button(
                         onClick = {
                             deleteAllFavorites()
                             fetchFavoriteHouses()
-
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CC.primaryColor(),
-                        )
+                        enabled = favorites.value.isNotEmpty(),
+                        colors = CC.buttonColors()
                     ) {
-                        Text(text = "Clear All", style = CC.contentTextStyle())
+                        Text(
+                            text = "Clear All", style = CC.contentTextStyle().copy(
+                                color = if (favorites.value.isEmpty()) CC.secondaryColor() else CC.primaryColor(),
+                                textDecoration = if (favorites.value.isEmpty()) TextDecoration.LineThrough else TextDecoration.None
+                            )
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -132,7 +134,7 @@ fun Favourites(navController: NavController) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(favorites.value.size) { index ->
-                    HouseCard(house = favorites.value[index], navController = navController)
+                    HouseCard(house = favorites.value[index], navController = navController, favoriteViewModel = favoriteViewModel)
                 }
             }
         }
@@ -142,7 +144,7 @@ fun Favourites(navController: NavController) {
 @Composable
 fun HouseCard(
     house: HouseEntity,
-    favoriteViewModel: FavoriteViewModel = hiltViewModel(),
+    favoriteViewModel: FavoriteViewModel,
     navController: NavController,
 ) {
     val configurations = LocalConfiguration.current
@@ -252,7 +254,7 @@ fun HouseCard(
                         )
                         Text(
                             text = house.houseLocation,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = CC.contentTextStyle(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -278,7 +280,7 @@ fun HouseCard(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Remove",
-                        style = MaterialTheme.typography.labelMedium
+                        style = CC.contentTextStyle()
                     )
                 }
             }
