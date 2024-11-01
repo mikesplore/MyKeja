@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.houses.favorites.Favourites
+import com.mike.hms.model.favorites.FavoriteViewModel
+import com.mike.hms.model.houseModel.HouseEntity
+import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -42,8 +45,11 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 )
 @Composable
 fun HomeScreen(
+    houses: List<HouseEntity>,
     navController: NavController,
     context: Context,
+    favoriteViewModel: FavoriteViewModel,
+    houseViewModel: HouseViewModel
 ) {
     val screens = listOf(
         Screen.Home, Screen.Favourites, Screen.Chat, Screen.Profile
@@ -51,7 +57,7 @@ fun HomeScreen(
     val coroutineScope = rememberCoroutineScope()
 
     // Local state
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -122,8 +128,8 @@ fun HomeScreen(
                 flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
             ) { page ->
                 when (screens[page]) {
-                    Screen.Home -> DashboardScreen(context, navController)
-                    Screen.Favourites -> Favourites(navController)
+                    Screen.Home -> DashboardScreen(context, houses, navController, houseViewModel)
+                    Screen.Favourites -> Favourites(navController, favoriteViewModel)
                     Screen.Chat -> Chat(context)
                     Screen.Profile -> Profile(context)
                 }
