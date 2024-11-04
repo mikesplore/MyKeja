@@ -2,6 +2,7 @@ package com.mike.hms.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -39,7 +40,6 @@ import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(
     ExperimentalMaterial3Api::class
 )
@@ -86,7 +86,7 @@ fun HomeScreen(
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = CC.primaryColor()
+                containerColor = CC.primaryColor(),
             ) {
                 screens.forEachIndexed { index, screen ->
                     NavigationBarItem(
@@ -120,7 +120,9 @@ fun HomeScreen(
         },
         containerColor = CC.primaryColor()
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(it)
+            .fillMaxSize()) {
             HorizontalPager(
                 userScrollEnabled = false,
                 state = pagerState,
@@ -130,7 +132,7 @@ fun HomeScreen(
                 when (screens[page]) {
                     Screen.Home -> DashboardScreen(context, houses, navController, houseViewModel)
                     Screen.Favourites -> Favourites(navController, favoriteViewModel)
-                    Screen.Chat -> Chat(context)
+                    Screen.Chat -> Chat()
                     Screen.Profile -> Profile(context)
                 }
             }
@@ -140,7 +142,7 @@ fun HomeScreen(
 
 
 @Composable
-fun Chat(context: Context) {
+fun Chat() {
     Box(
         modifier = Modifier
 
