@@ -29,6 +29,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -65,7 +66,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navC
         Box {
             // Image
             AsyncImage(
-                model = houseType.houseImageLink.random(),
+                model = houseType.houseImageLink.firstOrNull(),
                 contentDescription = "House Image",
                 modifier = Modifier
                     .fillMaxSize()
@@ -78,11 +79,7 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navC
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .background(
-                        CC
-                            .surfaceContainerColor()
-                            .copy(alpha = 0.9f)
-                    )
+                    .background(CC.secondaryColor())
                     .padding(5.dp)  // Padding for a cleaner layout
             ) {
                 // House name, type and location
@@ -100,31 +97,32 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navC
                     } in ${houseType.houseLocation}",
                     style = CC.bodyTextStyle().copy(
                         fontSize = textSize * 0.6f,
-                        color = CC.tertiaryColor()
+                        color = CC.primaryColor()
                     ),
                     modifier = Modifier.padding(bottom = 5.dp)
                 )
-
-                // Row for rating with star icon
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,  // Center the star and rating
-                    modifier = Modifier.padding(start = 4.dp)  // Padding for structure
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Star Icon",
-                        tint = CC.extraPrimaryColor(),
-                        modifier = Modifier.size(20.dp)
+            }
+            Row(
+                modifier = Modifier
+                    .background(CC.secondaryColor(), RoundedCornerShape(topEnd = 20.dp, bottomEnd = 20.dp))
+                    .align(Alignment.TopStart)
+                    .padding(horizontal = 5.dp, vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Star,
+                    contentDescription = "Rating",
+                    tint = Color.Yellow,
+                    modifier = Modifier.size(18.dp),
                     )
-                    Spacer(modifier = Modifier.width(4.dp))  // Space between star and rating
-                    Text(
-                        text = houseType.houseRating,
-                        style = CC.bodyTextStyle().copy(
-                            fontSize = textSize * 0.7f,
-                            color = CC.extraPrimaryColor()
-                        )
-                    )
-                }
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(
+                    text = houseType.houseRating.toString(),
+                    style = CC.bodyTextStyle().copy(
+                        fontSize = textSize * 0.6f,
+                        color = CC.primaryColor()
+                        ),
+                )
             }
         }
     }
@@ -133,16 +131,20 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navC
 
 
 @Composable
-fun PopularHouseTypeList(modifier: Modifier = Modifier, navController: NavController) {
-    val houseViewModel: HouseViewModel = hiltViewModel()
-    val houses = houseViewModel.houses.collectAsState()
+fun PopularHouseTypeList(
+    modifier: Modifier = Modifier,
+    houses: List<HouseEntity> = emptyList(),
+    navController: NavController
+) {
+    val sortedHouses = houses.sortedByDescending { it.houseRating } // Sort by rating in descending order
+
     LazyRow(
         modifier = modifier
             .padding(start = 20.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        items(houses.value) { houseType ->
+        items(sortedHouses) { houseType -> // Use sortedHouses in LazyRow
             PopularHouseItem(houseType, navController = navController)
         }
     }
