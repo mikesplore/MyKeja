@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
@@ -27,6 +28,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -77,21 +80,22 @@ fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewMode
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Favorites", style = CC.titleTextStyle()) },
+                title = { Text(text = "My favorites", style = CC.titleTextStyle()) },
                 actions = {
-                    Button(
+                    IconButton(
                         onClick = {
                             deleteAllFavorites()
                             fetchFavoriteHouses()
                         },
                         enabled = favorites.value.isNotEmpty(),
-                        colors = CC.buttonColors()
+                        colors = IconButtonDefaults.iconButtonColors(
+
+                        )
                     ) {
-                        Text(
-                            text = "Clear All", style = CC.contentTextStyle().copy(
-                                color = if (favorites.value.isEmpty()) CC.secondaryColor() else CC.primaryColor(),
-                                textDecoration = if (favorites.value.isEmpty()) TextDecoration.LineThrough else TextDecoration.None
-                            )
+                        Icon(
+                            Icons.Default.ClearAll,
+                            contentDescription = "Clear All",
+                            tint = CC.secondaryColor()
                         )
                     }
                 },
@@ -226,8 +230,7 @@ fun HouseCard(
             // Content Section
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                    .weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
@@ -286,5 +289,4 @@ fun HouseCard(
             }
         }
     }
-
 }
