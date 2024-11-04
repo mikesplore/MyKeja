@@ -57,7 +57,7 @@ fun HouseOverview(house: HouseEntity) {
                 .animateContentSize() // Animate size changes
         ) {
             Text(
-                text = "Overview",
+                text = "Description",
                 style = CC.titleTextStyle().copy(
                     fontSize = 18.sp,
                     color = CC.tertiaryColor()
