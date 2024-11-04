@@ -1,28 +1,44 @@
 package com.mike.hms.homeScreen
 
 import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
@@ -30,64 +46,107 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarComponent(context: Context){
+fun TopAppBarComponent(context: Context) {
     val location = HMSPreferences.location.value
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val currentUser = auth.currentUser
 
-    TopAppBar(
-        title = {
-            Column {
-                Text("${CC.greeting()}, Mike!", style = CC.titleTextStyle())
-                Row {
-                    Icon(Icons.Default.LocationOn, contentDescription = "Location", tint = CC.secondaryColor(), modifier = Modifier.size(16.dp))
-                    Text(location, style = CC.bodyTextStyle().copy(color = CC.extraPrimaryColor()))
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(CC.primaryColor())
+    ) {
+        Row(
+            modifier = Modifier
+
+                .fillMaxWidth()
+                .height(this.maxHeight * 0.08f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Title and Location Column
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Hi, Mike!",
+                        style = TextStyle(
+                            color = CC.textColor(),
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 20.sp
+                        )
+                    )
                 }
-            }
-        },
-        actions = {
-            BoxWithConstraints {
-                val maxWidth = this.maxWidth
-                Box(modifier = Modifier
-                    .size(maxWidth * 0.10f)
-                    .clip(CircleShape)
-                ){
-                    ProfilePicture(
-                        imageUrl = currentUser?.photoUrl.toString(),
-                        size = maxWidth * 0.10f,
-                        onClick = {
-                            HMSPreferences.darkMode.value = !HMSPreferences.darkMode.value
-                        }
 
-
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = CC.secondaryColor(),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = location,
+                        style = CC.contentTextStyle().copy(
+                            fontStyle = FontStyle.Italic,
+                            fontSize = 14.sp
+                        )
                     )
                 }
             }
-        },
-        colors = CC.topAppBarColors()
-    )
 
+            // Profile Picture
+            ProfilePicture(
+                imageUrl = auth.currentUser?.photoUrl.toString(),
+                size = 40.dp,
+                onClick = {
+                    HMSPreferences.saveDarkModePreference(!HMSPreferences.darkMode.value)
+                }
+            )
+        }
+    }
 }
+
 
 
 @Composable
 fun ProfilePicture(imageUrl: String, size: Dp, onClick: () -> Unit) {
-    Box(modifier = Modifier
-        .clickable { onClick() }
-        .size(size)
-        .clip(CircleShape)
-        .border(
-            width = 1.dp,
-            color = CC.secondaryColor(),
-            shape = CircleShape
-        )
+    IconButton (
+        onClick,
+        modifier = Modifier
+            .padding(10.dp)
+            .clickable { onClick() }
+            .size(size)
+            .clip(CircleShape)
+            .border(
+                width = 1.dp,
+                color = CC.secondaryColor(),
+                shape = CircleShape
+            )
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = "Profile Picture",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        if (imageUrl.isNullOrEmpty()) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                tint = CC.textColor()
+            )
+        } else {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "Profile Picture",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
-
 }
