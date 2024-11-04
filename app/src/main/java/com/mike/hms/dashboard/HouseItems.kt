@@ -1,5 +1,7 @@
 package com.mike.hms.dashboard
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,9 +16,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -37,6 +41,7 @@ fun HouseItem(houseType: HouseEntity) {
     val textSize = with(density) { (boxSize).toSp() }
 
 
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -44,7 +49,8 @@ fun HouseItem(houseType: HouseEntity) {
             modifier = Modifier
                 .size(boxSize)
                 .clip(CircleShape)
-                .border(1.dp,
+                .border(
+                    1.dp,
                     CC
                         .secondaryColor()
                         .copy(0.5f),
@@ -53,7 +59,7 @@ fun HouseItem(houseType: HouseEntity) {
         ) {
             AsyncImage(
                 modifier = Modifier.size(boxSize),
-                model = houseType.houseImageLink.randomOrNull(),
+                model = houseType.houseImageLink.firstOrNull(),
                 contentDescription = "House Type Image",
                 contentScale = ContentScale.Crop,
 
@@ -71,14 +77,18 @@ fun HouseItem(houseType: HouseEntity) {
 
 @Composable
 fun HouseTypeList(modifier: Modifier = Modifier, houses: List<HouseEntity>) {
-    LazyRow(
+    Box(
         modifier = modifier
-            .padding(start = 20.dp)
+            .animateContentSize(animationSpec = tween(500))
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(15.dp)
+        contentAlignment = Alignment.Center // Center the content of the Box
     ) {
-        items(houses) { houses ->
-            HouseItem(houses)
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(15.dp) // Space items by 15.dp
+        ) {
+            items(houses) { house ->
+                HouseItem(house)
+            }
         }
     }
 }
