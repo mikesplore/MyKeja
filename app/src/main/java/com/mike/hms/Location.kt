@@ -17,28 +17,23 @@ const val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
 object LocationUtils {
 
-    // Request both coarse and fine location permissions
+    // Request only coarse location permission
     fun requestLocationPermission(activity: Activity) {
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                 activity,
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
+                arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
         }
     }
 
-    // Check if both location permissions are granted
+    // Check if coarse location permission is granted
     fun isLocationPermissionGranted(activity: Activity): Boolean {
-        return ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
-    // Function to get precise location
+    // Function to get approximate location to fetch city name
     fun getLocation(activity: Activity, fusedLocationClient: FusedLocationProviderClient, onLocationReceived: (String?) -> Unit) {
         if (!isLocationPermissionGranted(activity)) {
             requestLocationPermission(activity)
@@ -64,12 +59,11 @@ object LocationUtils {
         }
     }
 
-    // Request precise location updates with high accuracy
+    // Request location updates with balanced accuracy (coarse location)
     private fun requestLocationUpdates(activity: Activity, fusedLocationClient: FusedLocationProviderClient, onLocationReceived: (String?) -> Unit) {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 5000)
             .setMinUpdateIntervalMillis(2000)
             .setMaxUpdateDelayMillis(10000)
-            .setWaitForAccurateLocation(true)
             .build()
 
         val locationCallback = object : LocationCallback() {
@@ -91,30 +85,19 @@ object LocationUtils {
         }
     }
 
-    // Enhanced location fetching with more detailed address information
+    // Function to fetch only the city name from the latitude and longitude
     private fun fetchLocationInBackground(activity: Activity, latitude: Double, longitude: Double, onLocationReceived: (String?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val geocoder = Geocoder(activity, Locale.getDefault())
                 val addresses = geocoder.getFromLocation(latitude, longitude, 1)
 
-                val result = if (addresses?.isNotEmpty() == true) {
-                    val address = addresses[0]
-                    buildString {
-                        address.locality?.let { append(it) }  // City
-                        address.adminArea?.let {
-                            if (isNotEmpty()) append(", ")
-                            append(it)  // State
-                        }
-                        address.countryName?.let {
-                            if (isNotEmpty()) append(", ")
-                            append(it)  // Country
-                        }
-                    }.takeIf { it.isNotEmpty() }
+                val cityName = if (addresses?.isNotEmpty() == true) {
+                    addresses[0].locality // City name
                 } else {
                     null
                 }
-                onLocationReceived(result)
+                onLocationReceived(cityName)
             } catch (e: Exception) {
                 e.printStackTrace()
                 onLocationReceived(null)
