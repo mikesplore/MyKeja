@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.mike.hms.homeScreen.TopAppBarComponent
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,14 +40,13 @@ fun DashboardScreen(
     context: Context,
     houses: List<HouseEntity>,
     navController: NavController,
-    houseViewModel: HouseViewModel
+    houseViewModel: HouseViewModel,
+    userViewModel: UserViewModel
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val density = LocalDensity.current
     val textSize = with(density) { (screenWidth).toSp() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         houseViewModel.getAllHouses()
@@ -54,7 +54,7 @@ fun DashboardScreen(
 
     Scaffold(
         topBar = {
-            TopAppBarComponent(context)
+            TopAppBarComponent(context, userViewModel)
         },
         containerColor = CC.primaryColor()
     ) {
@@ -95,7 +95,7 @@ fun DashboardScreen(
 
             }
             Spacer(modifier = Modifier.height(20.dp))
-            PopularHouseTypeList(navController = navController, houses = houses)
+            PopularHouseTypeList(navController = navController, houses = houses, houseViewModel = houseViewModel)
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
