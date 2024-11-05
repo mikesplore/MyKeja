@@ -19,4 +19,7 @@ interface UserDao {
 
     @Query("DELETE FROM users WHERE userID = :userID")
     suspend fun deleteUser(userID: String)
+
+    @Query("SELECT * FROM users WHERE email = :email")
+    fun getUserByEmail(email: String): Flow<UserEntity?>
 }
