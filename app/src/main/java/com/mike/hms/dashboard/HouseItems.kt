@@ -79,6 +79,7 @@ fun HouseItem(houseType: HouseEntity) {
 fun HouseTypeList(modifier: Modifier = Modifier, houses: List<HouseEntity>) {
     Box(
         modifier = modifier
+            .padding(start = 16.dp)
             .animateContentSize(animationSpec = tween(500))
             .fillMaxWidth(),
         contentAlignment = Alignment.Center // Center the content of the Box
