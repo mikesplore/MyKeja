@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
@@ -36,6 +37,7 @@ import com.mike.hms.houses.favorites.Favourites
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -49,7 +51,8 @@ fun HomeScreen(
     navController: NavController,
     context: Context,
     favoriteViewModel: FavoriteViewModel,
-    houseViewModel: HouseViewModel
+    houseViewModel: HouseViewModel,
+    userViewModel: UserViewModel
 ) {
     val screens = listOf(
         Screen.Home, Screen.Favourites, Screen.Chat, Screen.Profile
@@ -120,20 +123,20 @@ fun HomeScreen(
         },
         containerColor = CC.primaryColor()
     ) {
+        innerPadding ->
         Box(modifier = Modifier
-            .padding(it)
+            .padding(innerPadding)
             .fillMaxSize()) {
             HorizontalPager(
                 userScrollEnabled = false,
                 state = pagerState,
-                modifier = Modifier.padding(10.dp),
                 flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
             ) { page ->
                 when (screens[page]) {
-                    Screen.Home -> DashboardScreen(context, houses, navController, houseViewModel)
+                    Screen.Profile -> DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
                     Screen.Favourites -> Favourites(navController, favoriteViewModel)
                     Screen.Chat -> Chat()
-                    Screen.Profile -> Profile(context)
+                    Screen.Home -> Profile(context, userViewModel)
                 }
             }
         }
