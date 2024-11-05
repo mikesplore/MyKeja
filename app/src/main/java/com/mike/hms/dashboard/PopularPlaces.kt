@@ -1,6 +1,8 @@
 package com.mike.hms.dashboard
 
 import android.content.Context
+import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -133,19 +136,26 @@ fun PopularHouseItem(houseType: HouseEntity, modifier: Modifier = Modifier, navC
 @Composable
 fun PopularHouseTypeList(
     modifier: Modifier = Modifier,
+    houseViewModel: HouseViewModel,
     houses: List<HouseEntity> = emptyList(),
     navController: NavController
 ) {
+    val housesLoading by houseViewModel.isHouseLoading.collectAsState()
     val sortedHouses = houses.sortedByDescending { it.houseRating } // Sort by rating in descending order
 
     LazyRow(
-        modifier = modifier
-            .padding(start = 20.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(15.dp)
-    ) {
-        items(sortedHouses) { houseType -> // Use sortedHouses in LazyRow
-            PopularHouseItem(houseType, navController = navController)
+    modifier = modifier
+        .animateContentSize()
+        .padding(start = 20.dp)
+        .fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(15.dp)
+) {
+    items(if (housesLoading) 1 else sortedHouses.size) { index ->
+        if (housesLoading) {
+            CircularProgressIndicator()
+        } else {
+            PopularHouseItem(sortedHouses[index], navController = navController)
         }
     }
+}
 }
