@@ -19,18 +19,19 @@ import com.mike.hms.houses.bookHouse.BookingInfoScreen
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.userModel.UserViewModel
 
 @Composable
-fun NavGraph(houseViewModel: HouseViewModel, houses: List<HouseEntity>, favoriteViewModel: FavoriteViewModel, context: Context) {
+fun NavGraph(houseViewModel: HouseViewModel, houses: List<HouseEntity>, favoriteViewModel: FavoriteViewModel, userViewModel: UserViewModel, context: Context) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "homeScreen") {
         composable("dashboard") {
-            DashboardScreen(context,houses, navController, houseViewModel )
+            DashboardScreen(context,houses, navController, houseViewModel, userViewModel )
         }
 
         composable("homeScreen") {
-            HomeScreen(houses, navController, context, favoriteViewModel, houseViewModel)
+            HomeScreen(houses, navController, context, favoriteViewModel, houseViewModel, userViewModel)
         }
 
         composable("houses") {
