@@ -22,26 +22,42 @@ class HouseViewModel @Inject constructor(
     private val _houses = MutableStateFlow<List<HouseEntity>>(emptyList())
     val houses: StateFlow<List<HouseEntity>> = _houses.asStateFlow()
 
+    private val _isHouseLoading = MutableStateFlow(false)
+    val isHouseLoading: StateFlow<Boolean> = _isHouseLoading.asStateFlow()
 
     fun insertHouse(house: HouseEntity, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             houseRepository.insertHouse(house)
                 .onEach { success ->
                     onComplete(success)
-                     }
+                }
                 .launchIn(viewModelScope)
         }
     }
 
     fun getHouseByID(houseID: String) {
+        _isHouseLoading.value = true // Start loading
         houseRepository.getHouseByID(houseID)
-            .onEach { houseEntity -> _house.value = houseEntity }
+            .onEach { houseEntity ->
+                _house.value = houseEntity
+                _isHouseLoading.value = false // Stop loading once data is fetched
+            }
+            .catch {
+                _isHouseLoading.value = false // Stop loading if an error occurs
+            }
             .launchIn(viewModelScope)
     }
 
     fun getAllHouses() {
+        _isHouseLoading.value = true // Start loading
         houseRepository.getAllHouses()
-            .onEach { houseEntities -> _houses.value = houseEntities }
+            .onEach { houseEntities ->
+                _houses.value = houseEntities
+                _isHouseLoading.value = false // Stop loading once data is fetched
+            }
+            .catch {
+                _isHouseLoading.value = false // Stop loading if an error occurs
+            }
             .launchIn(viewModelScope)
     }
 
@@ -49,20 +65,20 @@ class HouseViewModel @Inject constructor(
         viewModelScope.launch {
             houseRepository.deleteHouse(houseID)
                 .onEach {
-                    getAllHouses()
+                    getAllHouses() // Refresh the house list after deletion
                 }
                 .launchIn(viewModelScope)
         }
     }
 
-     fun isFavorite(houseID: String) {
-         viewModelScope.launch {
-             houseRepository.isFavorite(houseID)
-                 .onEach { isFavorite ->
-                     _isFavorite.value = isFavorite
-                     Log.d("HouseViewModel", "House with ID $houseID is favorite: ${_isFavorite.value}")
-                 }
-                 .launchIn(viewModelScope)
-         }
-     }
+    fun isFavorite(houseID: String) {
+        viewModelScope.launch {
+            houseRepository.isFavorite(houseID)
+                .onEach { isFavorite ->
+                    _isFavorite.value = isFavorite
+                }
+                .launchIn(viewModelScope)
+        }
+    }
 }
+
