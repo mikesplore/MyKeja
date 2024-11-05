@@ -44,6 +44,12 @@ class UserViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
+    fun getUserByEmail(email: String) {
+        userRepository.getUserByEmail(email)
+            .onEach { userEntity -> _user.value = userEntity }
+            .launchIn(viewModelScope)
+    }
+
     fun getAllUsers() {
         userRepository.getAllUsers()
             .onEach { userEntities -> _userList.value = userEntities }
