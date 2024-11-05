@@ -1,6 +1,7 @@
 package com.mike.hms.profile
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,19 +32,18 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(context: Context) {
+fun Profile(context: Context, userViewModel: UserViewModel) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
     val userViewModel: UserViewModel = hiltViewModel()
-    val userId = HMSPreferences.userId.value
-
+    val user by userViewModel.user.collectAsState()
+    val userEmail  = auth.currentUser?.email
 
     LaunchedEffect(Unit) {
-        userViewModel.getUserByID(userId)
-        if (auth.currentUser != null) {
-            isAuthenticated = true
-        }
+        userEmail?.let {
+            Toast.makeText(context, "Email found, searching", Toast.LENGTH_SHORT).show()
+            userViewModel.getUserByEmail(it)}
     }
 
     Scaffold(
@@ -67,24 +68,13 @@ fun Profile(context: Context) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (!isAuthenticated) {
-                // Handle unauthenticated user
-                UnauthenticatedUser(
-                    context,
-                    onSignInSuccess = {
-                        isAuthenticated = true
-                    },
-                    onSignInFailure = {
-                        isAuthenticated = false
-                    }
-                )
+            if (isAuthenticated) {
+                Text("${user?.email} is Authenticated")
 
             } else {
-                // Authenticated user
+                UnauthenticatedUser(context = context, userViewModel = userViewModel, onSignInResult = {
 
-                AuthenticatedUser(
-                    isEditMode = isEditMode,
-                )
+                })
             }
         }
     }
