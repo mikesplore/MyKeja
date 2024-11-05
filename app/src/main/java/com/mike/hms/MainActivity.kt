@@ -15,6 +15,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.HostelManagementSystemTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 dynamicColor = false
             ) {
                 val houseViewModel: HouseViewModel = hiltViewModel()
+                val userViewModel: UserViewModel = hiltViewModel()
                 val houses = houseViewModel.houses.collectAsState()
                 val favoriteViewModel: FavoriteViewModel = hiltViewModel()
                 val window = (LocalView.current.context as Activity).window
@@ -64,7 +66,8 @@ class MainActivity : AppCompatActivity() {
                     favoriteViewModel.fetchFavoriteHouses()
                 }
                 // Your content goes here
-                NavGraph(houseViewModel, houses.value, favoriteViewModel, this)
+
+                NavGraph(houseViewModel, houses.value, favoriteViewModel, userViewModel, this)
             }
         }
     }
