@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.ClearAll
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LocationOn
@@ -49,12 +50,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.mike.hms.houses.formatNumber
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
@@ -76,6 +77,8 @@ fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewMode
     LaunchedEffect(Unit) {
         fetchFavoriteHouses()
     }
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
     Scaffold(
         topBar = {
@@ -104,7 +107,8 @@ fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewMode
                     titleContentColor = CC.secondaryColor()
                 )
             )
-        }
+        },
+        containerColor = CC.primaryColor()
     ) { innerPadding ->
 
         Column(
@@ -120,7 +124,7 @@ fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewMode
 
                 ) {
                     Text(text = "🥹")
-                    Text(text = "No favorites yet", style = CC.titleTextStyle())
+                    Text(text = "No favorites yet", style = CC.contentTextStyle().copy(fontWeight = FontWeight.Bold))
                     OutlinedButton(
                         onClick = { navController.navigate("houses") },
                         modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -138,7 +142,11 @@ fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewMode
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(favorites.value.size) { index ->
-                    HouseCard(house = favorites.value[index], navController = navController, favoriteViewModel = favoriteViewModel)
+                    FavoriteHouseCard(
+                        house = favorites.value[index],
+                        navController = navController,
+                        favoriteViewModel = favoriteViewModel
+                    )
                 }
             }
         }
@@ -146,7 +154,7 @@ fun Favourites(navController: NavController, favoriteViewModel: FavoriteViewMode
 }
 
 @Composable
-fun HouseCard(
+fun FavoriteHouseCard(
     house: HouseEntity,
     favoriteViewModel: FavoriteViewModel,
     navController: NavController,
@@ -156,9 +164,9 @@ fun HouseCard(
     val screenWidth = configurations.screenWidthDp.dp
 
     // Calculate dynamic sizes based on screen dimensions
-    val cardHeight = screenHeight * 0.15f
-    val imageSize = cardHeight * 0.8f
-    val contentPadding = screenWidth * 0.01f
+    val cardHeight = screenHeight * 0.18f
+    val imageSize = cardHeight * 0.75f
+    val contentPadding = screenWidth * 0.02f
 
     Card(
         modifier = Modifier
@@ -167,17 +175,20 @@ fun HouseCard(
             .height(cardHeight)
             .clickable { navController.navigate("houseDetails/${house.houseID}") },
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp,
-            pressedElevation = 8.dp
+//        elevation = CardDefaults.cardElevation(
+//            defaultElevation = 6.dp,
+//            pressedElevation = 8.dp
+//        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    CC.primaryColor().copy(alpha = 0.5f),
-                )
+//                .background(
+//                    CC.primaryColor().copy(alpha = 0.5f),
+//                )
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -228,14 +239,18 @@ fun HouseCard(
             }
 
             // Content Section
+            Box(
+                    modifier = Modifier.weight(1f)
+            ){
             Column(
                 modifier = Modifier
-                    .weight(1f),
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+
                     Text(
                         text = house.houseName,
                         style = MaterialTheme.typography.titleMedium.copy(
@@ -262,31 +277,56 @@ fun HouseCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+
+                    // Price Tag
+                    Text(
+                        text = "Ksh ${formatNumber(house.housePrice)}/night",
+                        style = CC.contentTextStyle().copy(fontSize = 14.sp)
+                        )
                 }
 
-                // Remove Button
-                TextButton(
-                    onClick = {
-                        favoriteViewModel.removeFavorite(house.houseID)
-                        favoriteViewModel.fetchFavoriteHouses()
-                    },
-                    modifier = Modifier.align(Alignment.End),
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // "Book Now" Button
+                    Button(
+                        onClick = { navController.navigate("houseDetails/${house.houseID}")},
+                        colors =CC.buttonColors().copy(
+                            contentColor = CC.primaryColor()
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Bookmark,
+                            contentDescription = "Book Now",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Book Now",
+                            style = CC.contentTextStyle().copy(
+                                color = CC.primaryColor()
+                            )
+                        )
+                    }
+                }
+            }
+                //Delete Button
+                IconButton(onClick = {},
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove from favorites",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Remove",
-                        style = CC.contentTextStyle()
+                        contentDescription = "Delete",
+                        tint = CC.secondaryColor(),
+                        modifier = Modifier.size(24.dp)
                     )
                 }
+
             }
         }
     }
 }
+
