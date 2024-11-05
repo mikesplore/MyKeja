@@ -36,8 +36,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun GoogleAuth(
-    onSignInSuccess: () -> Unit,
-    onSignInFailure: (String) -> Unit,
+    onSignInSuccess: (Boolean) -> Unit,
 ) {
     val firebaseAuth = FirebaseAuth.getInstance()
     val activity = LocalContext.current as Activity
@@ -59,11 +58,11 @@ fun GoogleAuth(
                     .addOnSuccessListener {
                         success = true
                         isLoading = false // Stop loading on success
-                        onSignInSuccess()
+                        onSignInSuccess(true)
                     }
                     .addOnFailureListener {
                         isLoading = false // Stop loading on failure
-                        onSignInFailure(it.message ?: "Unknown error")
+                        onSignInSuccess(false)
                         Log.e("GoogleAuth", "Sign-in failed", it)
                     }
             }
