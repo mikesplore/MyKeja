@@ -6,11 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,29 +23,40 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
+import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBarComponent(context: Context) {
+fun TopAppBarComponent(context: Context, userViewModel: UserViewModel) {
     val location = HMSPreferences.location.value
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val user by userViewModel.user.collectAsState()
+    val currentUserEmail = auth.currentUser?.email.toString()
+
+    LaunchedEffect(Unit) {
+        userViewModel.getUserByEmail(currentUserEmail)
+        Toast.makeText(context, "Searching database for: $currentUserEmail", Toast.LENGTH_SHORT).show()
+    }
 
     BoxWithConstraints(
         modifier = Modifier
@@ -57,7 +65,7 @@ fun TopAppBarComponent(context: Context) {
     ) {
         Row(
             modifier = Modifier
-
+                .padding(start = 16.dp)
                 .fillMaxWidth()
                 .height(this.maxHeight * 0.08f),
             verticalAlignment = Alignment.CenterVertically,
@@ -73,7 +81,7 @@ fun TopAppBarComponent(context: Context) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Hi, Mike!",
+                        text = "Hi, ${user?.firstName}!",
                         style = TextStyle(
                             color = CC.textColor(),
                             fontWeight = FontWeight.ExtraBold,
@@ -115,10 +123,9 @@ fun TopAppBarComponent(context: Context) {
 }
 
 
-
 @Composable
 fun ProfilePicture(imageUrl: String, size: Dp, onClick: () -> Unit) {
-    IconButton (
+    IconButton(
         onClick,
         modifier = Modifier
             .padding(10.dp)
