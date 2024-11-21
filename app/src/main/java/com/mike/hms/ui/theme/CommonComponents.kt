@@ -73,6 +73,11 @@ object CommonComponents {
     }
 
     @Composable
+    fun titleColor(): Color {
+        return MaterialTheme.colorScheme.onSurface
+    }
+
+    @Composable
     fun titleTextStyle(): TextStyle {
         return TextStyle.Default.copy(
             fontFamily = LibreFranklin,
