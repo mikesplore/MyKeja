@@ -1,7 +1,7 @@
 package com.mike.hms.profile
 
 import android.content.Context
-import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,32 +19,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.graphics.Brush
 import com.google.firebase.auth.FirebaseAuth
-import com.mike.hms.HMSPreferences
+import com.mike.hms.model.creditCardModel.CreditCardViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Profile(context: Context, userViewModel: UserViewModel) {
+fun Profile(
+    context: Context,
+    userViewModel: UserViewModel,
+    creditCardViewModel: CreditCardViewModel
+) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
     var isEditMode by remember { mutableStateOf(false) }
-    val userViewModel: UserViewModel = hiltViewModel()
-    val user by userViewModel.user.collectAsState()
-    val userEmail  = auth.currentUser?.email
+    val userEmail = auth.currentUser?.email
 
     LaunchedEffect(Unit) {
         userEmail?.let {
-            Toast.makeText(context, "Email found, searching", Toast.LENGTH_SHORT).show()
-            userViewModel.getUserByEmail(it)}
+            userViewModel.getUserByEmail(it)
+        }
     }
+    Brush.verticalGradient(
+        listOf(CC.primaryColor(), CC.titleColor().copy(0.5f), CC.tertiaryColor(), CC.primaryColor())
+    )
 
     Scaffold(
         topBar = {
@@ -64,17 +68,25 @@ fun Profile(context: Context, userViewModel: UserViewModel) {
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                // .background(brush)
                 .verticalScroll(rememberScrollState())
+                .animateContentSize()
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
             if (isAuthenticated) {
-                Text("${user?.email} is Authenticated")
+                AuthenticatedUser(
+                    isEditMode = isEditMode
+                )
+
 
             } else {
-                UnauthenticatedUser(context = context, userViewModel = userViewModel, onSignInResult = {
-
-                })
+                UnauthenticatedUser(context = context,
+                    cardViewModel = creditCardViewModel,
+                    userViewModel = userViewModel, onSignInResult = {
+                        isAuthenticated = it
+                    }
+                )
             }
         }
     }
