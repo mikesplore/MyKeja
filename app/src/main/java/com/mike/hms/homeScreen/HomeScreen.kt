@@ -34,9 +34,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.houses.favorites.Favourites
+import com.mike.hms.model.creditCardModel.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
@@ -52,7 +54,8 @@ fun HomeScreen(
     context: Context,
     favoriteViewModel: FavoriteViewModel,
     houseViewModel: HouseViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    creditCardViewModel: CreditCardViewModel,
 ) {
     val screens = listOf(
         Screen.Home, Screen.Favourites, Screen.Chat, Screen.Profile
@@ -133,10 +136,10 @@ fun HomeScreen(
                 flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
             ) { page ->
                 when (screens[page]) {
-                    Screen.Profile -> DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
+                    Screen.Profile -> Profile(context, userViewModel, creditCardViewModel)
                     Screen.Favourites -> Favourites(navController, favoriteViewModel)
                     Screen.Chat -> Chat()
-                    Screen.Home -> Profile(context, userViewModel)
+                    Screen.Home -> DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
                 }
             }
         }
