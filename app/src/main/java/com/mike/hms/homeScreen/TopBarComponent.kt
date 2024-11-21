@@ -55,7 +55,6 @@ fun TopAppBarComponent(context: Context, userViewModel: UserViewModel) {
 
     LaunchedEffect(Unit) {
         userViewModel.getUserByEmail(currentUserEmail)
-        Toast.makeText(context, "Searching database for: $currentUserEmail", Toast.LENGTH_SHORT).show()
     }
 
     BoxWithConstraints(
