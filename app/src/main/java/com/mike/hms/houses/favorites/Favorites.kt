@@ -199,7 +199,7 @@ fun FavoriteHouseCard(
                     .fillMaxHeight()
             ) {
                 AsyncImage(
-                    model = house.houseImageLink.randomOrNull(),
+                    model = house.houseImageLink.firstOrNull(),
                     contentDescription = "House Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
