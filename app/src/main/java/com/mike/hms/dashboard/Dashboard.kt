@@ -1,6 +1,7 @@
 package com.mike.hms.dashboard
 
 import android.content.Context
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ fun DashboardScreen(
                 .padding(it)
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
+                .animateContentSize()
         ) {
             CC.MyOutlinedTextField(
                 value = "",
