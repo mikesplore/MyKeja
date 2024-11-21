@@ -1,10 +1,12 @@
 package com.mike.hms.profile
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -26,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,11 +40,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
 import com.mike.hms.model.creditCardModel.CreditCardEntity
 import com.mike.hms.model.creditCardModel.CreditCardViewModel
 import com.mike.hms.model.creditCardModel.CreditCardWithUser
 import com.mike.hms.model.userModel.UserViewModel
+import kotlinx.coroutines.delay
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
@@ -52,15 +56,40 @@ fun AuthenticatedUser(
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
     val creditCardViewModel: CreditCardViewModel = hiltViewModel()
-    val userID = HMSPreferences.userId.value
-    val user by userViewModel.user.collectAsState(null)
-    val creditCard = CreditCardWithUser()
+    val email = FirebaseAuth.getInstance().currentUser?.email
+    val user by userViewModel.user.collectAsState()
+    val creditCard by creditCardViewModel.creditCard.collectAsState()
+    var showAddCard by remember {mutableStateOf(false)}
 
-    LaunchedEffect(Unit) {
-        creditCardViewModel.getCreditCard(userID)
-        Toast.makeText(context, "Searching credit card of user $userID", Toast.LENGTH_SHORT).show()
-        userViewModel.getUserByID(userID)
+    LaunchedEffect(HMSPreferences.userId.value) {
+        val maxRetries = 3
+        var attempt = 0
+
+        while (attempt < maxRetries) {
+            // Fetch the user by email
+            userViewModel.getUserByEmail(email!!)
+            Log.d("CreditCardViewModell", "Attempt ${attempt + 1}: Fetching credit card for user ID: ${HMSPreferences.userId.value}")
+
+            // Fetch the credit card
+            creditCardViewModel.getCreditCard(HMSPreferences.userId.value)
+
+            // Check if the credit card is fetched (assuming creditCard is a state or flow)
+
+            if (creditCard != null) {
+                Log.d("CreditCardViewModell", "Credit card fetched successfully: $creditCard")
+                break
+            }
+
+            attempt++
+            delay(1000L) // Wait for 1 second before retrying
+        }
+
+        if (creditCard == null) {
+            Log.d("CreditCardViewModell", "Failed to fetch credit card after $maxRetries attempts.")
+        }
     }
+
+
 
 
     Column(
@@ -80,11 +109,17 @@ fun AuthenticatedUser(
         // Editable or non-editable user information
         if (isEditMode) {
             user?.let { EditDetails(it) }
-
         } else {
             user?.let { UserCard(it) }
         }
         Spacer(modifier = Modifier.height(20.dp))
+        HorizontalDivider(
+            color = CC.textColor(),
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth(0.9f)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
         // Credit Card Section
         Text(
             text = "Credit Card Information",
@@ -92,206 +127,42 @@ fun AuthenticatedUser(
             modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (false) {
-            Text("You don't have a saved credit card yet", style = CC.contentTextStyle())
-            Spacer(modifier = Modifier.height(16.dp))
-            AddCreditCard(context, creditCardViewModel)
-            Spacer(modifier = Modifier.height(20.dp))
+
+        // Conditional rendering for credit card
+        if (creditCard != null) {
+            CreditCard(creditCard!!,{
+                creditCardViewModel.deleteCreditCard(creditCard!!.creditCard.userId)
+            })
         } else {
-            CreditCard(creditCard)
+            Row {
+            Text("You don't have a saved credit card yet. ", style = CC.contentTextStyle())
+            Text("Add one", style = CC.contentTextStyle().copy(color = CC.titleColor()),
+                modifier = Modifier.clickable{
+                    showAddCard = true
+                })
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            AnimatedVisibility(showAddCard) {
+                AddCreditCard(context, creditCardViewModel) {
+                    showAddCard  = it
+                }
+            }
         }
         Spacer(modifier = Modifier.height(20.dp))
+        HorizontalDivider(
+            color = CC.textColor(),
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth(0.9f)
+        )
+
         // Danger Zone Section
         DangerZone(userViewModel, context, navController = NavController(context))
     }
+
 }
 
 
-@Composable
-fun AddCreditCard(
-    context: Context,
-    creditCardViewModel: CreditCardViewModel
-) {
-    var cardNumber by remember { mutableStateOf("") }
-    var expiryDate by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
-    val userID = HMSPreferences.userId.value
 
-    var cardNumberError by remember { mutableStateOf(false) }
-    var expiryDateError by remember { mutableStateOf(false) }
-    var cvvError by remember { mutableStateOf(false) }
-    var showAddCard by remember { mutableStateOf(false) }
-
-    fun validateInput(): Boolean {
-        var isValid = true
-        cardNumberError = cardNumber.length != 16
-        expiryDateError = expiryDate.isEmpty() || !expiryDate.matches("\\d{2}/\\d{2}".toRegex())
-        cvvError = cvv.length != 3
-
-        isValid = !cardNumberError && !expiryDateError && !cvvError
-        return isValid
-    }
-
-    fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
-
-    AnimatedVisibility(visible = !showAddCard) {
-        Button(
-            onClick = {
-                creditCardViewModel.getCreditCard(userID)
-                // showAddCard = !showAddCard
-            },
-            colors = CC.buttonColors(),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text("Add Credit Card", style = CC.contentTextStyle().copy(color = CC.primaryColor()))
-        }
-    }
-
-    AnimatedVisibility(visible = showAddCard) {
-        Column(
-            modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = CC.textColor(),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Add Credit Card",
-                style = CC.titleTextStyle(),
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            CreditCardTextField(
-                value = cardNumber,
-                onValueChange = { cardNumber = it },
-                label = "Card Number",
-                keyboardType = KeyboardType.Number,
-                placeholder = "1234 5678 9012 3456",
-                isError = cardNumberError,
-                errorMessage = "Invalid card number"
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                CreditCardTextField(
-                    value = expiryDate,
-                    onValueChange = { expiryDate = it },
-                    label = "Expiry Date",
-                    keyboardType = KeyboardType.Unspecified,
-                    placeholder = "MM/YY",
-                    modifier = Modifier.weight(1f),
-                    isError = expiryDateError,
-                    errorMessage = "Invalid expiry date"
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                CreditCardTextField(
-                    value = cvv,
-                    onValueChange = { cvv = it },
-                    label = "CVV",
-                    placeholder = "123",
-                    keyboardType = KeyboardType.Number,
-                    modifier = Modifier.weight(1f),
-                    isError = cvvError,
-                    errorMessage = "Invalid CVV"
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    onClick = {
-                        if (validateInput()) {
-                            CC.generateCardId { id ->
-                                val card = CreditCardEntity(
-                                    cardId = id,
-                                    userId = userID,
-                                    cardNumber = cardNumber,
-                                    expiryDate = expiryDate,
-                                    cvv = cvv
-                                )
-                                creditCardViewModel.insertCreditCard(card) { success ->
-                                    if (success) {
-                                        showToast("Success!")
-                                    } else {
-                                        showToast("Failure!")
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CC.buttonColors()
-                ) {
-                    Text(
-                        "Save Card",
-                        style = CC.contentTextStyle()
-                            .copy(fontWeight = FontWeight.Bold, color = CC.primaryColor())
-                    )
-                }
-                OutlinedButton(
-                    onClick = {
-                        showAddCard = !showAddCard
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                ) {
-                    Text(
-                        "Cancel",
-                        style = CC.contentTextStyle().copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-            }
-        }
-
-    }
-}
-
-@Composable
-fun CreditCardTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    keyboardType: KeyboardType,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    isError: Boolean = false,
-    errorMessage: String = ""
-) {
-    Column(modifier = modifier) {
-        CC.MyOutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = label,
-            keyboardType = keyboardType,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = placeholder,
-            isError = isError
-        )
-        if (isError) {
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
-            )
-        }
-    }
-}
 
 
 @Composable
