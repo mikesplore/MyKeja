@@ -6,55 +6,96 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CreditCardViewModel @Inject constructor(private val creditCardRepository: CreditCardRepository) : ViewModel() {
+class CreditCardViewModel @Inject constructor(
+    private val creditCardRepository: CreditCardRepository
+) : ViewModel() {
 
-    private val _creditCard = MutableLiveData<CreditCardWithUser>()
-    val creditCard: LiveData<CreditCardWithUser> = _creditCard
+    private val _creditCard = MutableStateFlow<CreditCardWithUser?>(null)
+    val creditCard: StateFlow<CreditCardWithUser?> = _creditCard
 
-    private val _insertResult = MutableLiveData<Boolean>()
-    val insertResult: LiveData<Boolean> = _insertResult
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _deleteResult = MutableLiveData<Boolean>()
-    val deleteResult: LiveData<Boolean> = _deleteResult
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
+    // Insert Credit Card
     fun insertCreditCard(creditCard: CreditCardEntity, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
-            creditCardRepository.insertCreditCard(creditCard).collect { result ->
-                Log.d("CreditCardViewModel", "Inserted credit card: $creditCard, success: $result")
-                _insertResult.postValue(result)
-                if (result) {
-                    onSuccess(true)
-                    getCreditCard(creditCard.userId)
-                }
-                else {
+            _isLoading.value = true
+            creditCardRepository.insertCreditCard(creditCard)
+                .catch { exception ->
+                    Log.e("CreditCardViewModel", "Error inserting credit card: ${exception.message}")
+                    _error.value = exception.localizedMessage
                     onSuccess(false)
                 }
-            }
+                .collect { result ->
+                    if (result) {
+                        Log.d("CreditCardViewModel", "Inserted credit card: $creditCard")
+                        onSuccess(true)
+                        getCreditCard(creditCard.userId) // Fetch the updated credit card
+                    } else {
+                        _error.value = "Failed to insert credit card."
+                        onSuccess(false)
+                    }
+                }
+            _isLoading.value = false
         }
     }
 
+    // Get Credit Card
     fun getCreditCard(userId: String) {
         viewModelScope.launch {
-            Log.d("CreditCardViewModel", "Getting credit card for user: $userId")
-            creditCardRepository.retrieveCreditCardByUserId(userId).collect { creditCardFlow ->
-                creditCardFlow.collect { creditCardWithUser ->
-                    Log.d("CreditCardViewModel", "Retrieved credit card: $creditCardWithUser")
-                    _creditCard.postValue(creditCardWithUser)
+            _isLoading.value = true
+            creditCardRepository.retrieveCreditCardByUserId(userId)
+                .catch { exception ->
+                    Log.e("CreditCardViewModel", "Error retrieving credit card: ${exception.message}")
+                    _error.value = exception.localizedMessage
                 }
-            }
+                .collect { creditCardFlow ->
+                    creditCardFlow
+                        .catch { innerException ->
+                            Log.e("CreditCardViewModel", "Error in inner flow: ${innerException.message}")
+                            _error.value = innerException.localizedMessage
+                        }
+                        .collect { creditCardWithUser ->
+                            if (true) {
+                                Log.d("CreditCardViewModel", "Retrieved credit card: $creditCardWithUser")
+                                _creditCard.value = creditCardWithUser
+                            } else {
+                                _error.value = "No credit card found for user ID: $userId"
+                            }
+                        }
+                }
+            _isLoading.value = false
         }
     }
 
+    // Delete Credit Card
     fun deleteCreditCard(userId: String) {
         viewModelScope.launch {
-            creditCardRepository.deleteCreditCard(userId).collect { result ->
-                Log.d("CreditCardViewModel", "Deleted credit card for user $userId, success: $result")
-                _deleteResult.postValue(result)
-            }
+            _isLoading.value = true
+            creditCardRepository.deleteCreditCard(userId)
+                .catch { exception ->
+                    Log.e("CreditCardViewModel", "Error deleting credit card: ${exception.message}")
+                    _error.value = exception.localizedMessage
+                }
+                .collect { result ->
+                    if (result) {
+                        Log.d("CreditCardViewModel", "Deleted credit card for user ID: $userId")
+                        _creditCard.value = null // Clear the state after deletion
+                    } else {
+                        _error.value = "Failed to delete credit card for user ID: $userId"
+                    }
+                }
+            _isLoading.value = false
         }
     }
 }
