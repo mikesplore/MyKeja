@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
@@ -44,15 +45,14 @@ fun UserCard(
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = CC.surfaceContainerColor()
-
-        ),
-        elevation = CardDefaults.elevatedCardElevation(4.dp)
-    ) {
+    val brush = Brush.linearGradient(
+        listOf(
+            CC.primaryColor(), CC.secondaryColor()
+        )
+    )
     Column(
         modifier = Modifier
+            .background(brush, RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .padding(16.dp)
     ) {
@@ -140,7 +140,7 @@ fun UserCard(
             thickness = 0.5.dp
         )
     }
-}
+
 }
 
 
@@ -201,7 +201,7 @@ fun EditDetails(user: UserEntity){
         modifier = Modifier.fillMaxWidth()
     )
     Spacer(modifier = Modifier.height(8.dp))
-     AddCreditCard()
+    // AddCreditCard()
 
     Button(
         onClick = { /* Handle save button click */ },
