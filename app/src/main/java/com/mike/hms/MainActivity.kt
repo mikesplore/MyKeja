@@ -2,6 +2,7 @@ package com.mike.hms
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,11 +14,15 @@ import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
+import com.mike.hms.model.creditCardModel.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.HostelManagementSystemTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.runtime.getValue
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -55,19 +60,42 @@ class MainActivity : AppCompatActivity() {
                 val userViewModel: UserViewModel = hiltViewModel()
                 val houses = houseViewModel.houses.collectAsState()
                 val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+                val creditCardViewModel: CreditCardViewModel = hiltViewModel()
                 val window = (LocalView.current.context as Activity).window
+                val user by userViewModel.user.collectAsState()
+                val email = FirebaseAuth.getInstance().currentUser?.email
                 WindowCompat.getInsetsController(
                     window,
                     window.decorView
                 ).isAppearanceLightStatusBars = !HMSPreferences.darkMode.value
 
-                LaunchedEffect(Unit) {
-                    houseViewModel.getAllHouses()
-                    favoriteViewModel.fetchFavoriteHouses()
+                LaunchedEffect(email) {
+                    val maxRetries = 3
+                    var attempt = 0
+
+                    while (attempt < maxRetries) {
+                        userViewModel.getUserByEmail(email.toString())
+                        Log.d("UserViewModell", "Attempt ${attempt + 1}: Searching user of email: $email")
+
+                        if (user != null) {
+                            Log.d("UserViewModell", "User found: ${user?.userID}")
+                            HMSPreferences.saveUserId(user!!.userID)
+                            break
+                        }
+
+                        attempt++
+                        delay(1000L) // Suspend the coroutine for 1 second instead of blocking
+                    }
+
+                    if (user == null) {
+                        Log.d("UserViewModell", "User not found after $maxRetries attempts.")
+                    }
                 }
+
+
                 // Your content goes here
 
-                NavGraph(houseViewModel, houses.value, favoriteViewModel, userViewModel, this)
+                NavGraph(houseViewModel, houses.value, favoriteViewModel, userViewModel, creditCardViewModel, this)
             }
         }
     }
