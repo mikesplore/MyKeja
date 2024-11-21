@@ -51,24 +51,10 @@ fun Profile(
     )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("My Profile", style = CC.titleTextStyle()) },
-                actions = {
-                    if (isAuthenticated) {
-                        IconButton(onClick = { isEditMode = !isEditMode }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit Profile")
-                        }
-                    }
-                },
-                colors = CC.topAppBarColors()
-            )
-        },
         containerColor = CC.primaryColor()
     ) { paddingValues ->
         Column(
             modifier = Modifier
-                // .background(brush)
                 .verticalScroll(rememberScrollState())
                 .animateContentSize()
                 .fillMaxSize()
