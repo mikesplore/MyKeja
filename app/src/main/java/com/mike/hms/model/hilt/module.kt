@@ -2,10 +2,11 @@ package com.mike.hms.model.hilt
 
 import android.content.Context
 import androidx.room.Room
-import com.mike.hms.model.creditCardModel.CreditCardRepository
-import com.mike.hms.model.favorites.FavoriteDao
+import com.mike.hms.model.paymentMethods.CreditCardRepository
 import com.mike.hms.model.favorites.FavoriteRepository
 import com.mike.hms.model.houseModel.HouseRepository
+import com.mike.hms.model.paymentMethods.MpesaRepository
+import com.mike.hms.model.paymentMethods.PayPalRepository
 import com.mike.hms.model.review.ReviewRepository
 import com.mike.hms.model.roomDatabase.HMSDatabase
 import com.mike.hms.model.userModel.UserRepository
@@ -58,5 +59,17 @@ object AppModule {
     @Singleton
     fun provideFavoriteRepository(database: HMSDatabase): FavoriteRepository {
         return FavoriteRepository(database.favoriteDao())
+    }
+
+    @Provides
+    @Singleton
+    fun providePayPalRepository(database: HMSDatabase): PayPalRepository {
+        return PayPalRepository(database.payPalDao())
+    }
+
+    @Provides
+    @Singleton
+    fun provideMpesaRepository(database: HMSDatabase): MpesaRepository {
+        return MpesaRepository(database.mpesaDao())
     }
 }
