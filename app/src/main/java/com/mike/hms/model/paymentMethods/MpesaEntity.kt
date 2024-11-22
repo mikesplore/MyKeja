@@ -11,10 +11,8 @@ data class MpesaEntity(
     @PrimaryKey val mpesaId: String,
     val userId: String,
     val phoneNumber: String,
-    val amount: Double,
-    val transactionId: String
 ){
-    constructor() : this("", "", "", 0.0, "")
+    constructor() : this("", "", "")
 
 }
 
