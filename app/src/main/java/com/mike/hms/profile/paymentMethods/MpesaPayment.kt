@@ -1,5 +1,7 @@
 package com.mike.hms.profile.paymentMethods
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -22,6 +24,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +32,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,16 +47,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mike.hms.model.paymentMethods.MpesaEntity
+import com.mike.hms.model.paymentMethods.MpesaViewModel
 import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AddMpesaPayment(
     userEntity: UserEntity,
+    mpesaViewModel: MpesaViewModel,
+    context: Context,
     onDismiss: () -> Unit = {}
 ) {
     var mpesaNumber by remember { mutableStateOf("") }
     var useCurrentNumber by remember { mutableStateOf(true) }
+    var loading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -186,7 +195,32 @@ fun AddMpesaPayment(
 
         // Add Payment Button
         Button(
-            onClick = { /* Handle add payment */ },
+            onClick = {
+                if (!useCurrentNumber && mpesaNumber.isEmpty()) {
+                    Toast.makeText(context, "Please enter your M-PESA number", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+                loading = true
+                CC.generateMpesaId { id ->
+                    val mpesa = MpesaEntity(
+                        mpesaId = id,
+                        phoneNumber = if (useCurrentNumber) userEntity.phoneNumber else mpesaNumber,
+                        userId = userEntity.userID,
+                    )
+                    mpesaViewModel.insertMpesa(mpesa){success ->
+                        if(success) {
+                            loading = false
+                            Toast.makeText(context, "M-PESA payment added successfully", Toast.LENGTH_SHORT).show()
+                            mpesaViewModel.getMpesa(userEntity.userID)
+                            onDismiss()
+                        }
+                        else {
+                            loading = false
+                            Toast.makeText(context, "Failed to add M-PESA payment. Please try again.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -195,13 +229,22 @@ fun AddMpesaPayment(
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text(
-                "Add M-PESA Payment",
-                style = CC.contentTextStyle().copy(
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
+            if (loading) {
+                CircularProgressIndicator(
+                    color = CC.primaryColor(),
+                    strokeWidth = 1.dp,
+                    modifier = Modifier.size(24.dp)
                 )
-            )
+            }
+            else{
+                Text(
+                    "Add M-PESA Payment",
+                    style = CC.contentTextStyle().copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
