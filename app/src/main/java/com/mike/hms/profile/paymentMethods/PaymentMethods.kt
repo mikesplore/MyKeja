@@ -1,6 +1,8 @@
 package com.mike.hms.profile.paymentMethods
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +31,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.paymentMethods.CreditCardWithUser
+import com.mike.hms.model.paymentMethods.MpesaViewModel
+import com.mike.hms.model.paymentMethods.MpesaWithUser
+import com.mike.hms.model.paymentMethods.PayPalViewModel
+import com.mike.hms.model.paymentMethods.PayPalWithUser
 import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -36,7 +42,11 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 fun PaymentMethodsSection(
     userEntity: UserEntity,
     creditCard: CreditCardWithUser?,
+    payPal: PayPalWithUser?,
+    mpesa: MpesaWithUser?,
     creditCardViewModel: CreditCardViewModel,
+    payPalViewModel: PayPalViewModel,
+    mpesaViewModel: MpesaViewModel,
     context: Context
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -120,26 +130,55 @@ fun PaymentMethodsSection(
             }
 
             1 -> { // PayPal
-                PaymentMethodEmptyState(
-                    paymentType = "PayPal account",
-                    showAddForm = showAddPaymentMethod,
-                    onAddClick = { showAddPaymentMethod = !showAddPaymentMethod }
-                ) {
-                    AddPayPalPayment(userEntity) {
-                        showAddPaymentMethod = !showAddPaymentMethod
+                if (payPal != null) {
+                    SavedPayPalCard(payPal) {
+                        payPalViewModel.deletePayPal(payPal.user.userID){success ->
+                            if (success){
+                                payPalViewModel.getPayPal(payPal.paypal.userId)
+                                showAddPaymentMethod = !showAddPaymentMethod
+                            }
+                            else{
+                                Toast.makeText(context, "Failed to delete PayPal. Try again", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                } else {
+                    PaymentMethodEmptyState(
+                        paymentType = "PayPal account",
+                        showAddForm = showAddPaymentMethod,
+                        onAddClick = { showAddPaymentMethod = !showAddPaymentMethod }
+                    ) {
+                        AddPayPalPayment(userEntity, payPalViewModel, context = context, onDismiss = {
+                            showAddPaymentMethod = !showAddPaymentMethod
+                        })
                     }
                 }
             }
 
             2 -> { // M-PESA
-                PaymentMethodEmptyState(
-                    paymentType = "M-PESA number",
-                    showAddForm = showAddPaymentMethod,
-                    onAddClick = { showAddPaymentMethod = !showAddPaymentMethod }
-                ) {
-                    // Add M-PESA form here
-                    AddMpesaPayment(userEntity = userEntity) {
-                        showAddPaymentMethod = !showAddPaymentMethod
+                if (mpesa != null) {
+                    SavedMpesaCard(mpesa) {
+                        mpesaViewModel.deleteMpesa(mpesa.mpesa.userId){success ->
+                            if (success){
+                                mpesaViewModel.getMpesa(mpesa.mpesa.userId)
+                                showAddPaymentMethod = !showAddPaymentMethod
+                            }
+                            else{
+                                Toast.makeText(context, "Failed to delete M-PESA. Try again", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                    }
+                } else {
+                    PaymentMethodEmptyState(
+                        paymentType = "M-PESA number",
+                        showAddForm = showAddPaymentMethod,
+                        onAddClick = { showAddPaymentMethod = !showAddPaymentMethod }
+                    ) {
+                        // Add M-PESA form here
+                        AddMpesaPayment(userEntity = userEntity, mpesaViewModel = mpesaViewModel, context = context) {
+                            showAddPaymentMethod = !showAddPaymentMethod
+                        }
                     }
                 }
             }
