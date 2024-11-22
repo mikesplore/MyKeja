@@ -98,7 +98,7 @@ fun AddPayPalPayment(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
             colors = CardDefaults.cardColors(
-                containerColor = CC.titleColor().copy(alpha = 0.1f)
+                containerColor = CC.tertiaryColor().copy(alpha = 0.3f)
             ),
             shape = RoundedCornerShape(8.dp)
         ) {
