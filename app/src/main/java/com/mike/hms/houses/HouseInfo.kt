@@ -68,7 +68,7 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
         houseViewModel.getHouseByID(houseID)
     }
 
-    
+
     Scaffold(
         floatingActionButtonPosition = FabPosition.EndOverlay,
         floatingActionButton = {
