@@ -117,11 +117,12 @@ fun AuthenticatedUser(
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
+        Spacer(modifier = Modifier.height(10.dp))
         user?.let { UserCard(it) }
 
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(
-            color = CC.textColor(),
+            color = CC.textColor().copy(0.5f),
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
         )
@@ -156,7 +157,7 @@ fun AuthenticatedUser(
         )
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(
-            color = CC.textColor(),
+            color = CC.textColor().copy(0.5f),
             thickness = 1.dp,
             modifier = Modifier.fillMaxWidth()
         )
