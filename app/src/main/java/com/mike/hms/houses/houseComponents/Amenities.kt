@@ -34,7 +34,7 @@ fun HouseAmenities(house: HouseEntity) {
     val screenHeight = configuration.screenHeightDp.dp
 
     val brush = Brush.horizontalGradient(
-        listOf(CC.primaryColor(), CC.extraSecondaryColor().copy(alpha = 0.7f))
+        listOf(CC.primaryColor(), CC.extraSecondaryColor() )
     )
 
 
