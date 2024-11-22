@@ -60,7 +60,7 @@ fun UserCard(
 
     Column(
         modifier = Modifier
-            .background(CC.primaryColor(), RoundedCornerShape(16.dp))
+            .background(CC.titleColor(), RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
