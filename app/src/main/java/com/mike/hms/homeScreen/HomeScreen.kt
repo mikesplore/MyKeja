@@ -135,7 +135,7 @@ fun HomeScreen(
                     Screen.Profile -> DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
                     Screen.Favourites -> Favourites(navController, favoriteViewModel)
                     Screen.Chat -> Chat()
-                    Screen.Home -> Profile(context, userViewModel, creditCardViewModel)
+                    Screen.Home -> Profile(context, navController, userViewModel, creditCardViewModel)
                 }
             }
         }
