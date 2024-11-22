@@ -203,6 +203,7 @@ object CommonComponents {
         imeAction: ImeAction = ImeAction.Done, // Default to Done
         trailingIcon: @Composable (() -> Unit)? = null,
         isError: Boolean = false,
+        leadingIcon: @Composable (() -> Unit)? = null
     ) {
         OutlinedTextField(
             value = value,
