@@ -130,7 +130,7 @@ fun AddMpesaPayment(
                     selected = useCurrentNumber,
                     onClick = { useCurrentNumber = true },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = CC.titleColor(),
+                        selectedColor = CC.secondaryColor(),
                         unselectedColor = CC.textColor().copy(alpha = 0.5f)
                     )
                 )
@@ -158,7 +158,7 @@ fun AddMpesaPayment(
                     selected = !useCurrentNumber,
                     onClick = { useCurrentNumber = false },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = CC.titleColor(),
+                        selectedColor = CC.secondaryColor(),
                         unselectedColor = CC.textColor().copy(alpha = 0.5f)
                     )
                 )
