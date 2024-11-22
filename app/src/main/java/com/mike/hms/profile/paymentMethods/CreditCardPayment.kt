@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.mike.hms.HMSPreferences
-import com.mike.hms.model.creditCardModel.CreditCardEntity
-import com.mike.hms.model.creditCardModel.CreditCardViewModel
-import com.mike.hms.model.creditCardModel.CreditCardWithUser
+import com.mike.hms.model.paymentMethods.CreditCardEntity
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.CreditCardWithUser
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
