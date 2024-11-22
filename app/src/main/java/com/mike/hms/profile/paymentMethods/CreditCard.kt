@@ -18,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -30,8 +32,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import coil.compose.AsyncImage
 import com.mike.hms.model.paymentMethods.CreditCardWithUser
+import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun CreditCard(
@@ -39,12 +44,27 @@ fun CreditCard(
     onDelete: () -> Unit,
 
     ) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
     val cardImageUrl = listOf(
         "https://img.freepik.com/free-photo/view-wild-lion-nature_23-2150460851.jpg",
         "https://media.wired.com/photos/65caa6f6f553745750c04769/master/w_2560%2Cc_limit/elephant-congo-science-GettyImages-630005418.jpg",
         "https://files.worldwildlife.org/wwfcmsprod/images/White_Rhino/hero_small/3yuabfu3jq_white_rhino_42993643.jpg",
         "https://d1jyxxz9imt9yb.cloudfront.net/animal/234/meta_image/regular/LC202303_AmboseliCommsSummit_082_404092_reduced.jpg"
     )
+
+    if (showConfirmDialog){
+        CC.ConfirmDialog(
+            title = "Delete Credit Card",
+            message = "Are you sure you want to delete this credit card?",
+            onConfirm = {
+                onDelete()
+                showConfirmDialog = false
+            },
+            onDismiss = {
+                showConfirmDialog = false
+            }
+        )
+    }
 
     Card(
         modifier = Modifier
@@ -63,9 +83,22 @@ fun CreditCard(
                     )
                 )
         ) {
+
+
+            // Card Image or Placeholder
+            AsyncImage(
+                model = cardImageUrl.random(),
+                contentDescription = "Card Image",
+                modifier = Modifier
+                    .fillMaxSize()  // Make the image cover the entire card
+                    .align(Alignment.Center),  // Center the image
+                contentScale = ContentScale.Crop  // Crop the image to cover the card area
+            )
             // Delete Button
             IconButton(
-                onClick = onDelete,
+                onClick = {
+                    showConfirmDialog = true
+                },
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(0.dp)
@@ -77,15 +110,6 @@ fun CreditCard(
                 )
             }
 
-            // Card Image or Placeholder
-            AsyncImage(
-                model = cardImageUrl.random(),
-                contentDescription = "Card Image",
-                modifier = Modifier
-                    .fillMaxSize()  // Make the image cover the entire card
-                    .align(Alignment.Center),  // Center the image
-                contentScale = ContentScale.Crop  // Crop the image to cover the card area
-            )
 
             // Overlay with text and details
             Column(
@@ -94,6 +118,7 @@ fun CreditCard(
                     .padding(16.dp), // Add padding to ensure text doesn't overlap the edges
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
+
                 // Card Issuer Logo/Text
                 Text(
                     text = "VISA",
