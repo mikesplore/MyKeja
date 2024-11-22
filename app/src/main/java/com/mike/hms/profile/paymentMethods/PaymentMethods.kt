@@ -1,7 +1,6 @@
 package com.mike.hms.profile.paymentMethods
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -17,6 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,6 +58,7 @@ fun PaymentMethodsSection(
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var showAddPaymentMethod by remember { mutableStateOf(false) }
+    var displayCvvDialog by remember { mutableStateOf(false) }
 
     val paymentMethods = listOf(
         "Credit Card",
@@ -123,13 +129,38 @@ fun PaymentMethodsSection(
         when (selectedTab) {
             0 -> { // Credit Card
                 if (creditCard != null) {
-                    CreditCard(creditCard) {
-                        creditCardViewModel.deleteCreditCard(creditCard.creditCard.userId){
-                            success ->
-                            if (success){
+                    CreditCard(creditCard, showCvvDialog = displayCvvDialog, setShowCvvDialog = {
+                        displayCvvDialog = false
+                    }, onDelete = {
+                        creditCardViewModel.deleteCreditCard(creditCard.creditCard.userId) { success ->
+                            if (success) {
                                 creditCardViewModel.getCreditCard(creditCard.creditCard.userId)
                                 showAddPaymentMethod = !showAddPaymentMethod
                             }
+                        }
+                    })
+                    HorizontalDivider(
+                        color = CC.textColor().copy(alpha = 0.2f),
+                        thickness = 1.dp
+                    )
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .fillMaxWidth(0.9f)
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Display card details", style = CC.contentTextStyle())
+                        Spacer(modifier = Modifier.weight(1f))
+                        IconToggleButton(
+                            onCheckedChange = { displayCvvDialog = !displayCvvDialog },
+                            checked = displayCvvDialog
+                        ) {
+                            Icon(
+                                if (displayCvvDialog) Icons.Default.LockOpen else Icons.Default.Lock,
+                                contentDescription = "Display card details",
+                                tint = CC.textColor()
+                            )
                         }
                     }
                 } else {
@@ -148,13 +179,16 @@ fun PaymentMethodsSection(
             1 -> { // PayPal
                 if (payPal != null) {
                     SavedPayPalCard(payPal) {
-                        payPalViewModel.deletePayPal(payPal.user.userID){success ->
-                            if (success){
+                        payPalViewModel.deletePayPal(payPal.user.userID) { success ->
+                            if (success) {
                                 payPalViewModel.getPayPal(payPal.paypal.userId)
                                 showAddPaymentMethod = !showAddPaymentMethod
-                            }
-                            else{
-                                Toast.makeText(context, "Failed to delete PayPal. Try again", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to delete PayPal. Try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -164,9 +198,13 @@ fun PaymentMethodsSection(
                         showAddForm = showAddPaymentMethod,
                         onAddClick = { showAddPaymentMethod = !showAddPaymentMethod }
                     ) {
-                        AddPayPalPayment(userEntity, payPalViewModel, context = context, onDismiss = {
-                            showAddPaymentMethod = !showAddPaymentMethod
-                        })
+                        AddPayPalPayment(
+                            userEntity,
+                            payPalViewModel,
+                            context = context,
+                            onDismiss = {
+                                showAddPaymentMethod = !showAddPaymentMethod
+                            })
                     }
                 }
             }
@@ -174,13 +212,16 @@ fun PaymentMethodsSection(
             2 -> { // M-PESA
                 if (mpesa != null) {
                     SavedMpesaCard(mpesa) {
-                        mpesaViewModel.deleteMpesa(mpesa.mpesa.userId){success ->
-                            if (success){
+                        mpesaViewModel.deleteMpesa(mpesa.mpesa.userId) { success ->
+                            if (success) {
                                 mpesaViewModel.getMpesa(mpesa.mpesa.userId)
                                 showAddPaymentMethod = !showAddPaymentMethod
-                            }
-                            else{
-                                Toast.makeText(context, "Failed to delete M-PESA. Try again", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to delete M-PESA. Try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
 
@@ -192,7 +233,11 @@ fun PaymentMethodsSection(
                         onAddClick = { showAddPaymentMethod = !showAddPaymentMethod }
                     ) {
                         // Add M-PESA form here
-                        AddMpesaPayment(userEntity = userEntity, mpesaViewModel = mpesaViewModel, context = context) {
+                        AddMpesaPayment(
+                            userEntity = userEntity,
+                            mpesaViewModel = mpesaViewModel,
+                            context = context
+                        ) {
                             showAddPaymentMethod = !showAddPaymentMethod
                         }
                     }
