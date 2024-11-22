@@ -1,12 +1,9 @@
 package com.mike.hms.homeScreen
 
-import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
@@ -34,11 +31,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mike.hms.dashboard.DashboardScreen
 import com.mike.hms.houses.favorites.Favourites
-import com.mike.hms.model.creditCardModel.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
-import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.Profile
 import kotlinx.coroutines.launch
