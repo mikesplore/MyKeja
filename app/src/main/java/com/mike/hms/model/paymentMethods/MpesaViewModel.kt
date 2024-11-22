@@ -89,7 +89,7 @@ class MpesaViewModel @Inject constructor(
     }
 
     // Delete Credit Card
-    fun deleteMpesa(userId: String) {
+    fun deleteMpesa(userId: String, onSuccess: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
             _isLoading.value = true
             mpesaRepository.deleteMpesa(userId)
@@ -100,8 +100,10 @@ class MpesaViewModel @Inject constructor(
                 .collect { result ->
                     if (result) {
                         Log.d("MpesaViewModel", "Deleted mpesa for user ID: $userId")
+                        onSuccess(true)
                         _mpesa.value = null // Clear the state after deletion
                     } else {
+                        onSuccess(false)
                         _error.value = "Failed to delete payPal for user ID: $userId"
                     }
                 }
