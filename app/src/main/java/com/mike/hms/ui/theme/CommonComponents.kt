@@ -1,5 +1,7 @@
 package com.mike.hms.ui.theme
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +21,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
@@ -267,9 +270,14 @@ object CommonComponents {
         title: String,
         message: String,
         onConfirm: () -> Unit,
-        onDismiss: () -> Unit
+        onDismiss: () -> Unit,
+        messageColor: Color = textColor(),
+        textFieldValue: String? = null,
+        onTextFieldValueChange: ((String) -> Unit)? = null, // Only required if TextField is displayed
+        keyboardType: KeyboardType = KeyboardType.Unspecified,
     ) {
         AlertDialog(
+            containerColor = extraSecondaryColor(),
             onDismissRequest = onDismiss,
             title = {
                 Text(
@@ -281,14 +289,34 @@ object CommonComponents {
                 )
             },
             text = {
-                Text(
-                    text = message,
-                    style = contentTextStyle().copy(
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    ),
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                Column {
+                    Text(
+                        text = message,
+                        style = contentTextStyle().copy(
+                            color = messageColor,
+                            fontSize = 14.sp,
+                            lineHeight = 20.sp
+                        ),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    // Conditionally show TextField if `textFieldValue` is not null
+                    if (textFieldValue != null && onTextFieldValueChange != null) {
+                        TextField(
+                            value = textFieldValue,
+                            onValueChange = onTextFieldValueChange,
+                            label = { Text("Input") },
+                            textStyle = contentTextStyle(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = keyboardType,
+                                imeAction = ImeAction.Done
+                            ),
+                            colors = outLinedTextFieldColors(),
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                        )
+                    }
+                }
             },
             confirmButton = {
                 Button(
@@ -321,6 +349,7 @@ object CommonComponents {
             tonalElevation = 8.dp
         )
     }
+
 
     data class MyCode(
         val id: String = UUID.randomUUID().toString(),
