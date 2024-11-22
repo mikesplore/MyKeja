@@ -89,7 +89,7 @@ class CreditCardViewModel @Inject constructor(
     }
 
     // Delete Credit Card
-    fun deleteCreditCard(userId: String) {
+    fun deleteCreditCard(userId: String, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             creditCardRepository.deleteCreditCard(userId)
@@ -99,9 +99,11 @@ class CreditCardViewModel @Inject constructor(
                 }
                 .collect { result ->
                     if (result) {
+                        onSuccess(true)
                         Log.d("CreditCardViewModel", "Deleted credit card for user ID: $userId")
                         _creditCard.value = null // Clear the state after deletion
                     } else {
+                        onSuccess(false)
                         _error.value = "Failed to delete credit card for user ID: $userId"
                     }
                 }
