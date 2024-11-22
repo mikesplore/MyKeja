@@ -1,5 +1,6 @@
 package com.mike.hms.profile.paymentMethods
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,44 +19,58 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import coil.compose.AsyncImage
 import com.mike.hms.model.paymentMethods.CreditCardWithUser
+import kotlin.math.abs
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun CreditCard(
     creditCardWithUser: CreditCardWithUser,
-    onDelete: () -> Unit,
+    showCvvDialog: Boolean = false,
+    setShowCvvDialog: (Boolean) -> Unit = {},
+    onDelete: () -> Unit
 
-    ) {
+) {
     var showConfirmDialog by remember { mutableStateOf(false) }
+    var isDetailsVisible by remember { mutableStateOf(false) }
+    var enteredCvv by remember { mutableStateOf("") }
+    val isError = remember { mutableStateOf(false) }
+
+    var message by remember { mutableStateOf("Please enter the CVV for the credit card.") }
     val cardImageUrl = listOf(
         "https://img.freepik.com/free-photo/view-wild-lion-nature_23-2150460851.jpg",
-        "https://media.wired.com/photos/65caa6f6f553745750c04769/master/w_2560%2Cc_limit/elephant-congo-science-GettyImages-630005418.jpg",
-        "https://files.worldwildlife.org/wwfcmsprod/images/White_Rhino/hero_small/3yuabfu3jq_white_rhino_42993643.jpg",
-        "https://d1jyxxz9imt9yb.cloudfront.net/animal/234/meta_image/regular/LC202303_AmboseliCommsSummit_082_404092_reduced.jpg"
+        "https://ajkenyasafaris.com/wp-content/uploads/2023/10/image1-1024x683.png.webp",
+        "https://upload.wikimedia.org/wikipedia/commons/0/0a/Standing_jaguar.jpg",
+        "https://d1jyxxz9imt9yb.cloudfront.net/animal/234/meta_image/regular/LC202303_AmboseliCommsSummit_082_404092_reduced.jpg",
+        "https://t4.ftcdn.net/jpg/09/58/40/81/360_F_958408177_JxtISGf1k7ZUM2mRnC8KAbt8RdYYBUbi.jpg",
+        "https://t3.ftcdn.net/jpg/08/56/23/24/360_F_856232449_2SAIyzHtoTBEGnK7lPm9KZdIbUrTeBuq.jpg"
     )
+    val cardRotation = remember { Animatable(0f) }
 
-    if (showConfirmDialog){
+    if (showConfirmDialog) {
         CC.ConfirmDialog(
             title = "Delete Credit Card",
             message = "Are you sure you want to delete this credit card?",
+            messageColor = CC.textColor(),
             onConfirm = {
                 onDelete()
                 showConfirmDialog = false
@@ -66,11 +81,40 @@ fun CreditCard(
         )
     }
 
+    if (showCvvDialog) {
+        CC.ConfirmDialog(
+            title = "Enter CVV",
+            message = message,
+            messageColor = if (isError.value) Color.Red else CC.textColor(),
+            textFieldValue = enteredCvv,
+            onTextFieldValueChange = { enteredCvv = it },
+            keyboardType = KeyboardType.Phone,
+            onDismiss = {
+                setShowCvvDialog(false)
+                isError.value = false
+                enteredCvv = ""
+                message = "Please enter the CVV for the credit card."
+            },
+            onConfirm = {
+                if (enteredCvv == creditCardWithUser.creditCard.cvv) {
+                    isDetailsVisible = true
+                    setShowCvvDialog(true)
+                    enteredCvv = ""
+                } else {
+                    isError.value = true
+                    message = "Incorrect CVV. Please try again."
+                    enteredCvv = ""
+                }
+            }
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)
-            .padding(16.dp),
+            .padding(16.dp)
+            .graphicsLayer(rotationY = cardRotation.value),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
@@ -83,18 +127,15 @@ fun CreditCard(
                     )
                 )
         ) {
-
-
-            // Card Image or Placeholder
             AsyncImage(
-                model = cardImageUrl.random(),
+                model = cardImageUrl[findDigitAndTransform(creditCardWithUser.creditCard.cardNumber)],
                 contentDescription = "Card Image",
                 modifier = Modifier
-                    .fillMaxSize()  // Make the image cover the entire card
-                    .align(Alignment.Center),  // Center the image
-                contentScale = ContentScale.Crop  // Crop the image to cover the card area
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop
             )
-            // Delete Button
+
             IconButton(
                 onClick = {
                     showConfirmDialog = true
@@ -110,16 +151,12 @@ fun CreditCard(
                 )
             }
 
-
-            // Overlay with text and details
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp), // Add padding to ensure text doesn't overlap the edges
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-
-                // Card Issuer Logo/Text
                 Text(
                     text = "VISA",
                     color = Color.White,
@@ -129,21 +166,26 @@ fun CreditCard(
                     modifier = Modifier.align(Alignment.End)
                 )
 
-                // Card Number
                 Text(
-                    text = creditCardWithUser.creditCard.cardNumber
-                        .chunked(4)
-                        .joinToString(" "),
+                    text = if (isDetailsVisible) {
+                        creditCardWithUser.creditCard.cardNumber
+                            .chunked(4)
+                            .joinToString(" ")
+                    } else {
+                        "${
+                            creditCardWithUser.creditCard.cardNumber.chunked(2).first()
+                        } ** **** **** ** ${creditCardWithUser.creditCard.cardNumber.chunked(2).last()}"
+                    },
                     fontSize = 22.sp,
                     color = Color.White,
                     fontFamily = FontFamily.Monospace,
                     letterSpacing = 2.sp,
-                    style = TextStyle( // Apply bold and shadow
+                    style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         shadow = Shadow(
-                            color = Color.Black, // Shadow color
-                            offset = Offset(2f, 2f), // Shadow offset
-                            blurRadius = 4f // Shadow blur radius
+                            color = Color.Black,
+                            offset = Offset(2f, 2f),
+                            blurRadius = 4f
                         )
                     )
                 )
@@ -153,27 +195,32 @@ fun CreditCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.Bottom
                 ) {
-                    // Card Holder Name
                     Column {
                         Text(
                             text = "Card Holder",
-                            fontSize = 10.sp,
-                            color = Color.White.copy(alpha = 0.7f)
+                            fontSize = 11.sp,
+                            color = Color.White.copy(alpha = 0.8f)
                         )
                         Text(
-                            text = "${creditCardWithUser.user.firstName} ${creditCardWithUser.user.lastName}",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            text = "${creditCardWithUser.user.firstName.uppercase()} ${creditCardWithUser.user.lastName.uppercase()}",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                shadow = Shadow(
+                                    color = Color.Black,
+                                    offset = Offset(2f, 2f),
+                                    blurRadius = 4f
+                                )
+                            )
                         )
                     }
 
-                    // Expiry Date
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "Expires",
-                            fontSize = 10.sp,
-                            color = Color.White.copy(alpha = 0.7f)
+                            fontSize = 11.sp,
+                            color = Color.White.copy(alpha = 0.8f)
                         )
                         Text(
                             text = creditCardWithUser.creditCard.expiryDate,
@@ -185,5 +232,27 @@ fun CreditCard(
                 }
             }
         }
+    }
+}
+
+
+//Lets decide the index of the image to be picked based on the credit card number
+fun findDigitAndTransform(cardNumber: String): Int {
+    val digitFrequencies = mutableMapOf<Char, Int>()
+
+    for (digit in cardNumber) {
+        if (digit.isDigit()) {
+            digitFrequencies[digit] = digitFrequencies.getOrDefault(digit, 0) + 1
+        }
+    }
+
+    val mostFrequentDigit = digitFrequencies.maxByOrNull { it.value }?.key
+
+    return if (mostFrequentDigit != null && mostFrequentDigit.isDigit()) {
+        val digit = mostFrequentDigit.digitToInt()
+        val transformedValue = abs(6 - digit)
+        transformedValue.coerceIn(1, 6)
+    } else {
+        1
     }
 }
