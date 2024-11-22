@@ -29,8 +29,8 @@ interface PayPalDao {
     @Query("SELECT * FROM paypal WHERE userId = :userId")
     fun getPayPalWithUser(userId: String): Flow<PayPalWithUser>
 
-    @Query("DELETE FROM paypal WHERE paypalId = :paypalId")
-    suspend fun deletePayPal(paypalId: String)
+    @Query("DELETE FROM paypal WHERE userId = :userId")
+    suspend fun deletePayPal(userId: String)
 }
 
 @Dao
@@ -42,6 +42,6 @@ interface MpesaDao {
     @Query("SELECT * FROM mpesa WHERE userId = :userId")
     fun getMpesaWithUser(userId: String): Flow<MpesaWithUser>
 
-    @Query("DELETE FROM mpesa WHERE mpesaId = :mpesaId")
-    suspend fun deleteMpesa(mpesaId: String)
+    @Query("DELETE FROM mpesa WHERE userId = :userId")
+    suspend fun deleteMpesa(userId: String)
 }
