@@ -16,7 +16,7 @@ import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
 import com.mike.hms.houses.addOrEditHouse.HouseForm
 import com.mike.hms.houses.bookHouse.BookingInfoScreen
-import com.mike.hms.model.creditCardModel.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
