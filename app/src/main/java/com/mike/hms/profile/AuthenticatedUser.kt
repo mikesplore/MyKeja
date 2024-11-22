@@ -3,10 +3,8 @@ package com.mike.hms.profile
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,8 +51,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
 import com.mike.hms.model.creditCardModel.CreditCardViewModel
 import com.mike.hms.model.userModel.UserViewModel
+import com.mike.hms.profile.paymentMethods.PaymentMethodsSection
 import kotlinx.coroutines.delay
-import java.nio.file.WatchEvent
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
@@ -67,7 +65,14 @@ fun AuthenticatedUser(
     val email = FirebaseAuth.getInstance().currentUser?.email
     val user by userViewModel.user.collectAsState()
     val creditCard by creditCardViewModel.creditCard.collectAsState()
-    var showAddCard by remember { mutableStateOf(false) }
+
+    listOf(
+        "Credit Card",
+        "PayPal",
+        "M-PESA"
+    )
+
+    remember { mutableStateOf<String?>("Credit Card") }
 
     LaunchedEffect(HMSPreferences.userId.value) {
         val maxRetries = 3
@@ -143,38 +148,19 @@ fun AuthenticatedUser(
         Spacer(modifier = Modifier.height(20.dp))
         RowTopic(
             icon = Icons.Default.RateReview,
-            text = "Points and Ratings",
+            text = "Ratings and Reviews",
             destination = ""
         )
-
-        // Credit Card Section
-        Text(
-            text = "Credit Card Information",
-            style = CC.titleTextStyle(),
-            modifier = Modifier.align(Alignment.Start)
+        Spacer(modifier = Modifier.height(20.dp))
+        HorizontalDivider(
+            color = CC.textColor(),
+            thickness = 1.dp,
+            modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+        // Payment Methods Section
+        user?.let { PaymentMethodsSection(it, creditCard, creditCardViewModel, context) }
 
-        // Conditional rendering for credit card
-        if (creditCard != null) {
-            CreditCard(creditCard!!) {
-                creditCardViewModel.deleteCreditCard(creditCard!!.creditCard.userId)
-            }
-        } else {
-            Row {
-                Text("You don't have a saved credit card yet. ", style = CC.contentTextStyle())
-                Text("Add one", style = CC.contentTextStyle().copy(color = CC.titleColor()),
-                    modifier = Modifier.clickable {
-                        showAddCard = true
-                    })
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            AnimatedVisibility(showAddCard) {
-                AddCreditCard(context, creditCardViewModel) {
-                    showAddCard = it
-                }
-            }
-        }
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(
             color = CC.textColor(),
@@ -288,7 +274,7 @@ fun ShowDeleteDialog(
 }
 
 @Composable
-fun RowTopic(icon: ImageVector, text: String, destination: String){
+fun RowTopic(icon: ImageVector, text: String, destination: String) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     Row(
@@ -303,20 +289,23 @@ fun RowTopic(icon: ImageVector, text: String, destination: String){
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = {},
+        IconButton(
+            onClick = {},
             modifier = Modifier
                 .padding(start = 10.dp)
                 .size(screenWidth * 0.1f),
             colors = IconButtonDefaults.iconButtonColors(
                 containerColor = CC.tertiaryColor()
-            )) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = CC.textColor(),
-            modifier = Modifier.size(screenWidth * 0.05f)
+            )
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = CC.textColor(),
+                modifier = Modifier.size(screenWidth * 0.05f)
 
-        )}
+            )
+        }
 
         Text(text, style = CC.contentTextStyle())
 
@@ -331,9 +320,4 @@ fun RowTopic(icon: ImageVector, text: String, destination: String){
 
     }
 }
-
-
-
-
-
 
