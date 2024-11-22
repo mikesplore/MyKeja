@@ -2,8 +2,6 @@ package com.mike.hms.profile
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,16 +19,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.RateReview
-import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,9 +32,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -59,7 +53,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AuthenticatedUser(
-    isEditMode: Boolean,
+    navController: NavController,
     context: Context = LocalContext.current
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
@@ -125,12 +119,8 @@ fun AuthenticatedUser(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Editable or non-editable user information
-        if (isEditMode) {
-            user?.let { EditDetails(it) }
-        } else {
-            user?.let { UserCard(it) }
-        }
+        user?.let { UserCard(it) }
+
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(
             color = CC.textColor(),
@@ -140,26 +130,30 @@ fun AuthenticatedUser(
         Spacer(modifier = Modifier.height(20.dp))
 
         RowTopic(
-            icon = Icons.Default.Person,
-            text = "Edit Personal Details",
-            destination = ""
+            icon = Icons.Default.ManageAccounts,
+            text = "Manage Account",
+            navController = navController,
+            destination = "manageAccount"
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         RowTopic(
             icon = Icons.Default.CreditCard,
-            text = "Manage Credit Cards",
+            text = "Transaction History",
+            navController = navController,
             destination = ""
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         RowTopic(
             icon = Icons.Default.CollectionsBookmark,
-            text = "View bookings history",
+            text = "Bookings History",
+            navController = navController,
             destination = ""
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         RowTopic(
             icon = Icons.Default.RateReview,
             text = "Ratings and Reviews",
+            navController = navController,
             destination = ""
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -172,7 +166,7 @@ fun AuthenticatedUser(
         // Payment Methods Section
         user?.let { user ->
             PaymentMethodsSection(
-                userEntity =user,
+                userEntity = user,
                 creditCard = creditCard,
                 payPal = payPal,
                 mpesa = mpesa,
@@ -182,124 +176,17 @@ fun AuthenticatedUser(
                 context = context
             )
         }
-
-
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalDivider(
-            color = CC.textColor(),
-            thickness = 1.dp,
-            modifier = Modifier.fillMaxWidth(0.9f)
-        )
-
-        // Danger Zone Section
-        DangerZone(userViewModel, context, navController = NavController(context))
     }
 
 }
 
 
 @Composable
-fun DangerZone(userViewModel: UserViewModel, context: Context, navController: NavController) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-
-        if (showDeleteDialog) {
-            ShowDeleteDialog(
-                onDismiss = { showDeleteDialog = it },
-                userViewModel = userViewModel,
-                context = context
-            )
-        }
-        Text("Delete Account", style = CC.contentTextStyle())
-        Button(
-            onClick = {
-                showDeleteDialog = !showDeleteDialog
-
-            },
-            colors = CC.buttonColors().copy(),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Text("Delete Account", style = CC.contentTextStyle())
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ShowDeleteDialog(
-    onDismiss: (Boolean) -> Unit,
-    userViewModel: UserViewModel,
-    context: Context
-
-) {
-    val userID = HMSPreferences.userId.value
-    BasicAlertDialog(
-        onDismissRequest = { onDismiss(false) }
-    ) {
-        Column(
-            modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = CC.textColor(),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .background(CC.primaryColor())
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Are you sure you want to delete your account?", style = CC.contentTextStyle())
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedButton(
-                    onClick = { onDismiss(false) },
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Cancel", style = CC.contentTextStyle())
-                }
-                Button(
-                    onClick = {
-                        userViewModel.deleteUser(userID) { success ->
-                            if (success) {
-                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-                                onDismiss(true)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Failed, please try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                onDismiss(false)
-                            }
-
-                        }
-
-                    },
-                    enabled = false,
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Delete", style = CC.contentTextStyle())
-                }
-            }
-        }
-    }
-
-}
-
-@Composable
-fun RowTopic(icon: ImageVector, text: String, destination: String) {
+fun RowTopic(icon: ImageVector, text: String, navController: NavController, destination: String) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
+
+
     Row(
         modifier = Modifier
             .border(
@@ -332,7 +219,11 @@ fun RowTopic(icon: ImageVector, text: String, destination: String) {
 
         Text(text, style = CC.contentTextStyle())
 
-        IconButton(onClick = { /* Handle edit button click */ }) {
+        IconButton(onClick = {
+            if (destination.isNotEmpty()) {
+                navController.navigate(destination)
+            }
+        }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
                 contentDescription = null,
