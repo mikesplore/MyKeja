@@ -25,7 +25,7 @@ class PayPalViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    // Insert Pay Pal
+    // Insert Credit Card
     fun insertPayPal(payPal: PayPalEntity, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -90,7 +90,7 @@ class PayPalViewModel @Inject constructor(
     }
 
     // Delete Credit Card
-    fun deletePayPal(userId: String) {
+    fun deletePayPal(userId: String, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
             payPalRepository.deletePayPal(userId)
@@ -100,9 +100,11 @@ class PayPalViewModel @Inject constructor(
                 }
                 .collect { result ->
                     if (result) {
+                        onSuccess(true)
                         Log.d("PayPalViewModel", "Deleted payPal for user ID: $userId")
                         _payPal.value = null // Clear the state after deletion
                     } else {
+                        onSuccess(false)
                         _error.value = "Failed to delete payPal for user ID: $userId"
                     }
                 }
