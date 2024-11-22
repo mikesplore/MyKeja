@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,24 +69,6 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
         houseViewModel.getHouseByID(houseID)
     }
 
-
-    Scaffold(
-        floatingActionButtonPosition = FabPosition.EndOverlay,
-        floatingActionButton = {
-            IconButton(onClick = {},
-
-                modifier = Modifier
-                    .background(CC.tertiaryColor(), RoundedCornerShape(10.dp))) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Message, contentDescription = "Chat",
-                        tint = CC.primaryColor())
-                }
-            }
-
-        }
-    ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -138,7 +121,7 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
 
         // Book Now
         house?.let { BookNow(it, navController) }
-    }}
+    }
 }
 
 
@@ -160,6 +143,7 @@ fun HouseTitleRow(house: HouseEntity, textSize: TextUnit) {
 
         Box(
             modifier = Modifier
+                .clickable{}
                 .border(
                     width = 1.dp,
                     color = CC.secondaryColor(),
@@ -172,11 +156,8 @@ fun HouseTitleRow(house: HouseEntity, textSize: TextUnit) {
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             Text(
-                text = "Ksh ${formatNumber(house.housePrice)}",
-                style = CC.titleTextStyle().copy(
-                    fontSize = textSize * 0.08f,
-                    color = CC.primaryColor()
-                )
+                "Chat with Host 💬",
+                style = CC.contentTextStyle().copy(fontSize = textSize * 0.07f, color = CC.primaryColor()),
             )
         }
     }
