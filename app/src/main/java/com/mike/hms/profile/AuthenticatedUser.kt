@@ -49,7 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
-import com.mike.hms.model.creditCardModel.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.paymentMethods.PaymentMethodsSection
 import kotlinx.coroutines.delay
