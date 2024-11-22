@@ -1,4 +1,4 @@
-package com.mike.hms.model.creditCardModel
+package com.mike.hms.model.paymentMethods
 
 import androidx.room.Embedded
 import androidx.room.Entity
