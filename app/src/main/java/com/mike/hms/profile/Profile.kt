@@ -1,15 +1,12 @@
 package com.mike.hms.profile
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,32 +42,28 @@ fun Profile(
         listOf(CC.primaryColor(), CC.titleColor().copy(0.5f), CC.tertiaryColor(), CC.primaryColor())
     )
 
-    Scaffold(
-        containerColor = CC.primaryColor()
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .animateContentSize()
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            if (isAuthenticated) {
-                AuthenticatedUser(
-                    navController
-                )
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .animateContentSize()
+            .fillMaxSize()
+    ) {
+        if (isAuthenticated) {
+            AuthenticatedUser(
+                navController
+            )
 
 
-            } else {
-                UnauthenticatedUser(context = context,
-                    cardViewModel = creditCardViewModel,
-                    userViewModel = userViewModel, onSignInResult = {
-                        isAuthenticated = it
-                    }
-                )
-            }
+        } else {
+            UnauthenticatedUser(context = context,
+                cardViewModel = creditCardViewModel,
+                userViewModel = userViewModel, onSignInResult = {
+                    isAuthenticated = it
+                }
+            )
         }
     }
+
 }
 
 
