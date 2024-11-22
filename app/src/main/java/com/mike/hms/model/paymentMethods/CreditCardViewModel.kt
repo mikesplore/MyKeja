@@ -1,4 +1,4 @@
-package com.mike.hms.model.creditCardModel
+package com.mike.hms.model.paymentMethods
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
