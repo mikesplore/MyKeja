@@ -1,19 +1,17 @@
-package com.mike.hms.model.creditCardModel
+package com.mike.hms.model.paymentMethods
 
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class CreditCardRepository(private val creditCardDao: CreditCardDao) {
 
     private val database = FirebaseDatabase.getInstance().reference
 
+    // Credit Card Operations
     fun insertCreditCard(creditCard: CreditCardEntity): Flow<Boolean> = flow {
         creditCardDao.insertCreditCard(creditCard)
         emit(insertCreditCardToFirebase(creditCard))
@@ -59,4 +57,5 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
             false
         }
     }
+
 }
