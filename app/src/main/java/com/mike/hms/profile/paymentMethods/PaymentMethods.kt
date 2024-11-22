@@ -27,8 +27,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.mike.hms.model.creditCardModel.CreditCardViewModel
-import com.mike.hms.model.creditCardModel.CreditCardWithUser
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.CreditCardWithUser
 import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
