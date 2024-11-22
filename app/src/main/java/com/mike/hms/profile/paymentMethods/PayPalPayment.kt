@@ -1,5 +1,7 @@
 package com.mike.hms.profile.paymentMethods
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -28,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,16 +50,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mike.hms.model.paymentMethods.PayPalEntity
+import com.mike.hms.model.paymentMethods.PayPalViewModel
 import com.mike.hms.model.userModel.UserEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AddPayPalPayment(
     userEntity: UserEntity,
-    onDismiss: () -> Unit = {}
+    payPalViewModel: PayPalViewModel,
+    onDismiss: () -> Unit = {},
+    context: Context
 ) {
     var paypalEmail by remember { mutableStateOf("") }
     var useCurrentEmail by remember { mutableStateOf(true) }
+    var loading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -158,7 +166,7 @@ fun AddPayPalPayment(
                     selected = useCurrentEmail,
                     onClick = { useCurrentEmail = true },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = CC.titleColor(),
+                        selectedColor = CC.secondaryColor(),
                         unselectedColor = CC.textColor().copy(alpha = 0.5f)
                     )
                 )
@@ -186,7 +194,7 @@ fun AddPayPalPayment(
                     selected = !useCurrentEmail,
                     onClick = { useCurrentEmail = false },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = CC.titleColor(),
+                        selectedColor = CC.secondaryColor(),
                         unselectedColor = CC.textColor().copy(alpha = 0.5f)
                     )
                 )
@@ -223,7 +231,35 @@ fun AddPayPalPayment(
 
         // Add Payment Button
         Button(
-            onClick = { /* Handle add payment */ },
+            onClick = {
+                if (!useCurrentEmail && paypalEmail.isEmpty()) {
+                    Toast.makeText(context, "Please enter a valid PayPal email", Toast.LENGTH_SHORT)
+                        .show()
+                    return@Button
+                }
+                loading = true
+                CC.generatePayPalId { id ->
+                    val paypal = PayPalEntity(
+                        userId = userEntity.userID,
+                        paypalEmail = if (useCurrentEmail) userEntity.email else paypalEmail,
+                        paypalId = id
+                    )
+                    payPalViewModel.insertPayPal(paypal) { success ->
+                        if (success) {
+                            loading = false
+                            payPalViewModel.getPayPal(userEntity.userID)
+                            onDismiss()
+                        } else {
+                            loading = false
+                            Toast.makeText(
+                                context,
+                                "Failed to add PayPal. Try again",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp),
@@ -236,20 +272,27 @@ fun AddPayPalPayment(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Payment,
-                    contentDescription = "PayPal",
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Set Up PayPal Payments",
-                    style = CC.contentTextStyle().copy(
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+                if (loading) {
+                    CircularProgressIndicator(
+                        color = CC.primaryColor(),
+                        modifier = Modifier.size(24.dp)
                     )
-                )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Payment,
+                        contentDescription = "PayPal",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Add PayPal Payment",
+                        style = CC.contentTextStyle().copy(
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
             }
         }
 
