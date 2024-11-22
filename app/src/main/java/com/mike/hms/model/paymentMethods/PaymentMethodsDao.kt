@@ -16,8 +16,8 @@ interface CreditCardDao {
     @Query("SELECT * FROM credit_cards WHERE userId = :userId")
     fun getCreditCardWithUser(userId: String): Flow<CreditCardWithUser>
 
-    @Query("DELETE FROM credit_cards WHERE cardId = :cardId")
-    suspend fun deleteCreditCard(cardId: String)
+    @Query("DELETE FROM credit_cards WHERE userId = :userId")
+    suspend fun deleteCreditCard(userId: String)
 }
 
 @Dao
