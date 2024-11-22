@@ -61,7 +61,7 @@ fun DangerZone(
     var countdown by remember { mutableIntStateOf(30) }
     val auth = FirebaseAuth.getInstance()
     val email = auth.currentUser?.email
-    val expectedText = remember { email }
+    val expectedText = remember { email?.uppercase() }
 
     // Countdown timer effect
     LaunchedEffect(cooldownActive) {
@@ -235,10 +235,8 @@ fun DangerZone(
                                 userViewModel.deleteUser(user.userID) { success ->
                                     if (success) {
                                         Toast.makeText(context, "Account deleted successfully", Toast.LENGTH_SHORT).show()
-                                        // Navigate to login or home screen
-                                        navController.navigate("login") {
-                                            popUpTo(0)
-                                        }
+                                        //sign out user
+                                        auth.signOut()
                                     } else {
                                         Toast.makeText(context, "Failed to delete account", Toast.LENGTH_SHORT).show()
                                     }
