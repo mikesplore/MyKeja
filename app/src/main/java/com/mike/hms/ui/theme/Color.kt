@@ -12,4 +12,4 @@ val Green = Color(0xFF76B39D)
 val Purple = Color(0XFF0C2D57)
 val whiteSurfaceContainer = Black
 val blackSurfaceContainer = BlackSchemeTextColor
-val RealPurple = Color(0xFFFF3EA5)
+val RealPurple = Color(0xFF3A1078)
