@@ -1,4 +1,4 @@
-package com.mike.hms.profile
+package com.mike.hms.profile.paymentMethods
 
 import android.content.Context
 import android.widget.Toast
