@@ -1,14 +1,19 @@
 package com.mike.hms.ui.theme
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButtonColors
@@ -20,16 +25,19 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.mike.hms.ui.theme.CommonComponents
 import java.time.LocalTime
 import java.util.Locale
 import java.util.UUID
@@ -203,7 +211,8 @@ object CommonComponents {
         imeAction: ImeAction = ImeAction.Done, // Default to Done
         trailingIcon: @Composable (() -> Unit)? = null,
         isError: Boolean = false,
-        leadingIcon: @Composable (() -> Unit)? = null
+        leadingIcon: @Composable (() -> Unit)? = null,
+
     ) {
         OutlinedTextField(
             value = value,
@@ -219,6 +228,7 @@ object CommonComponents {
                 keyboardType = keyboardType,
                 imeAction = imeAction
             ),
+            leadingIcon = leadingIcon,
             singleLine = singleLine,
             isError = isError,
 
@@ -237,6 +247,79 @@ object CommonComponents {
             text.replaceFirstChar { it.uppercase() }.replace("_", " ")
         }
 
+    }
+
+    @Composable
+    fun getScreenHeight(): Dp {
+        return LocalConfiguration.current.screenHeightDp.dp
+
+    }
+
+    @Composable
+    fun getScreenWidth(): Dp {
+        return LocalConfiguration.current.screenWidthDp.dp
+
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun ConfirmDialog(
+        title: String,
+        message: String,
+        onConfirm: () -> Unit,
+        onDismiss: () -> Unit
+    ) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = title,
+                    style = titleTextStyle().copy(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = message,
+                    style = contentTextStyle().copy(
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp
+                    ),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = onConfirm,
+                    colors = buttonColors()
+                ) {
+                    Text(
+                        text = "Confirm",
+                        style = contentTextStyle()
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = titleColor()
+                    )
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = contentTextStyle()
+                    )
+                }
+            },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .width(getScreenWidth() * 0.8f),
+            tonalElevation = 8.dp
+        )
     }
 
     data class MyCode(
@@ -302,6 +385,20 @@ object CommonComponents {
         updateAndGetCode("Favorites"){code ->
             val favouriteId = "Fav$code"
             onCodeUpdated(favouriteId)
+        }
+    }
+
+    fun generateMpesaId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("Mpesa"){code ->
+            val mpesaId = "Mpesa$code"
+            onCodeUpdated(mpesaId)
+        }
+    }
+
+    fun generatePayPalId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("PayPal"){code ->
+            val payPalId = "PayPal$code"
+            onCodeUpdated(payPalId)
         }
     }
     
