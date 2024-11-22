@@ -63,7 +63,7 @@ fun SavedMpesaCard(
         )
     }
     val brush = Brush.horizontalGradient(
-        colors = listOf(CC.extraPrimaryColor().copy(0.5f), CC.extraSecondaryColor())
+        colors = listOf(CC.tertiaryColor().copy(0.5f), CC.extraSecondaryColor())
     )
     Card(
         modifier = Modifier
