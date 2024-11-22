@@ -50,6 +50,8 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.MpesaViewModel
+import com.mike.hms.model.paymentMethods.PayPalViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.paymentMethods.PaymentMethodsSection
 import kotlinx.coroutines.delay
@@ -62,9 +64,14 @@ fun AuthenticatedUser(
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
     val creditCardViewModel: CreditCardViewModel = hiltViewModel()
+    val mpesaViewModel: MpesaViewModel = hiltViewModel()
+    val payPalViewModel: PayPalViewModel = hiltViewModel()
+
     val email = FirebaseAuth.getInstance().currentUser?.email
     val user by userViewModel.user.collectAsState()
     val creditCard by creditCardViewModel.creditCard.collectAsState()
+    val mpesa by mpesaViewModel.mpesa.collectAsState()
+    val payPal by payPalViewModel.payPal.collectAsState()
 
     listOf(
         "Credit Card",
@@ -73,7 +80,6 @@ fun AuthenticatedUser(
     )
 
     remember { mutableStateOf<String?>("Credit Card") }
-
     LaunchedEffect(HMSPreferences.userId.value) {
         val maxRetries = 3
         var attempt = 0
@@ -81,6 +87,11 @@ fun AuthenticatedUser(
         while (attempt < maxRetries) {
             // Fetch the user by email
             userViewModel.getUserByEmail(email!!)
+
+            // Fetch the M-PESA and PayPal entities
+            mpesaViewModel.getMpesa(HMSPreferences.userId.value)
+            payPalViewModel.getPayPal(HMSPreferences.userId.value)
+
             Log.d(
                 "CreditCardViewModell",
                 "Attempt ${attempt + 1}: Fetching credit card for user ID: ${HMSPreferences.userId.value}"
@@ -159,7 +170,19 @@ fun AuthenticatedUser(
         )
         Spacer(modifier = Modifier.height(20.dp))
         // Payment Methods Section
-        user?.let { PaymentMethodsSection(it, creditCard, creditCardViewModel, context) }
+        user?.let { user ->
+            PaymentMethodsSection(
+                userEntity =user,
+                creditCard = creditCard,
+                payPal = payPal,
+                mpesa = mpesa,
+                creditCardViewModel = creditCardViewModel,
+                payPalViewModel = payPalViewModel,
+                mpesaViewModel = mpesaViewModel,
+                context = context
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(20.dp))
         HorizontalDivider(
