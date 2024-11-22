@@ -58,9 +58,14 @@ fun UserCard(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
+    val brush = Brush.horizontalGradient(
+        colors = listOf(CC.extraSecondaryColor(), CC.primaryColor(), CC.extraSecondaryColor())
+    )
+
+
     Column(
         modifier = Modifier
-            .background(CC.titleColor(), RoundedCornerShape(16.dp))
+            .background(brush, RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -131,80 +136,3 @@ fun InsightColumn(value: String, label: String) {
 }
 
 
-
-
-
-@Composable
-fun EditDetails(user: UserEntity){
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    val email by remember { mutableStateOf(user.email) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Edit Details",
-            style = CC.titleTextStyle().copy(
-                color = CC.extraPrimaryColor()
-            ),
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-    CC.MyOutlinedTextField(
-        value = firstName,
-        onValueChange = { firstName = it },
-        label = "First Name",
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = "Enter First Name"
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-
-    CC.MyOutlinedTextField(
-        value = lastName,
-        onValueChange = { lastName = it },
-        label = "Last Name",
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = "Enter Last Name"
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-
-    CC.MyOutlinedTextField(
-        value = phoneNumber,
-        onValueChange = { phoneNumber = it },
-        label = "Phone Number",
-        keyboardType = KeyboardType.Phone,
-        placeholder = "Enter Phone Number",
-        modifier = Modifier.fillMaxWidth()
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-
-    CC.MyOutlinedTextField(
-        value = email,
-        onValueChange = {},
-        label = "Email",
-        keyboardType = KeyboardType.Email,
-        placeholder = "Enter Email",
-        modifier = Modifier.fillMaxWidth()
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    // AddCreditCard()
-
-    Button(
-        onClick = { /* Handle save button click */ },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = CC.primaryColor(),
-            contentColor = CC.surfaceContainerColor()
-        )
-    ) {
-        Text("Save", style = CC.contentTextStyle())
-    }
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-}
