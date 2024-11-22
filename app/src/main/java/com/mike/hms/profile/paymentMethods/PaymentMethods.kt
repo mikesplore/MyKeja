@@ -26,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.paymentMethods.CreditCardWithUser
@@ -58,6 +60,14 @@ fun PaymentMethodsSection(
         "M-PESA"
     )
 
+    val brush = Brush.horizontalGradient(
+        colors = listOf(CC.primaryColor(), CC.secondaryColor())
+    )
+
+    val transparentBrush = Brush.horizontalGradient(
+        colors = listOf(Color.Transparent, Color.Transparent)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,12 +94,11 @@ fun PaymentMethodsSection(
                     modifier = Modifier
                         .border(
                             width = 1.dp,
-                            color = if (selectedTab == index) CC.titleColor() else CC.textColor(),
+                            color = if (selectedTab == index) CC.secondaryColor() else CC.textColor(),
                             shape = RoundedCornerShape(8.dp)
                         )
                         .background(
-                            color = if (selectedTab == index) CC.secondaryColor().copy(alpha = 0.5f)
-                            else Color.Transparent,
+                            brush = if (selectedTab == index) brush else transparentBrush,
                             shape = RoundedCornerShape(8.dp)
                         )
                         .width(LocalConfiguration.current.screenWidthDp.dp * 0.28f)
@@ -100,7 +109,8 @@ fun PaymentMethodsSection(
                     Text(
                         paymentMethod,
                         style = CC.contentTextStyle().copy(
-                            color = if (selectedTab == index) CC.titleColor() else CC.textColor()
+                            fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
+                            color = if (selectedTab == index) CC.primaryColor() else CC.textColor()
                         )
                     )
                 }
@@ -114,7 +124,13 @@ fun PaymentMethodsSection(
             0 -> { // Credit Card
                 if (creditCard != null) {
                     CreditCard(creditCard) {
-                        creditCardViewModel.deleteCreditCard(creditCard.creditCard.userId)
+                        creditCardViewModel.deleteCreditCard(creditCard.creditCard.userId){
+                            success ->
+                            if (success){
+                                creditCardViewModel.getCreditCard(creditCard.creditCard.userId)
+                                showAddPaymentMethod = !showAddPaymentMethod
+                            }
+                        }
                     }
                 } else {
                     PaymentMethodEmptyState(
