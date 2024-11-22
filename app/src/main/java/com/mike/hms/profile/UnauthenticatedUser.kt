@@ -53,18 +53,19 @@ fun UnauthenticatedUser(
     userViewModel: UserViewModel,
     cardViewModel: CreditCardViewModel,
 ) {
+    val authenticatedUser = FirebaseAuth.getInstance().currentUser
+    val authenticatedEmail = authenticatedUser?.email
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var profilePicture by remember { mutableStateOf("") }
+    var profilePicture = authenticatedUser?.photoUrl.toString()
     var genderSelected by remember { mutableStateOf("") }
 
     var isAuthenticated by remember { mutableStateOf(false) }
     var isUserFound by remember { mutableStateOf(false) }
     var addUserLoading by remember { mutableStateOf(false) }
-    val authenticatedUser = FirebaseAuth.getInstance().currentUser
-    val authenticatedEmail = authenticatedUser?.email
+
 
     val user by userViewModel.user.collectAsState()
 
