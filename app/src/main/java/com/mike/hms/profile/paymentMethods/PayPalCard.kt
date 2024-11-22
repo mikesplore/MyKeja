@@ -46,10 +46,10 @@ fun SavedPayPalCard(
 ) {
     var showConfirmDialog by remember { mutableStateOf(false) }
 
-    val brush= Brush.verticalGradient(
+    val brush= Brush.horizontalGradient(
         colors = listOf(
-            CC.tertiaryColor(),
-            CC.primaryColor()
+            CC.secondaryColor(),
+            CC.extraSecondaryColor()
         )
     )
 
@@ -125,7 +125,7 @@ fun SavedPayPalCard(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = Color.Red.copy(alpha = 0.5f)
+                            tint = Color.White
                         )
                     }
                 }
