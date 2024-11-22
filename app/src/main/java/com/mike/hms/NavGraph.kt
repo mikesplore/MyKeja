@@ -21,6 +21,7 @@ import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.userModel.UserViewModel
+import com.mike.hms.profile.ManageAccount
 
 @Composable
 fun NavGraph(
@@ -81,6 +82,10 @@ fun NavGraph(
 
         composable("addHouse") {
             HouseForm(context)
+        }
+
+        composable("manageAccount"){
+            ManageAccount(userViewModel, context, navController)
         }
 
         composable("houseGallery/{houseID}", arguments = listOf(navArgument("houseID") {
