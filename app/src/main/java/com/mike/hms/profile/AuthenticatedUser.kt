@@ -111,13 +111,11 @@ fun AuthenticatedUser(
     }
 
 
-
-
     Column(
         modifier = Modifier
             .imePadding()
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
     ) {
         user?.let { UserCard(it) }
 
