@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mike.hms.model.paymentMethods.MpesaWithUser
@@ -60,16 +62,22 @@ fun SavedMpesaCard(
             }
         )
     }
+    val brush = Brush.horizontalGradient(
+        colors = listOf(CC.extraPrimaryColor().copy(0.5f), CC.extraSecondaryColor())
+    )
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CC.titleColor()
-        ),
+
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush)
+        ){
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -118,7 +126,7 @@ fun SavedMpesaCard(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = CC.textColor().copy(alpha = 0.6f)
+                            tint = Color.White
                         )
                     }
                 }
@@ -173,7 +181,7 @@ fun SavedMpesaCard(
                 modifier = Modifier.align(Alignment.End)
             )
         }
-    }
+    }}
 }
 
 
