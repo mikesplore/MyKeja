@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.userModel.UserViewModel
@@ -27,12 +28,12 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun Profile(
     context: Context,
+    navController: NavController,
     userViewModel: UserViewModel,
     creditCardViewModel: CreditCardViewModel
 ) {
     val auth = FirebaseAuth.getInstance()
     var isAuthenticated by remember { mutableStateOf(false) }
-    var isEditMode by remember { mutableStateOf(false) }
     val userEmail = auth.currentUser?.email
 
     LaunchedEffect(Unit) {
@@ -56,7 +57,7 @@ fun Profile(
         ) {
             if (isAuthenticated) {
                 AuthenticatedUser(
-                    isEditMode = isEditMode
+                    navController
                 )
 
 
