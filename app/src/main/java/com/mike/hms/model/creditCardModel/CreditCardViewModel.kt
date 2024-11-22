@@ -1,8 +1,6 @@
 package com.mike.hms.model.creditCardModel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +30,10 @@ class CreditCardViewModel @Inject constructor(
             _isLoading.value = true
             creditCardRepository.insertCreditCard(creditCard)
                 .catch { exception ->
-                    Log.e("CreditCardViewModel", "Error inserting credit card: ${exception.message}")
+                    Log.e(
+                        "CreditCardViewModel",
+                        "Error inserting credit card: ${exception.message}"
+                    )
                     _error.value = exception.localizedMessage
                     onSuccess(false)
                 }
@@ -56,18 +57,27 @@ class CreditCardViewModel @Inject constructor(
             _isLoading.value = true
             creditCardRepository.retrieveCreditCardByUserId(userId)
                 .catch { exception ->
-                    Log.e("CreditCardViewModel", "Error retrieving credit card: ${exception.message}")
+                    Log.e(
+                        "CreditCardViewModel",
+                        "Error retrieving credit card: ${exception.message}"
+                    )
                     _error.value = exception.localizedMessage
                 }
                 .collect { creditCardFlow ->
                     creditCardFlow
                         .catch { innerException ->
-                            Log.e("CreditCardViewModel", "Error in inner flow: ${innerException.message}")
+                            Log.e(
+                                "CreditCardViewModel",
+                                "Error in inner flow: ${innerException.message}"
+                            )
                             _error.value = innerException.localizedMessage
                         }
                         .collect { creditCardWithUser ->
                             if (true) {
-                                Log.d("CreditCardViewModel", "Retrieved credit card: $creditCardWithUser")
+                                Log.d(
+                                    "CreditCardViewModel",
+                                    "Retrieved credit card: $creditCardWithUser"
+                                )
                                 _creditCard.value = creditCardWithUser
                             } else {
                                 _error.value = "No credit card found for user ID: $userId"
