@@ -15,7 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
-import com.mike.hms.model.creditCardModel.CreditCardViewModel
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.userModel.UserViewModel
