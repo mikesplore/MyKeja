@@ -33,6 +33,10 @@ interface ReviewDao {
     @Query("DELETE FROM reviews WHERE userId = :userId")
     suspend fun deleteReviewsByUserId(userId: String)
 
+    // Delete all reviews by a houseId
+    @Query("DELETE FROM reviews WHERE houseId = :houseId")
+    suspend fun deleteReviewsByHouseId(houseId: String)
+
     // Delete all reviews in the table
     @Query("DELETE FROM reviews")
     suspend fun deleteAllReviews()
