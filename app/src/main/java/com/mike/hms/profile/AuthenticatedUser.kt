@@ -2,11 +2,10 @@ package com.mike.hms.profile
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.background
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +37,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -50,6 +48,7 @@ import com.mike.hms.HMSPreferences
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.paymentMethods.MpesaViewModel
 import com.mike.hms.model.paymentMethods.PayPalViewModel
+import com.mike.hms.model.transactions.TransactionViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.paymentMethods.PaymentMethodsSection
 import kotlinx.coroutines.delay
@@ -64,6 +63,7 @@ fun AuthenticatedUser(
     val creditCardViewModel: CreditCardViewModel = hiltViewModel()
     val mpesaViewModel: MpesaViewModel = hiltViewModel()
     val payPalViewModel: PayPalViewModel = hiltViewModel()
+    val transactionViewModel: TransactionViewModel = hiltViewModel()
 
     val email = FirebaseAuth.getInstance().currentUser?.email
     val user by userViewModel.user.collectAsState()
@@ -133,6 +133,7 @@ fun AuthenticatedUser(
         // LazyColumn for scrollable content
         LazyColumn(
             modifier = Modifier
+                .animateContentSize()
                 .imePadding()
                 .fillMaxWidth() // Match width
                 .weight(1f) // Fills remaining height within the Column
@@ -163,7 +164,7 @@ fun AuthenticatedUser(
                     icon = Icons.Default.CreditCard,
                     text = "Transaction History",
                     navController = navController,
-                    destination = "statements"
+                    destination = "transaction"
                 )
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
@@ -203,6 +204,7 @@ fun AuthenticatedUser(
                         payPal = payPal,
                         mpesa = mpesa,
                         creditCardViewModel = creditCardViewModel,
+                        transactionViewModel = transactionViewModel,
                         payPalViewModel = payPalViewModel,
                         mpesaViewModel = mpesaViewModel,
                         context = context
@@ -214,7 +216,6 @@ fun AuthenticatedUser(
 }
 
 
-
 @Composable
 fun RowTopic(icon: ImageVector, text: String, navController: NavController, destination: String) {
     val configuration = LocalConfiguration.current
@@ -222,7 +223,7 @@ fun RowTopic(icon: ImageVector, text: String, navController: NavController, dest
 
     Row(
         modifier = Modifier
-            .clickable{
+            .clickable {
                 if (destination.isNotEmpty()) {
                     navController.navigate(destination)
                 }
