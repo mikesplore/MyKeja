@@ -117,6 +117,7 @@ fun AuthenticatedUser(
 
     Column(
         modifier = Modifier
+            .animateContentSize()
             .fillMaxSize()
             .imePadding()
     ) {
