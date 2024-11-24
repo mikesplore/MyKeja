@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -34,9 +35,9 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun HouseReviewsScreen(navController: NavController, context: Context) {
     val reviewViewModel: ReviewViewModel = hiltViewModel()
-    val reviews by reviewViewModel.reviews.observeAsState()
-    val averageRating = reviews?.map { it.review.rating }?.average()
-    val totalReviews = reviews?.size
+    val reviews by reviewViewModel.reviews.collectAsState()
+    val averageRating = reviews.map { it.review.rating }.average()
+    val totalReviews = reviews.size
 
     Scaffold(
         topBar = {
