@@ -162,7 +162,7 @@ fun SavedMpesaCard(
                         )
                     )
                     Text(
-                        mpesaEntity.user.phoneNumber,
+                        mpesaEntity.mpesa.phoneNumber,
                         style = CC.contentTextStyle().copy(
                             fontWeight = FontWeight.Medium
                         )
