@@ -1,9 +1,9 @@
-package com.mike.hms.model.statements
+package com.mike.hms.model.transactions
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "transaction")
+@Entity(tableName = "transactions")
 data class TransactionEntity(
     @PrimaryKey val transactionID: String,
     val transactionNo: String,
