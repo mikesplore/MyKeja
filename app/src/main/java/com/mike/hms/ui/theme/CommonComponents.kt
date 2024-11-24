@@ -283,7 +283,6 @@ object CommonComponents {
         textFieldValue: String? = null,
         onTextFieldValueChange: ((String) -> Unit)? = null, // Only required if TextField is displayed
         keyboardType: KeyboardType = KeyboardType.Unspecified,
-        textFieldNumber: Int = 1
     ) {
         AlertDialog(
             containerColor = containerColor,
@@ -336,7 +335,7 @@ object CommonComponents {
                 ) {
                     Text(
                         text = confirmText,
-                        style = contentTextStyle()
+                        style = contentTextStyle().copy(color = primaryColor())
                     )
                 }
             },
