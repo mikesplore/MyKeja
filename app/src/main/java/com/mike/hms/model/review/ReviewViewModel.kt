@@ -23,10 +23,10 @@ class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRe
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Insert a review
-    fun insertReview(review: ReviewEntity, onResult: (Result<Boolean>) -> Unit) {
+    fun insertReview(review: ReviewEntity, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             reviewRepository.insertReview(review)
-                .collect { result -> onResult(result) }
+                .collect { result -> onResult(result.isSuccess) }
         }
     }
 
@@ -37,6 +37,15 @@ class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRe
                 .collect { userReviews -> _reviews.value = userReviews }
         }
     }
+
+    //Fetch all reviews by house ID
+    fun getReviewsByHouseId(houseId: String) {
+        viewModelScope.launch {
+            reviewRepository.getReviewsByHouseId(houseId)
+                .collect { reviews -> _reviews.value = reviews }
+        }
+    }
+
 
     // Delete a review
     fun deleteReview(reviewId: Int, onResult: (Result<Boolean>) -> Unit) {
