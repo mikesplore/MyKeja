@@ -117,8 +117,8 @@ fun AuthenticatedUser(
 
     Column(
         modifier = Modifier
-            .fillMaxSize() // Ensures the parent Column fills the whole screen
-            .imePadding() // Handles insets for on-screen keyboard
+            .fillMaxSize()
+            .imePadding()
     ) {
         // Fixed UserCard at the top
         user?.let {
@@ -163,7 +163,7 @@ fun AuthenticatedUser(
                     icon = Icons.Default.CreditCard,
                     text = "Transaction History",
                     navController = navController,
-                    destination = ""
+                    destination = "statements"
                 )
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
