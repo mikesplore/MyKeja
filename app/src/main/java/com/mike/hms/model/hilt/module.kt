@@ -9,7 +9,7 @@ import com.mike.hms.model.paymentMethods.MpesaRepository
 import com.mike.hms.model.paymentMethods.PayPalRepository
 import com.mike.hms.model.review.ReviewRepository
 import com.mike.hms.model.roomDatabase.HMSDatabase
-import com.mike.hms.model.statements.StatementRepository
+import com.mike.hms.model.transactions.TransactionRepository
 import com.mike.hms.model.userModel.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -76,7 +76,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesStatementRepository(database: HMSDatabase): StatementRepository {
-        return StatementRepository(database.statementDao())
+    fun providesStatementRepository(database: HMSDatabase): TransactionRepository {
+        return TransactionRepository(database.transactionDao())
     }
 }
