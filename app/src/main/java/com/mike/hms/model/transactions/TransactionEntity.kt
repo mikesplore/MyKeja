@@ -6,14 +6,13 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "transactions")
 data class TransactionEntity(
     @PrimaryKey val transactionID: String,
-    val transactionNo: String,
     val paymentMethod: PaymentMethod,
     val amount: String,
     val date: String,
     val userId: String,
     val transactionType: TransactionType
 ){
-    constructor(): this("","", PaymentMethod.CREDIT_CARD, "", "", "", TransactionType.ADDITION)
+    constructor(): this("", PaymentMethod.CREDIT_CARD, "", "", "", TransactionType.ADDITION)
 }
 
 enum class PaymentMethod {
