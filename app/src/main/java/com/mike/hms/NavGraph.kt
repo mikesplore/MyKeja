@@ -16,7 +16,7 @@ import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
 import com.mike.hms.houses.addOrEditHouse.HouseForm
 import com.mike.hms.houses.bookHouse.BookingInfoScreen
-import com.mike.hms.houses.transaction.TransactionsScreen
+import com.mike.hms.houses.statement.TransactionsScreen
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
@@ -89,8 +89,8 @@ fun NavGraph(
             ManageAccount(userViewModel, context, navController)
         }
 
-        composable("statements"){
-            TransactionsScreen(navController = navController)
+        composable("transaction"){
+            TransactionsScreen(navController = navController, context = context)
         }
 
         composable("houseGallery/{houseID}", arguments = listOf(navArgument("houseID") {
