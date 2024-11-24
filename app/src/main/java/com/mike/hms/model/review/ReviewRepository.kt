@@ -43,15 +43,11 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
         return reviewDao.getUserReviewsAsFlow(userId).flowOn(Dispatchers.IO)
     }
 
-    // Get all reviews from Room as a Flow
-    fun getAllReviews(): Flow<List<ReviewEntity>> {
-        return reviewDao.getAllReviewsAsFlow().flowOn(Dispatchers.IO)
-    }
-
-    // Get a specific review by ID as a Flow
-    fun getReviewById(houseId: String): Flow<List<ReviewsWithUserInfo>> {
+    // Retrieve reviews by house ID as a Flow
+    fun getReviewsByHouseId(houseId: String): Flow<List<ReviewsWithUserInfo>> {
         return reviewDao.getHouseReviewsAsFlow(houseId).flowOn(Dispatchers.IO)
     }
+
 
     // Delete a review from Firebase and Room
     fun deleteReview(reviewId: Int): Flow<Result<Boolean>> = callbackFlow {
@@ -98,7 +94,7 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 snapshot.getValue(ReviewEntity::class.java)?.let { review ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        reviewDao.deleteReviewById(review.id) // Delete from Room
+                        reviewDao.deleteReviewById(review.id.toInt()) // Delete from Room
                         emitReviewsFromRoom() // Emit updated list from Room
                     }
                 }
