@@ -23,7 +23,6 @@ import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.ManageAccount
-import com.mike.hms.viewmodel.StatementViewModel
 
 @Composable
 fun NavGraph(
@@ -36,7 +35,7 @@ fun NavGraph(
 ) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "statement") {
+    NavHost(navController = navController, startDestination = "homeScreen") {
         composable("dashboard") {
             DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
         }
@@ -90,7 +89,7 @@ fun NavGraph(
             ManageAccount(userViewModel, context, navController)
         }
 
-        composable("statement"){
+        composable("statements"){
             StatementsScreen(navController = navController)
         }
 
