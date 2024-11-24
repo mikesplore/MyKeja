@@ -271,13 +271,16 @@ object CommonComponents {
         message: String,
         onConfirm: () -> Unit,
         onDismiss: () -> Unit,
+        confirmText: String = "Confirm",
+        dismissText: String = "Cancel",
         messageColor: Color = textColor(),
+        containerColor: Color = extraSecondaryColor(),
         textFieldValue: String? = null,
         onTextFieldValueChange: ((String) -> Unit)? = null, // Only required if TextField is displayed
         keyboardType: KeyboardType = KeyboardType.Unspecified,
     ) {
         AlertDialog(
-            containerColor = extraSecondaryColor(),
+            containerColor = containerColor,
             onDismissRequest = onDismiss,
             title = {
                 Text(
@@ -324,7 +327,7 @@ object CommonComponents {
                     colors = buttonColors()
                 ) {
                     Text(
-                        text = "Confirm",
+                        text = confirmText,
                         style = contentTextStyle()
                     )
                 }
@@ -337,7 +340,7 @@ object CommonComponents {
                     )
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = dismissText,
                         style = contentTextStyle()
                     )
                 }
