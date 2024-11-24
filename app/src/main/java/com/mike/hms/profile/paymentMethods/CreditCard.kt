@@ -171,10 +171,15 @@ fun CreditCard(
                         creditCardWithUser.creditCard.cardNumber
                             .chunked(4)
                             .joinToString(" ")
+                    } else if (creditCardWithUser.creditCard.cardNumber.isNotEmpty()) {
+                        val chunkedCardNumber = creditCardWithUser.creditCard.cardNumber.chunked(2)
+                        if (chunkedCardNumber.isNotEmpty()) {
+                            "${chunkedCardNumber.first()} ** **** **** ** ${chunkedCardNumber.last()}"
+                        } else {
+                            "" // Or some other default value
+                        }
                     } else {
-                        "${
-                            creditCardWithUser.creditCard.cardNumber.chunked(2).first()
-                        } ** **** **** ** ${creditCardWithUser.creditCard.cardNumber.chunked(2).last()}"
+                        "" // Or some other default value
                     },
                     fontSize = 22.sp,
                     color = Color.White,
