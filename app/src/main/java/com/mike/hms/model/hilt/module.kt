@@ -27,7 +27,7 @@ object AppModule {
         return Room.databaseBuilder(
             context,
             HMSDatabase::class.java,
-            "hms_database"
+            "rms_database"
         ).build()
     }
 
