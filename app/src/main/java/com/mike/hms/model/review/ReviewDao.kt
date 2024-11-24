@@ -4,25 +4,26 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReviewDao {
 
-    // Get reviews by a specific user along with user information
+    // Get reviews by a specific user along with user information as a Flow
     @Query("""
         SELECT u.*, r.* FROM reviews AS r
         INNER JOIN users AS u ON r.userId = u.userId
         WHERE r.userId = :userId
     """)
-    fun getUserReviews(userId: String): List<ReviewsWithUserInfo>
+    fun getUserReviewsAsFlow(userId: String): Flow<List<ReviewsWithUserInfo>>
 
-    // Get reviews for a specific house along with user information
+    // Get reviews for a specific house along with user information as a Flow
     @Query("""
         SELECT u.*, r.* FROM reviews AS r
         INNER JOIN users AS u ON r.userId = u.userId
         WHERE r.houseId = :houseId
     """)
-    fun getHouseReviews(houseId: String): List<ReviewsWithUserInfo>
+    fun getHouseReviewsAsFlow(houseId: String): Flow<List<ReviewsWithUserInfo>>
 
     // Delete a review by reviewId
     @Query("DELETE FROM reviews WHERE id = :reviewId")
@@ -36,9 +37,9 @@ interface ReviewDao {
     @Query("DELETE FROM reviews")
     suspend fun deleteAllReviews()
 
-    // Get all reviews (basic fetch)
+    // Get all reviews as a Flow
     @Query("SELECT * FROM reviews")
-    suspend fun getAllReviews(): List<ReviewEntity>
+    fun getAllReviewsAsFlow(): Flow<List<ReviewEntity>>
 
     // Insert a new review
     @Insert(onConflict = OnConflictStrategy.REPLACE)
