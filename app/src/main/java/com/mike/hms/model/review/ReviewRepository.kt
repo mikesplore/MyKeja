@@ -2,14 +2,14 @@ package com.mike.hms.model.review
 
 import android.util.Log
 import com.google.firebase.database.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 
 class ReviewRepository(private val reviewDao: ReviewDao) {
 
-    private val viewmodelScope = CoroutineScope(Dispatchers.IO)
     private val database = FirebaseDatabase.getInstance().reference.child("Reviews")
+    private val reviewFlow = MutableSharedFlow<List<ReviewEntity>>(replay = 1)
 
     init {
         // Initialize listeners to keep Firebase and Room in sync
@@ -17,92 +17,89 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
     }
 
     // Insert a review into both Firebase and Room
-    fun insertReview(review: ReviewEntity, onSuccess: (Boolean) -> Unit) {
+    fun insertReview(review: ReviewEntity): Flow<Result<Boolean>> = callbackFlow {
         val reviewId = review.id.toString()
-        viewmodelScope.launch {
-            try {
-                reviewDao.insertReview(review)
-                database.child(reviewId).setValue(review)
-                    .addOnSuccessListener {
-                        onSuccess(true)
-                    }
-                    .addOnFailureListener {
-                        onSuccess(false)
-                    }
-            } catch (e: Exception) {
-                onSuccess(false)
-            }
+        try {
+            reviewDao.insertReview(review)
+            database.child(reviewId).setValue(review)
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                    close()
+                }
+                .addOnFailureListener { exception ->
+                    trySend(Result.failure(exception))
+                    close(exception)
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+            close(e)
         }
+        awaitClose { /* Cleanup if necessary */ }
+    }.flowOn(Dispatchers.IO)
+
+
+    // Retrieve reviews by user ID as a Flow
+    fun getReviewsByUserId(userId: String): Flow<List<ReviewsWithUserInfo>> {
+        return reviewDao.getUserReviewsAsFlow(userId).flowOn(Dispatchers.IO)
     }
 
-    // Retrieve reviews by user ID from Room (after initial sync from Firebase)
-    fun getReviewsByUserId(userId: String, onResult: (List<ReviewsWithUserInfo>) -> Unit) {
-        viewmodelScope.launch {
-            val reviews = reviewDao.getUserReviews(userId)
-            onResult(reviews)
-        }
+    // Get all reviews from Room as a Flow
+    fun getAllReviews(): Flow<List<ReviewEntity>> {
+        return reviewDao.getAllReviewsAsFlow().flowOn(Dispatchers.IO)
     }
 
-    // Get all reviews from Firebase, which will update Room accordingly
-    fun getAllReviews() {
-        viewmodelScope.launch {
-            val reviews = reviewDao.getAllReviews()
-            reviews.forEach { review ->
-                reviewDao.insertReview(review)
-            }
-        }
-    }
-
-    // Get a specific review by ID from Room
-    fun getReviewById(houseId: String, onResult: (List<ReviewsWithUserInfo>) -> Unit) {
-        viewmodelScope.launch {
-            val review = reviewDao.getHouseReviews(houseId)
-            onResult(review)
-        }
+    // Get a specific review by ID as a Flow
+    fun getReviewById(houseId: String): Flow<List<ReviewsWithUserInfo>> {
+        return reviewDao.getHouseReviewsAsFlow(houseId).flowOn(Dispatchers.IO)
     }
 
     // Delete a review from Firebase and Room
-    fun deleteReview(reviewId: Int, onSuccess: (Boolean) -> Unit) {
-        viewmodelScope.launch {
-            try {
-                reviewDao.deleteReviewById(reviewId)
-                database.child(reviewId.toString()).removeValue()
-                    .addOnSuccessListener {
-                        onSuccess(true)
-                    }
-                    .addOnFailureListener {
-                        onSuccess(false)
-                    }
-            } catch (e: Exception) {
-                onSuccess(false)
-            }
+    fun deleteReview(reviewId: Int): Flow<Result<Boolean>> = callbackFlow {
+        try {
+            reviewDao.deleteReviewById(reviewId)
+            database.child(reviewId.toString()).removeValue()
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                    close()
+                }
+                .addOnFailureListener { exception ->
+                    trySend(Result.failure(exception))
+                    close(exception)
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+            close(e)
         }
-    }
+        awaitClose { /* Cleanup if necessary */ }
+    }.flowOn(Dispatchers.IO)
 
 
-    // Sync reviews from Firebase to Room whenever there's a change in Firebase
+    // Sync reviews from Firebase to Room and emit them as Flows
     private fun syncReviewsFromFirebase() {
         database.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 snapshot.getValue(ReviewEntity::class.java)?.let { review ->
-                    viewmodelScope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
                         reviewDao.insertReview(review) // Insert into Room
+                        emitReviewsFromRoom() // Emit updated list from Room
                     }
                 }
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 snapshot.getValue(ReviewEntity::class.java)?.let { review ->
-                    viewmodelScope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
                         reviewDao.insertReview(review) // Update in Room
+                        emitReviewsFromRoom() // Emit updated list from Room
                     }
                 }
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 snapshot.getValue(ReviewEntity::class.java)?.let { review ->
-                    viewmodelScope.launch {
+                    CoroutineScope(Dispatchers.IO).launch {
                         reviewDao.deleteReviewById(review.id) // Delete from Room
+                        emitReviewsFromRoom() // Emit updated list from Room
                     }
                 }
             }
@@ -112,9 +109,20 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle errors
                 Log.e("ReviewRepository", "Firebase child event listener cancelled with error: ${error.message}")
             }
         })
     }
+
+    // Emit reviews from Room into the Flow
+    private suspend fun emitReviewsFromRoom() {
+        reviewDao.getAllReviewsAsFlow()
+            .collect { reviews ->
+                reviewFlow.emit(reviews) // Emit the collected List into SharedFlow
+            }
+    }
+
+
+    // Expose the Flow of reviews
+    fun observeReviews(): Flow<List<ReviewEntity>> = reviewFlow.asSharedFlow()
 }
