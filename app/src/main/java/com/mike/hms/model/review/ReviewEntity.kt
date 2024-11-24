@@ -7,14 +7,14 @@ import com.mike.hms.model.userModel.UserEntity
 
 @Entity(tableName = "reviews")
 data class ReviewEntity(
-    @PrimaryKey val id: Int = 0,
+    @PrimaryKey val id: String,
     val userId: String,
     val houseId: String,
     val rating: Int,
     val reviewText: String,
     val timestamp: String
 ){
-    constructor(): this (0, "", "", 0, "", "")
+    constructor(): this ("", "", "", 0, "", "")
 }
 
 data class ReviewsWithUserInfo(
