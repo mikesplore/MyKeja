@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +58,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.mike.hms.HMSPreferences
 import com.mike.hms.model.review.ReviewViewModel
 import com.mike.hms.model.review.ReviewsWithUserInfo
 import java.text.SimpleDateFormat
@@ -82,7 +83,6 @@ fun ReviewsScreen(
 ) {
 
     val reviews by reviewViewModel.reviews.collectAsState()
-
     var selectedRating by remember { mutableStateOf<Int?>(null) }
     val filteredReviews = remember(selectedRating, reviews) {
         if (selectedRating != null) {
@@ -90,6 +90,10 @@ fun ReviewsScreen(
         } else {
             reviews
         }
+    }
+
+    LaunchedEffect(Unit) {
+        reviewViewModel.getReviewsByUserId(HMSPreferences.userId.value)
     }
 
     Scaffold(
@@ -136,12 +140,11 @@ fun ReviewsScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                if(filteredReviews.isEmpty()){
-                    item{
+                if (filteredReviews.isEmpty()) {
+                    item {
                         NoReviewsYetColumn(modifier.fillMaxSize())
                     }
-                }
-                else {
+                } else {
                     items(filteredReviews.size) { index ->
                         ReviewCard(filteredReviews[index])
                     }
