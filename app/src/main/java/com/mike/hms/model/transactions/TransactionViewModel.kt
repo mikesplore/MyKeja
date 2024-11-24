@@ -79,26 +79,5 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    // Delete Transactions by User ID
-    fun deleteTransactions(userId: String, onSuccess: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            repository.deleteTransactionsForUser(userId)
-                .catch { exception ->
-                    Log.e("TransactionViewModel", "Error deleting transactions: ${exception.message}")
-                    _error.value = exception.localizedMessage
-                }
-                .collect { result ->
-                    if (result) {
-                        onSuccess(true)
-                        Log.d("TransactionViewModel", "Deleted transactions for user ID: $userId")
-                        _transactions.value = emptyList()
-                    } else {
-                        onSuccess(false)
-                        _error.value = "Failed to delete transactions for user ID: $userId"
-                    }
-                }
-            _isLoading.value = false
-        }
-    }
+
 }
