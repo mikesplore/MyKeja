@@ -67,8 +67,11 @@ fun NavGraph(
 
         }
 
-        composable("houseReviews") {
-            HouseReviewsScreen(navController, context)
+        composable("houseReviews/{houseID}", arguments = listOf(navArgument("houseID") {
+            type = NavType.StringType
+        })) {
+            val houseID = it.arguments?.getString("houseID")
+            HouseReviewsScreen(houseID!!, navController, context)
         }
 
         composable("houseGallery") {
