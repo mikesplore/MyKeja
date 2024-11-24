@@ -198,7 +198,8 @@ fun TransactionsScreen(
                             .fillMaxWidth()
                             .background(CC.secondaryColor().copy(alpha = 0.1f))
                             .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         TableHeader("No", screenWidth)
                         TableHeader("ID", screenWidth)
