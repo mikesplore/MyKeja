@@ -1,10 +1,8 @@
-package com.mike.hms.viewmodel
+package com.mike.hms.model.transactions
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mike.hms.model.statements.StatementEntity
-import com.mike.hms.model.statements.StatementRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,12 +11,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StatementViewModel @Inject constructor(
-    private val repository: StatementRepository
+class TransactionViewModel @Inject constructor(
+    private val repository: TransactionRepository
 ) : ViewModel() {
 
-    private val _statements = MutableStateFlow<List<StatementEntity>>(emptyList())
-    val statements: StateFlow<List<StatementEntity>> = _statements
+    private val _transactions = MutableStateFlow<List<TransactionEntity>>(emptyList())
+    val transactions: StateFlow<List<TransactionEntity>> = _transactions
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -26,23 +24,23 @@ class StatementViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    // Insert Statement
-    fun insertStatement(statement: StatementEntity, onSuccess: (Boolean) -> Unit) {
+    // Insert Transaction
+    fun insertTransaction(transaction: TransactionEntity, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
-            repository.insertStatement(statement)
+            repository.insertTransaction(transaction)
                 .catch { exception ->
-                    Log.e("StatementViewModel", "Error inserting statement: ${exception.message}")
+                    Log.e("TransactionViewModel", "Error inserting transaction: ${exception.message}")
                     _error.value = exception.localizedMessage
                     onSuccess(false)
                 }
                 .collect { result ->
                     if (result) {
-                        Log.d("StatementViewModel", "Inserted statement: $statement")
+                        Log.d("TransactionViewModel", "Inserted transaction: $transaction")
                         onSuccess(true)
-                        getStatements(statement.userId) // Refresh data
+                        getTransactions(transaction.userId) // Refresh data
                     } else {
-                        _error.value = "Failed to insert statement."
+                        _error.value = "Failed to insert transaction."
                         onSuccess(false)
                     }
                 }
@@ -50,30 +48,30 @@ class StatementViewModel @Inject constructor(
         }
     }
 
-    // Get Statements by User ID
-    fun getStatements(userId: String) {
+    // Get Transactions by User ID
+    fun getTransactions(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            repository.retrieveStatementsByUserId(userId)
+            repository.retrieveTransactionsByUserId(userId)
                 .catch { exception ->
-                    Log.e("StatementViewModel", "Error retrieving statements: ${exception.message}")
+                    Log.e("TransactionViewModel", "Error retrieving transactions: ${exception.message}")
                     _error.value = exception.localizedMessage
                 }
-                .collect { statementsFlow ->
-                    statementsFlow
+                .collect { transactionsFlow ->
+                    transactionsFlow
                         .catch { innerException ->
                             Log.e(
-                                "StatementViewModel",
+                                "TransactionViewModel",
                                 "Error in inner flow: ${innerException.message}"
                             )
                             _error.value = innerException.localizedMessage
                         }
-                        .collect { retrievedStatements ->
-                            if (retrievedStatements.isNotEmpty()) {
-                                Log.d("StatementViewModel", "Retrieved statements: $retrievedStatements")
-                                _statements.value = retrievedStatements
+                        .collect { retrievedTransactions ->
+                            if (retrievedTransactions.isNotEmpty()) {
+                                Log.d("TransactionViewModel", "Retrieved transactions: $retrievedTransactions")
+                                _transactions.value = retrievedTransactions
                             } else {
-                                _error.value = "No statements found for user ID: $userId"
+                                _error.value = "No transactions found for user ID: $userId"
                             }
                         }
                 }
@@ -81,23 +79,23 @@ class StatementViewModel @Inject constructor(
         }
     }
 
-    // Delete Statements by User ID
-    fun deleteStatements(userId: String, onSuccess: (Boolean) -> Unit) {
+    // Delete Transactions by User ID
+    fun deleteTransactions(userId: String, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             _isLoading.value = true
-            repository.deleteStatementsForUser(userId)
+            repository.deleteTransactionsForUser(userId)
                 .catch { exception ->
-                    Log.e("StatementViewModel", "Error deleting statements: ${exception.message}")
+                    Log.e("TransactionViewModel", "Error deleting transactions: ${exception.message}")
                     _error.value = exception.localizedMessage
                 }
                 .collect { result ->
                     if (result) {
                         onSuccess(true)
-                        Log.d("StatementViewModel", "Deleted statements for user ID: $userId")
-                        _statements.value = emptyList()
+                        Log.d("TransactionViewModel", "Deleted transactions for user ID: $userId")
+                        _transactions.value = emptyList()
                     } else {
                         onSuccess(false)
-                        _error.value = "Failed to delete statements for user ID: $userId"
+                        _error.value = "Failed to delete transactions for user ID: $userId"
                     }
                 }
             _isLoading.value = false
