@@ -54,6 +54,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun UserCard(
     user: UserEntity,
+    modifier: Modifier = Modifier,
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -64,7 +65,7 @@ fun UserCard(
 
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(brush, RoundedCornerShape(16.dp))
             .fillMaxWidth()
             .padding(10.dp),
