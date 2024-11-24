@@ -1,38 +1,48 @@
 package com.mike.hms.model.review
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRepository): ViewModel() {
-    private val _reviews = MutableLiveData<List<ReviewsWithUserInfo>>()
-    val reviews: LiveData<List<ReviewsWithUserInfo>> = _reviews
+class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRepository) :
+    ViewModel() {
 
-    fun insertReview(review: ReviewEntity, onSuccess: (Boolean) -> Unit) {
-        reviewRepository.insertReview(review) { success ->
-            onSuccess(success)
+    // StateFlow for reviews
+    private val _reviews = MutableStateFlow<List<ReviewsWithUserInfo>>(emptyList())
+    val reviews: StateFlow<List<ReviewsWithUserInfo>> = _reviews
+
+    // Collect all reviews as a Flow
+    val allReviews = reviewRepository.observeReviews()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // Insert a review
+    fun insertReview(review: ReviewEntity, onResult: (Result<Boolean>) -> Unit) {
+        viewModelScope.launch {
+            reviewRepository.insertReview(review)
+                .collect { result -> onResult(result) }
         }
     }
 
+    // Fetch reviews by userId as a Flow
     fun getReviewsByUserId(userId: String) {
-        reviewRepository.getReviewsByUserId(userId) { reviews ->
-            this._reviews.value = reviews
+        viewModelScope.launch {
+            reviewRepository.getReviewsByUserId(userId)
+                .collect { userReviews -> _reviews.value = userReviews }
         }
     }
 
-    fun deleteReview(reviewId: Int, onSuccess: (Boolean) -> Unit) {
-        reviewRepository.deleteReview(reviewId) { success ->
-            onSuccess(success)
+    // Delete a review
+    fun deleteReview(reviewId: Int, onResult: (Result<Boolean>) -> Unit) {
+        viewModelScope.launch {
+            reviewRepository.deleteReview(reviewId)
+                .collect { result -> onResult(result) }
         }
-
     }
-
-    fun getAllReviews() {
-        reviewRepository.getAllReviews()
-    }
-
 }
