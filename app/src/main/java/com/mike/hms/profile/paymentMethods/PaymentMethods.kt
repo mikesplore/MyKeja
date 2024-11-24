@@ -14,28 +14,35 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.RemoveRedEye
+import androidx.compose.material.icons.outlined.Money
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.mike.hms.houses.formatNumber
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.paymentMethods.CreditCardWithUser
 import com.mike.hms.model.paymentMethods.MpesaViewModel
@@ -43,6 +50,9 @@ import com.mike.hms.model.paymentMethods.MpesaWithUser
 import com.mike.hms.model.paymentMethods.PayPalViewModel
 import com.mike.hms.model.paymentMethods.PayPalWithUser
 import com.mike.hms.model.userModel.UserEntity
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.toString
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
@@ -59,7 +69,85 @@ fun PaymentMethodsSection(
     var selectedTab by remember { mutableIntStateOf(0) }
     var showAddPaymentMethod by remember { mutableStateOf(false) }
     var displayCvvDialog by remember { mutableStateOf(false) }
+    var displayCardBalance by remember { mutableStateOf(false) }
+    var displayAddFundsDialog by remember { mutableStateOf(false) }
+    var amount by remember { mutableStateOf("") } // Use String to allow text input
+    var successMessage by remember { mutableStateOf("Please enter the amount you want to add to your account") }
+    val scope = rememberCoroutineScope()
+    var isError by remember { mutableStateOf(false) }
 
+    if (displayAddFundsDialog) {
+        CC.ConfirmDialog(
+            title = "Add Funds",
+            message = successMessage,
+            textFieldValue = amount,
+            keyboardType = KeyboardType.Phone,
+            onTextFieldValueChange = { amount = it }, // Update the amount correctly
+            confirmText = "Add Funds",
+            messageColor = if (isError) Color.Red else CC.textColor(),
+            onConfirm = {
+                when {
+                    amount.isEmpty() -> {
+                        successMessage = "Please enter the amount you want to add to your account"
+                        return@ConfirmDialog
+                    }
+                    amount.any { !it.isDigit() } -> {
+                        successMessage = "Invalid input. Please enter a valid numeric amount."
+                        isError = true
+                        return@ConfirmDialog
+                    }
+                    else -> {
+                        val currentBalance = creditCard?.creditCard?.balance?.toIntOrNull() ?: 0 // Convert current balance to Int, default to 0
+                        val enteredAmount = amount.toIntOrNull() // Convert the entered amount to Int
+
+                        if (enteredAmount == null) {
+                            successMessage = "Invalid input. Please enter a valid numeric amount."
+                            isError = true
+                        } else {
+                            val newBalance = currentBalance + enteredAmount // Add the current balance and entered amount
+                            val updatedCreditCard = creditCard?.creditCard?.copy(balance = newBalance.toString()) // Convert the result back to String
+
+                            if (updatedCreditCard != null) {
+                                creditCardViewModel.insertCreditCard(updatedCreditCard) { success ->
+                                    if (success) {
+                                        successMessage = "Funds added successfully!"
+                                        creditCardViewModel.getCreditCard(creditCard.creditCard.userId)
+                                        amount = ""
+                                        scope.launch {
+                                            delay(1000)
+                                            displayAddFundsDialog = false
+                                        }
+                                    } else {
+                                        successMessage = "Failed to add funds. Try again."
+                                        isError = true
+                                    }
+                                }
+                            } else {
+                                successMessage = "Failed to process the request. Try again."
+                                isError = true
+                            }
+                        }
+
+                    }
+                }
+            },
+            onDismiss = { displayAddFundsDialog = false }
+        )
+    }
+
+    val balance = creditCard?.creditCard?.balance?.toString().orEmpty().ifEmpty { "0" }
+
+    if (displayCardBalance) {
+        CC.ConfirmDialog(
+            title = "Card Balance",
+            message = "Your card balance is Ksh. ${formatNumber(balance.toInt())}",
+            confirmText = "Dismiss",
+            onConfirm = {
+                displayCardBalance = false
+            },
+            onDismiss = { displayCardBalance = false }
+        )
+    }
     val paymentMethods = listOf(
         "Credit Card",
         "PayPal",
@@ -96,30 +184,15 @@ fun PaymentMethodsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             paymentMethods.forEachIndexed { index, paymentMethod ->
-                Box(
-                    modifier = Modifier
-                        .border(
-                            width = 1.dp,
-                            color = if (selectedTab == index) CC.secondaryColor() else CC.textColor(),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .background(
-                            brush = if (selectedTab == index) brush else transparentBrush,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .width(LocalConfiguration.current.screenWidthDp.dp * 0.28f)
-                        .height(LocalConfiguration.current.screenWidthDp.dp * 0.1f)
-                        .clickable { selectedTab = index },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        paymentMethod,
-                        style = CC.contentTextStyle().copy(
-                            fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                            color = if (selectedTab == index) CC.primaryColor() else CC.textColor()
-                        )
-                    )
-                }
+                //Payment method Box
+                PaymentMethodBox(
+                    selectedTab = selectedTab,
+                    onTabSelected = { selectedTab = it },
+                    index = index,
+                    paymentMethod = paymentMethod,
+                    brush = brush,
+                    transparentBrush = transparentBrush
+                )
             }
         }
 
@@ -143,26 +216,39 @@ fun PaymentMethodsSection(
                         color = CC.textColor().copy(alpha = 0.2f),
                         thickness = 1.dp
                     )
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .fillMaxWidth(0.9f)
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Display card details", style = CC.contentTextStyle())
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconToggleButton(
-                            onCheckedChange = { displayCvvDialog = !displayCvvDialog },
-                            checked = displayCvvDialog
-                        ) {
-                            Icon(
-                                if (displayCvvDialog) Icons.Default.LockOpen else Icons.Default.Lock,
-                                contentDescription = "Display card details",
-                                tint = CC.textColor()
-                            )
-                        }
-                    }
+
+                    //Card Sub Menu
+                    Spacer(modifier = Modifier.height(10.dp))
+                    CardSubMenu(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        displayCvvDialog = { displayCvvDialog = !displayCvvDialog },
+                        text = "Display Card Details",
+                        icon = Icons.Filled.RemoveRedEye
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    CardSubMenu(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        displayCvvDialog = { displayCardBalance = !displayCardBalance },
+                        text = "Display Card Balance",
+                        icon = Icons.Outlined.Money
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    CardSubMenu(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        displayCvvDialog = { displayAddFundsDialog = !displayAddFundsDialog },
+                        text = "Add Funds",
+                        icon = Icons.Filled.AttachMoney
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    HorizontalDivider(
+                        color = CC.textColor().copy(alpha = 0.2f),
+                        thickness = 1.dp
+                    )
+
                 } else {
                     PaymentMethodEmptyState(
                         paymentType = "credit card",
@@ -247,6 +333,75 @@ fun PaymentMethodsSection(
     }
 }
 
+@Composable
+fun PaymentMethodBox(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit,
+    index: Int,
+    paymentMethod: String,
+    brush: Brush,
+    transparentBrush: Brush
+) {
+    Box(
+        modifier = Modifier
+            .border(
+                width = 1.dp,
+                color = if (selectedTab == index) CC.secondaryColor() else CC.textColor(),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .background(
+                brush = if (selectedTab == index) brush else transparentBrush,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .width(LocalConfiguration.current.screenWidthDp.dp * 0.28f)
+            .height(LocalConfiguration.current.screenWidthDp.dp * 0.1f)
+            .clickable { onTabSelected(index) },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            paymentMethod,
+            style = CC.contentTextStyle().copy(
+                fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
+                color = if (selectedTab == index) CC.primaryColor() else CC.textColor()
+            )
+        )
+    }
+}
+
+@Composable
+fun CardSubMenu(
+    displayCvvDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+    text: String,
+    icon: ImageVector
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(CC.extraSecondaryColor())
+            .clickable { displayCvvDialog() }
+            .fillMaxWidth(0.9f)
+            .padding(vertical = 12.dp), // Increased padding
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = CC.textColor(),
+            modifier = Modifier
+                .padding(start = 8.dp) // Increased padding
+                .size(24.dp) // Increased icon size
+        )
+        Spacer(modifier = Modifier.width(16.dp)) // Added spacer between icon and text
+        Text(
+            text = text,
+            style = CC.contentTextStyle().copy(
+                fontWeight = FontWeight.Medium, // Added font weight
+                fontSize = 16.sp // Increased font size
+            )
+        )
+    }
+}
 
 @Composable
 private fun PaymentMethodEmptyState(
