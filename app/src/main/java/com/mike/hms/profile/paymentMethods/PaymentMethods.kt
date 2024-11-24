@@ -49,10 +49,13 @@ import com.mike.hms.model.paymentMethods.MpesaViewModel
 import com.mike.hms.model.paymentMethods.MpesaWithUser
 import com.mike.hms.model.paymentMethods.PayPalViewModel
 import com.mike.hms.model.paymentMethods.PayPalWithUser
+import com.mike.hms.model.transactions.PaymentMethod
+import com.mike.hms.model.transactions.TransactionEntity
+import com.mike.hms.model.transactions.TransactionType
+import com.mike.hms.model.transactions.TransactionViewModel
 import com.mike.hms.model.userModel.UserEntity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.toString
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
@@ -62,6 +65,7 @@ fun PaymentMethodsSection(
     payPal: PayPalWithUser?,
     mpesa: MpesaWithUser?,
     creditCardViewModel: CreditCardViewModel,
+    transactionViewModel: TransactionViewModel,
     payPalViewModel: PayPalViewModel,
     mpesaViewModel: MpesaViewModel,
     context: Context
@@ -71,66 +75,12 @@ fun PaymentMethodsSection(
     var displayCvvDialog by remember { mutableStateOf(false) }
     var displayCardBalance by remember { mutableStateOf(false) }
     var displayAddFundsDialog by remember { mutableStateOf(false) }
-    var amount by remember { mutableStateOf("") } // Use String to allow text input
-    var successMessage by remember { mutableStateOf("Please enter the amount you want to add to your account") }
-    val scope = rememberCoroutineScope()
-    var isError by remember { mutableStateOf(false) }
 
     if (displayAddFundsDialog) {
-        CC.ConfirmDialog(
-            title = "Add Funds",
-            message = successMessage,
-            textFieldValue = amount,
-            keyboardType = KeyboardType.Phone,
-            onTextFieldValueChange = { amount = it }, // Update the amount correctly
-            confirmText = "Add Funds",
-            messageColor = if (isError) Color.Red else CC.textColor(),
-            onConfirm = {
-                when {
-                    amount.isEmpty() -> {
-                        successMessage = "Please enter the amount you want to add to your account"
-                        return@ConfirmDialog
-                    }
-                    amount.any { !it.isDigit() } -> {
-                        successMessage = "Invalid input. Please enter a valid numeric amount."
-                        isError = true
-                        return@ConfirmDialog
-                    }
-                    else -> {
-                        val currentBalance = creditCard?.creditCard?.balance?.toIntOrNull() ?: 0 // Convert current balance to Int, default to 0
-                        val enteredAmount = amount.toIntOrNull() // Convert the entered amount to Int
-
-                        if (enteredAmount == null) {
-                            successMessage = "Invalid input. Please enter a valid numeric amount."
-                            isError = true
-                        } else {
-                            val newBalance = currentBalance + enteredAmount // Add the current balance and entered amount
-                            val updatedCreditCard = creditCard?.creditCard?.copy(balance = newBalance.toString()) // Convert the result back to String
-
-                            if (updatedCreditCard != null) {
-                                creditCardViewModel.insertCreditCard(updatedCreditCard) { success ->
-                                    if (success) {
-                                        successMessage = "Funds added successfully!"
-                                        creditCardViewModel.getCreditCard(creditCard.creditCard.userId)
-                                        amount = ""
-                                        scope.launch {
-                                            delay(1000)
-                                            displayAddFundsDialog = false
-                                        }
-                                    } else {
-                                        successMessage = "Failed to add funds. Try again."
-                                        isError = true
-                                    }
-                                }
-                            } else {
-                                successMessage = "Failed to process the request. Try again."
-                                isError = true
-                            }
-                        }
-
-                    }
-                }
-            },
+        AddFundsDialog(
+            creditCard = creditCard,
+            creditCardViewModel = creditCardViewModel,
+            transactionViewModel = transactionViewModel,
             onDismiss = { displayAddFundsDialog = false }
         )
     }
@@ -427,6 +377,96 @@ private fun PaymentMethodEmptyState(
             addForm()
         }
     }
+}
+
+
+@Composable
+fun AddFundsDialog(
+    creditCard: CreditCardWithUser?, // Pass the CreditCardWithUser object
+    creditCardViewModel: CreditCardViewModel, // ViewModel for handling logic
+    transactionViewModel: TransactionViewModel,
+    onDismiss: () -> Unit
+) {
+        var amount by remember { mutableStateOf("") }
+        var successMessage by remember { mutableStateOf("Enter the amount you want to add.") }
+        var isError by remember { mutableStateOf(false) }
+        val scope = rememberCoroutineScope()
+
+        CC.ConfirmDialog(
+            title = "Add Funds",
+            message = successMessage,
+            textFieldValue = amount,
+            keyboardType = KeyboardType.Phone,
+            onTextFieldValueChange = { amount = it }, // Update the amount correctly
+            confirmText = "Add Funds",
+            messageColor = if (isError) Color.Red else CC.textColor(),
+            onConfirm = {
+                when {
+                    amount.isEmpty() -> {
+                        successMessage = "Please enter the amount you want to add to your account"
+                        return@ConfirmDialog
+                    }
+                    amount.any { !it.isDigit() } -> {
+                        successMessage = "Invalid input. Please enter a valid numeric amount."
+                        isError = true
+                        return@ConfirmDialog
+                    }
+                    else -> {
+                        val currentBalance = creditCard?.creditCard?.balance?.toIntOrNull() ?: 0 // Convert current balance to Int, default to 0
+                        val enteredAmount = amount.toIntOrNull() // Convert the entered amount to Int
+
+                        if (enteredAmount == null) {
+                            successMessage = "Invalid input. Please enter a valid numeric amount."
+                            isError = true
+                        } else {
+                            val newBalance = currentBalance + enteredAmount // Add the current balance and entered amount
+                            val updatedCreditCard = creditCard?.creditCard?.copy(balance = newBalance.toString()) // Convert the result back to String
+
+                            if (updatedCreditCard != null) {
+                                creditCardViewModel.insertCreditCard(updatedCreditCard) { success ->
+                                    if (success) {
+                                        CC.generateTransactionId { id ->
+                                        val transaction = TransactionEntity(
+                                          transactionID = id,
+                                            paymentMethod = PaymentMethod.CREDIT_CARD,
+                                            transactionType = TransactionType.ADDITION,
+                                            amount = amount,
+                                            userId = creditCard.creditCard.userId,
+                                            date = CC.getCurrentDate()
+                                        )
+
+                                        transactionViewModel.insertTransaction(transaction){ success ->
+                                            if(success){
+                                                successMessage = "Funds added successfully!"
+                                                creditCardViewModel.getCreditCard(creditCard.creditCard.userId)
+                                                amount = ""
+                                            }
+                                            else {
+                                                successMessage = "An Error Occurred"
+                                                isError = true
+                                            }
+                                        }}
+
+                                        scope.launch {
+                                            delay(1000)
+                                            onDismiss() // Close dialog after success
+                                        }
+                                    } else {
+                                        successMessage = "Failed to add funds. Try again."
+                                        isError = true
+                                    }
+                                }
+                            } else {
+                                successMessage = "Failed to process the request. Try again."
+                                isError = true
+                            }
+                        }
+                    }
+                }
+            },
+            onDismiss = onDismiss
+        )
+
 }
 
 
