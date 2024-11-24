@@ -235,8 +235,12 @@ fun CreditCard(
     }
 }
 
+/**
+ * This function takes a credit card number as input and returns the absolute difference between the most frequent digit and 6.
+ * @param cardNumber: the credit card number as a string.
+ *@return: the absolute difference between the most frequent digit and 6.
+ */
 
-//Lets decide the index of the image to be picked based on the credit card number
 fun findDigitAndTransform(cardNumber: String): Int {
     val digitFrequencies = mutableMapOf<Char, Int>()
 
@@ -251,8 +255,8 @@ fun findDigitAndTransform(cardNumber: String): Int {
     return if (mostFrequentDigit != null && mostFrequentDigit.isDigit()) {
         val digit = mostFrequentDigit.digitToInt()
         val transformedValue = abs(6 - digit)
-        transformedValue.coerceIn(1, 6)
+        transformedValue.coerceIn(0, 5) // Ensure result is between 0 and 5
     } else {
-        1
+        0 // Default value if no digits or most frequent digit is not a number
     }
 }
