@@ -500,4 +500,11 @@ object CommonComponents {
         }
     }
 
+    fun generateReviewId(onCodeUpdated: (String) -> Unit){
+        updateAndGetCode("Reviews") { code ->
+            val reviewId = "Rev$code"
+            onCodeUpdated(reviewId)
+        }
+    }
+
 }
