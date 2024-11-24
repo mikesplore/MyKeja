@@ -2,10 +2,14 @@ package com.mike.hms.model.paymentMethods
 
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
+import com.mike.hms.model.userModel.UserEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import kotlin.text.get
 
 class CreditCardRepository(private val creditCardDao: CreditCardDao) {
 
@@ -28,18 +32,49 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
         }
     }
 
-    fun retrieveCreditCardByUserId(userId: String): Flow<Flow<CreditCardWithUser>> = flow {
-        emit(creditCardDao.getCreditCardWithUser(userId))
-        val creditCard = retrieveCreditCardFromFirebase()
-        creditCardDao.insertCreditCard(creditCard)
+    fun retrieveCreditCardByUserId(userId: String): Flow<CreditCardWithUser> = flow {
+        val localCreditCard = creditCardDao.getCreditCardWithUser(userId).firstOrNull()
+        if (localCreditCard != null) {
+            emit(localCreditCard)
+        } else {
+            val firebaseCreditCard = retrieveCreditCardFromFirebase(userId)
+            if (firebaseCreditCard != null) {
+                creditCardDao.insertCreditCard(firebaseCreditCard)
+                emit(creditCardDao.getCreditCardWithUser(userId).first())
+            } else {
+                emit(CreditCardWithUser(CreditCardEntity(), UserEntity()))
+            }
+        }
     }.catch { e ->
         Log.e("CreditCardRepository", "Error retrieving credit card: ${e.message}")
+        emit(CreditCardWithUser(CreditCardEntity(), UserEntity()))
     }
 
-    private suspend fun retrieveCreditCardFromFirebase(): CreditCardEntity {
-        val creditCardRef = database.child("CreditCards")
-        val dataSnapshot = creditCardRef.get().await()
-        return dataSnapshot.getValue(CreditCardEntity::class.java) ?: CreditCardEntity()
+    private suspend fun retrieveCreditCardFromFirebase(userId: String): CreditCardEntity? {
+        return try {
+            val creditCardRef = database.child("CreditCards").child(userId)
+            val dataSnapshot = creditCardRef.get().await()
+            dataSnapshot.getValue(CreditCardEntity::class.java)
+        } catch (e: Exception) {
+            Log.e("CreditCardRepository", "Error retrieving credit card from Firebase: ${e.message}")
+            null
+        }
+    }
+
+    fun updateCreditCard(creditCard: CreditCardEntity): Flow<Boolean> = flow {
+        creditCardDao.insertCreditCard(creditCard)
+        emit(updateCreditCardInFirebase(creditCard))
+    }
+
+    private suspend fun updateCreditCardInFirebase(creditCard: CreditCardEntity): Boolean {
+        return try {
+            val creditCardRef = database.child("CreditCards").child(creditCard.userId)
+            creditCardRef.setValue(creditCard).await()
+            true
+        } catch (e: Exception) {
+            Log.e("CreditCardRepository", "Error updating credit card in Firebase: ${e.message}")
+            false
+        }
     }
 
     fun deleteCreditCard(userId: String): Flow<Boolean> = flow {
@@ -57,5 +92,4 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
             false
         }
     }
-
 }
