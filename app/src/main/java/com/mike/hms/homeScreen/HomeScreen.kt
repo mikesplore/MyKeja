@@ -132,10 +132,10 @@ fun HomeScreen(
                 flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
             ) { page ->
                 when (screens[page]) {
-                    Screen.Profile -> Profile(context, navController, userViewModel, creditCardViewModel)
+                    Screen.Profile -> DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
                     Screen.Favourites -> Favourites(navController, favoriteViewModel)
                     Screen.Chat -> Chat()
-                    Screen.Home -> DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
+                    Screen.Home -> Profile(context, navController, userViewModel, creditCardViewModel)
                 }
             }
         }
