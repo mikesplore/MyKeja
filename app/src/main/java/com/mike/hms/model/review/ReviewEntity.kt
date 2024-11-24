@@ -14,9 +14,7 @@ data class ReviewEntity(
     val reviewText: String,
     val timestamp: String
 ){
-    constructor(userId: String, rating: Int, reviewText: String, timestamp: String, houseId: String) :
-            this(0,houseId, userId, rating, reviewText, timestamp)
-
+    constructor(): this (0, "", "", 0, "", "")
 }
 
 data class ReviewsWithUserInfo(
