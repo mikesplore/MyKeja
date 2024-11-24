@@ -127,6 +127,23 @@ fun ManageAccount(userViewModel: UserViewModel, context: Context, navController:
                 thickness = 1.dp
             )
             Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    onClick = {auth.signOut()},
+                    colors = CC.buttonColors(),
+                ) {
+                    Text("Sign Out", style = CC.contentTextStyle())
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(
+                color = CC.textColor().copy(alpha = 0.5f),
+                thickness = 1.dp
+            )
 
             //Delete Account Section
             Text(
