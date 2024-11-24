@@ -12,9 +12,10 @@ data class CreditCardEntity(
     val userId: String = "",
     val cardNumber: String = "",
     val expiryDate: String = "",
-    val cvv: String = ""
+    val cvv: String = "",
+    val balance: String = ""
 ){
-    constructor() : this("", "", "", "", "")
+    constructor() : this("", "", "", "", "", "")
 }
 
 data class CreditCardWithUser(
