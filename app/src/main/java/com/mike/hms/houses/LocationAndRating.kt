@@ -91,7 +91,7 @@ fun HouseLocationAndRatings(house: HouseEntity, navController: NavController) {
                 contentDescription = "Arrow",
                 tint = CC.secondaryColor(),
                 modifier = Modifier.clickable {
-                    navController.navigate("houseReviews")
+                    navController.navigate("houseReviews/${house.houseID}")
                 }
             )
         }
