@@ -91,7 +91,7 @@ fun AuthenticatedUser(
             payPalViewModel.getPayPal(HMSPreferences.userId.value)
 
             Log.d(
-                "CreditCardViewModell",
+                "CreditCardViewModel",
                 "Attempt ${attempt + 1}: Fetching credit card for user ID: ${HMSPreferences.userId.value}"
             )
 
@@ -101,7 +101,7 @@ fun AuthenticatedUser(
             // Check if the credit card is fetched (assuming creditCard is a state or flow)
 
             if (creditCard != null) {
-                Log.d("CreditCardViewModell", "Credit card fetched successfully: $creditCard")
+                Log.d("CreditCardViewModel", "Credit card fetched successfully: $creditCard")
                 break
             }
 
@@ -110,7 +110,7 @@ fun AuthenticatedUser(
         }
 
         if (creditCard == null) {
-            Log.d("CreditCardViewModell", "Failed to fetch credit card after $maxRetries attempts.")
+            Log.d("CreditCardViewModel", "Failed to fetch credit card after $maxRetries attempts.")
         }
     }
 
@@ -183,7 +183,7 @@ fun AuthenticatedUser(
                     icon = Icons.Default.RateReview,
                     text = "Ratings and Reviews",
                     navController = navController,
-                    destination = ""
+                    destination = "reviews"
                 )
             }
             item { Spacer(modifier = Modifier.height(20.dp)) }
