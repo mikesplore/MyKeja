@@ -12,6 +12,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,10 +23,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,8 +44,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.mike.hms.ui.theme.CommonComponents
+import java.text.SimpleDateFormat
 import java.time.LocalTime
+import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
@@ -96,7 +101,7 @@ object CommonComponents {
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
 
-        )
+            )
     }
 
     @Composable
@@ -216,7 +221,7 @@ object CommonComponents {
         isError: Boolean = false,
         leadingIcon: @Composable (() -> Unit)? = null,
 
-    ) {
+        ) {
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -235,7 +240,7 @@ object CommonComponents {
             singleLine = singleLine,
             isError = isError,
 
-        )
+            )
     }
 
     @Composable
@@ -317,7 +322,9 @@ object CommonComponents {
                                 imeAction = ImeAction.Done
                             ),
                             colors = outLinedTextFieldColors(),
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
                         )
                     }
                 }
@@ -354,6 +361,58 @@ object CommonComponents {
         )
     }
 
+    fun getCurrentDate(): String {
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return formatter.format(Date())
+    }
+
+    fun formatDateToShortDate(date: String): String {
+        return try {
+            val parser = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val formatter =
+                SimpleDateFormat("dd/MM/yy", Locale.getDefault()) // Corrected format string
+            val parsedDate = parser.parse(date)
+            formatter.format(parsedDate)
+        } catch (e: Exception) {
+            date
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun DatePicker(onDateSelected: (String) -> Unit, onShowDatePickerChange: (Boolean) -> Unit) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { onShowDatePickerChange(false) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onShowDatePickerChange(false)
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val selectedDate = SimpleDateFormat(
+                            "dd/MM/yyyy",
+                            Locale.getDefault()
+                        ).format(Date(millis))
+                        onDateSelected(selectedDate) // Pass selected date to the callback
+                    }
+                }) {
+                    Text("OK", style = MaterialTheme.typography.bodyMedium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onShowDatePickerChange(false) }) {
+                    Text("Cancel", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = true
+            )
+        }
+
+    }
+
 
     data class MyCode(
         val id: String = UUID.randomUUID().toString(),
@@ -387,52 +446,59 @@ object CommonComponents {
     }
 
     fun generateHouseId(onCodeUpdated: (String) -> Unit) {
-        updateAndGetCode("House"){code ->
+        updateAndGetCode("House") { code ->
             val houseId = "H$code"
             onCodeUpdated(houseId)
         }
     }
 
     fun generateUserId(onCodeUpdated: (String) -> Unit) {
-        updateAndGetCode("Users"){code ->
+        updateAndGetCode("Users") { code ->
             val userId = "User$code"
             onCodeUpdated(userId)
         }
     }
 
     fun generateUserId(onCodeUpdated: (String) -> Unit, path: String) {
-        updateAndGetCode(path){code ->
+        updateAndGetCode(path) { code ->
             val userId = "User$code"
             onCodeUpdated(userId)
         }
     }
 
     fun generateCardId(onCodeUpdated: (String) -> Unit) {
-        updateAndGetCode("Cards"){code ->
+        updateAndGetCode("Cards") { code ->
             val cardId = "Card$code"
             onCodeUpdated(cardId)
         }
     }
 
     fun generateFavouriteId(onCodeUpdated: (String) -> Unit) {
-        updateAndGetCode("Favorites"){code ->
+        updateAndGetCode("Favorites") { code ->
             val favouriteId = "Fav$code"
             onCodeUpdated(favouriteId)
         }
     }
 
     fun generateMpesaId(onCodeUpdated: (String) -> Unit) {
-        updateAndGetCode("Mpesa"){code ->
+        updateAndGetCode("Mpesa") { code ->
             val mpesaId = "Mpesa$code"
             onCodeUpdated(mpesaId)
         }
     }
 
     fun generatePayPalId(onCodeUpdated: (String) -> Unit) {
-        updateAndGetCode("PayPal"){code ->
+        updateAndGetCode("PayPal") { code ->
             val payPalId = "PayPal$code"
             onCodeUpdated(payPalId)
         }
     }
-    
+
+    fun generateTransactionId(onCodeUpdated: (String) -> Unit) {
+        updateAndGetCode("Transaction") { code ->
+            val transactionId = "Trans$code"
+            onCodeUpdated(transactionId)
+        }
+    }
+
 }
