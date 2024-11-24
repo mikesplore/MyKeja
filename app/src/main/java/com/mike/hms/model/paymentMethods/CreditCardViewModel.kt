@@ -63,26 +63,12 @@ class CreditCardViewModel @Inject constructor(
                     )
                     _error.value = exception.localizedMessage
                 }
-                .collect { creditCardFlow ->
-                    creditCardFlow
-                        .catch { innerException ->
-                            Log.e(
-                                "CreditCardViewModel",
-                                "Error in inner flow: ${innerException.message}"
-                            )
-                            _error.value = innerException.localizedMessage
-                        }
-                        .collect { creditCardWithUser ->
-                            if (true) {
-                                Log.d(
-                                    "CreditCardViewModel",
-                                    "Retrieved credit card: $creditCardWithUser"
-                                )
-                                _creditCard.value = creditCardWithUser
-                            } else {
-                                _error.value = "No credit card found for user ID: $userId"
-                            }
-                        }
+                .collect { creditCardWithUser ->
+                    _creditCard.value = creditCardWithUser
+                    Log.d("CreditCardViewModel", "Retrieved credit card: $creditCardWithUser")
+                    // You can access individual fields like this:
+                     Log.d("CreditCardViewModel", "Card Number: ${creditCardWithUser.creditCard.cardNumber}")
+                    // ... other fields ...
                 }
             _isLoading.value = false
         }
