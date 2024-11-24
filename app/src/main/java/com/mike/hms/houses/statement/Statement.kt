@@ -1,4 +1,4 @@
-package com.mike.hms.houses.statement
+package com.mike.hms.houses.transaction
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.mike.hms.HMSPreferences
-import com.mike.hms.model.statements.StatementEntity
-import com.mike.hms.viewmodel.StatementViewModel
+import com.mike.hms.model.transactions.TransactionEntity
+import com.mike.hms.model.transactions.TransactionViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,10 +34,10 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatementsScreen(
+fun TransactionsScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    statementViewModel: StatementViewModel = hiltViewModel(),
+    transactionViewModel: TransactionViewModel = hiltViewModel(),
 
     ) {
     var selectedDate by remember { mutableStateOf("") }
@@ -45,17 +45,17 @@ fun StatementsScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val statements by statementViewModel.statements.collectAsState()
+    val transactions by transactionViewModel.transactions.collectAsState()
 
     LaunchedEffect(Unit) {
-        statementViewModel.getStatements(HMSPreferences.userId.value)
+        transactionViewModel.getTransactions(HMSPreferences.userId.value)
     }
 
 
-    // Filter statements
-    val filteredStatements = statements.filter { statement ->
-        (selectedDate.isEmpty() || statement.date == selectedDate) &&
-                (selectedHouse.isEmpty() || statement.houseID == selectedHouse)
+    // Filter transactions
+    val filteredTransactions = transactions.filter { transaction ->
+        (selectedDate.isEmpty() || transaction.date == selectedDate) &&
+                (selectedHouse.isEmpty() || transaction.transactionType.name == selectedHouse)
     }
 
     Scaffold(
@@ -63,7 +63,7 @@ fun StatementsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Statements",
+                        "Transactions",
                         style = CC.titleTextStyle(),
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -82,7 +82,7 @@ fun StatementsScreen(
                 ),
                 actions = {
                     // Add a refresh action
-                    IconButton(onClick = { statementViewModel.getStatements(HMSPreferences.userId.value) }) {
+                    IconButton(onClick = { transactionViewModel.getTransactions(HMSPreferences.userId.value) }) {
                         Icon(
                             Icons.Default.Refresh,
                             contentDescription = "Refresh",
@@ -175,7 +175,7 @@ fun StatementsScreen(
                 }
             }
 
-            // Statements Table
+            // Transactions Table
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -205,13 +205,13 @@ fun StatementsScreen(
                     }
 
                     // Table Content
-                    if (filteredStatements.isNotEmpty()) {
+                    if (filteredTransactions.isNotEmpty()) {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            items(filteredStatements) { statement ->
-                                TableRow(statement, screenWidth)
+                            items(filteredTransactions) { transaction ->
+                                TableRow(transaction, screenWidth)
                             }
                         }
                     } else {
@@ -258,7 +258,7 @@ private fun TableHeader(text: String, screenWidth: Dp) {
 }
 
 @Composable
-private fun TableRow(statement: StatementEntity, screenWidth: Dp) {
+private fun TableRow(transaction: TransactionEntity, screenWidth: Dp) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -275,10 +275,11 @@ private fun TableRow(statement: StatementEntity, screenWidth: Dp) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TableCell(statement.statementID, screenWidth)
-            TableCell(formatAmount(statement.amount), screenWidth, CC.secondaryColor())
-            TableCell(formatDate(statement.date), screenWidth)
-            TableCell(statement.houseID, screenWidth)
+            TableCell(transaction.transactionNo, screenWidth)
+            TableCell(transaction.transactionID, screenWidth)
+            TableCell(formatAmount(transaction.amount), screenWidth, CC.secondaryColor())
+            TableCell(formatDate(transaction.date), screenWidth)
+
         }
     }
 }
@@ -317,7 +318,7 @@ private fun EmptyState() {
                 tint = CC.secondaryColor()
             )
             Text(
-                "No statements found",
+                "No transactions found",
                 style = CC.contentTextStyle(),
                 textAlign = TextAlign.Center
             )
