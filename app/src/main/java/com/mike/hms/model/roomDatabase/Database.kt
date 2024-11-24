@@ -15,8 +15,8 @@ import com.mike.hms.model.paymentMethods.PayPalDao
 import com.mike.hms.model.paymentMethods.PayPalEntity
 import com.mike.hms.model.review.ReviewDao
 import com.mike.hms.model.review.ReviewEntity
-import com.mike.hms.model.statements.StatementDao
-import com.mike.hms.model.statements.StatementEntity
+import com.mike.hms.model.transactions.TransactionDao
+import com.mike.hms.model.transactions.TransactionEntity
 import com.mike.hms.model.userModel.UserDao
 import com.mike.hms.model.userModel.UserEntity
 
@@ -29,7 +29,7 @@ import com.mike.hms.model.userModel.UserEntity
         FavouriteEntity:: class,
         PayPalEntity::class,
         MpesaEntity::class,
-        StatementEntity::class
+        TransactionEntity::class
     ],
     version = 2,
     exportSchema = false
@@ -43,7 +43,7 @@ abstract class HMSDatabase : RoomDatabase() {
     abstract fun favoriteDao(): FavoriteDao
     abstract fun payPalDao(): PayPalDao
     abstract fun mpesaDao(): MpesaDao
-    abstract fun statementDao(): StatementDao
+    abstract fun transactionDao(): TransactionDao
 
 }
 
