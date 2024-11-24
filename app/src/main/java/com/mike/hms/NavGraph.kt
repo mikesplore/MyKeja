@@ -16,6 +16,7 @@ import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
 import com.mike.hms.houses.addOrEditHouse.HouseForm
 import com.mike.hms.houses.bookHouse.BookingInfoScreen
+import com.mike.hms.houses.ratingsAndReviews.ReviewsScreen
 import com.mike.hms.houses.statement.TransactionsScreen
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
@@ -91,6 +92,10 @@ fun NavGraph(
 
         composable("transaction"){
             TransactionsScreen(navController = navController, context = context)
+        }
+
+        composable("reviews"){
+            ReviewsScreen(navController)
         }
 
         composable("houseGallery/{houseID}", arguments = listOf(navArgument("houseID") {
