@@ -27,5 +27,4 @@ data class CreditCardWithUser(
     val user: UserEntity
 ){
     constructor() : this(CreditCardEntity(), UserEntity())
-
 }
