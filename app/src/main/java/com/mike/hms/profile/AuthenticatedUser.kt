@@ -2,8 +2,11 @@ package com.mike.hms.profile
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -113,71 +117,102 @@ fun AuthenticatedUser(
 
     Column(
         modifier = Modifier
-            .imePadding()
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .fillMaxSize() // Ensures the parent Column fills the whole screen
+            .imePadding() // Handles insets for on-screen keyboard
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
-        user?.let { UserCard(it) }
-
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalDivider(
-            color = CC.textColor().copy(0.5f),
-            thickness = 1.dp,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-
-        RowTopic(
-            icon = Icons.Default.ManageAccounts,
-            text = "Manage Account",
-            navController = navController,
-            destination = "manageAccount"
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        RowTopic(
-            icon = Icons.Default.CreditCard,
-            text = "Transaction History",
-            navController = navController,
-            destination = ""
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        RowTopic(
-            icon = Icons.Default.CollectionsBookmark,
-            text = "Bookings History",
-            navController = navController,
-            destination = ""
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        RowTopic(
-            icon = Icons.Default.RateReview,
-            text = "Ratings and Reviews",
-            navController = navController,
-            destination = ""
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalDivider(
-            color = CC.textColor().copy(0.5f),
-            thickness = 1.dp,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        // Payment Methods Section
-        user?.let { user ->
-            PaymentMethodsSection(
-                userEntity = user,
-                creditCard = creditCard,
-                payPal = payPal,
-                mpesa = mpesa,
-                creditCardViewModel = creditCardViewModel,
-                payPalViewModel = payPalViewModel,
-                mpesaViewModel = mpesaViewModel,
-                context = context
+        // Fixed UserCard at the top
+        user?.let {
+            UserCard(
+                modifier = Modifier
+                    .fillMaxWidth() // UserCard spans the full width
+                    .padding(16.dp),
+                user = it
             )
         }
-    }
 
+        // LazyColumn for scrollable content
+        LazyColumn(
+            modifier = Modifier
+                .imePadding()
+                .fillMaxWidth() // Match width
+                .weight(1f) // Fills remaining height within the Column
+                .padding(horizontal = 16.dp)
+        ) {
+            item { Spacer(modifier = Modifier.height(20.dp)) }
+            item {
+                HorizontalDivider(
+                    color = CC.textColor().copy(0.5f),
+                    thickness = 1.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
+
+            // Row Topics
+            item {
+                RowTopic(
+                    icon = Icons.Default.ManageAccounts,
+                    text = "Manage Account",
+                    navController = navController,
+                    destination = "manageAccount"
+                )
+            }
+            item { Spacer(modifier = Modifier.height(10.dp)) }
+            item {
+                RowTopic(
+                    icon = Icons.Default.CreditCard,
+                    text = "Transaction History",
+                    navController = navController,
+                    destination = ""
+                )
+            }
+            item { Spacer(modifier = Modifier.height(10.dp)) }
+            item {
+                RowTopic(
+                    icon = Icons.Default.CollectionsBookmark,
+                    text = "Bookings History",
+                    navController = navController,
+                    destination = ""
+                )
+            }
+            item { Spacer(modifier = Modifier.height(10.dp)) }
+            item {
+                RowTopic(
+                    icon = Icons.Default.RateReview,
+                    text = "Ratings and Reviews",
+                    navController = navController,
+                    destination = ""
+                )
+            }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
+            item {
+                HorizontalDivider(
+                    color = CC.textColor().copy(0.5f),
+                    thickness = 1.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+            item { Spacer(modifier = Modifier.height(20.dp)) }
+
+            // Payment Methods Section
+            user?.let { user ->
+                item {
+                    PaymentMethodsSection(
+                        userEntity = user,
+                        creditCard = creditCard,
+                        payPal = payPal,
+                        mpesa = mpesa,
+                        creditCardViewModel = creditCardViewModel,
+                        payPalViewModel = payPalViewModel,
+                        mpesaViewModel = mpesaViewModel,
+                        context = context
+                    )
+                }
+            }
+        }
+    }
 }
+
 
 
 @Composable
@@ -185,9 +220,13 @@ fun RowTopic(icon: ImageVector, text: String, navController: NavController, dest
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-
     Row(
         modifier = Modifier
+            .clickable{
+                if (destination.isNotEmpty()) {
+                    navController.navigate(destination)
+                }
+            }
             .border(
                 width = 1.dp,
                 color = CC.textColor().copy(0.5f),
@@ -212,7 +251,6 @@ fun RowTopic(icon: ImageVector, text: String, navController: NavController, dest
                 contentDescription = null,
                 tint = CC.textColor(),
                 modifier = Modifier.size(screenWidth * 0.05f)
-
             )
         }
 
@@ -230,7 +268,6 @@ fun RowTopic(icon: ImageVector, text: String, navController: NavController, dest
                 modifier = Modifier.size(screenWidth * 0.05f)
             )
         }
-
     }
 }
 
