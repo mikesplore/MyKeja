@@ -40,7 +40,12 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
             val firebaseCreditCard = retrieveCreditCardFromFirebase(userId)
             if (firebaseCreditCard != null) {
                 creditCardDao.insertCreditCard(firebaseCreditCard)
-                emit(creditCardDao.getCreditCardWithUser(userId).first())
+                val updatedCreditCard = creditCardDao.getCreditCardWithUser(userId).firstOrNull()
+                if (updatedCreditCard != null) {
+                    emit(updatedCreditCard)
+                } else {
+                    emit(CreditCardWithUser(CreditCardEntity(), UserEntity()))
+                }
             } else {
                 emit(CreditCardWithUser(CreditCardEntity(), UserEntity()))
             }
@@ -49,6 +54,7 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
         Log.e("CreditCardRepository", "Error retrieving credit card: ${e.message}")
         emit(CreditCardWithUser(CreditCardEntity(), UserEntity()))
     }
+
 
     private suspend fun retrieveCreditCardFromFirebase(userId: String): CreditCardEntity? {
         return try {
