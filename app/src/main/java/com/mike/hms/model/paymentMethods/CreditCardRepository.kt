@@ -1,21 +1,25 @@
 package com.mike.hms.model.paymentMethods
 
 import android.util.Log
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.mike.hms.model.userModel.UserEntity
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlin.text.get
 
 class CreditCardRepository(private val creditCardDao: CreditCardDao) {
 
     private val database = FirebaseDatabase.getInstance().reference
+    val scope = CoroutineScope(Dispatchers.IO)
 
-    // Credit Card Operations
+    init {
+        // Start syncing data from Firebase to Room
+        startFirebaseSync()
+    }
+
+    // Insert Credit Card
     fun insertCreditCard(creditCard: CreditCardEntity): Flow<Boolean> = flow {
         creditCardDao.insertCreditCard(creditCard)
         emit(insertCreditCardToFirebase(creditCard))
@@ -32,6 +36,7 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
         }
     }
 
+    // Retrieve Credit Card by User ID
     fun retrieveCreditCardByUserId(userId: String): Flow<CreditCardWithUser> = flow {
         val localCreditCard = creditCardDao.getCreditCardWithUser(userId).firstOrNull()
         if (localCreditCard != null) {
@@ -55,7 +60,6 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
         emit(CreditCardWithUser(CreditCardEntity(), UserEntity()))
     }
 
-
     private suspend fun retrieveCreditCardFromFirebase(userId: String): CreditCardEntity? {
         return try {
             val creditCardRef = database.child("CreditCards").child(userId)
@@ -67,22 +71,7 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
         }
     }
 
-    fun updateCreditCard(creditCard: CreditCardEntity): Flow<Boolean> = flow {
-        creditCardDao.insertCreditCard(creditCard)
-        emit(updateCreditCardInFirebase(creditCard))
-    }
-
-    private suspend fun updateCreditCardInFirebase(creditCard: CreditCardEntity): Boolean {
-        return try {
-            val creditCardRef = database.child("CreditCards").child(creditCard.userId)
-            creditCardRef.setValue(creditCard).await()
-            true
-        } catch (e: Exception) {
-            Log.e("CreditCardRepository", "Error updating credit card in Firebase: ${e.message}")
-            false
-        }
-    }
-
+    // Delete Credit Card
     fun deleteCreditCard(userId: String): Flow<Boolean> = flow {
         creditCardDao.deleteCreditCard(userId)
         emit(deleteCreditCardFromFirebase(userId))
@@ -98,4 +87,28 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
             false
         }
     }
+
+    // Real-time Firebase Sync
+    private fun startFirebaseSync() {
+        val creditCardsRef = database.child("CreditCards")
+
+        creditCardsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach { dataSnapshot ->
+                    val creditCard = dataSnapshot.getValue(CreditCardEntity::class.java)
+                    if (creditCard != null) {
+                        // Insert/Update local database
+                        scope.launch{
+                            creditCardDao.insertCreditCard(creditCard)
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("CreditCardRepository", "Firebase sync cancelled: ${error.message}")
+            }
+        })
+    }
+
 }
