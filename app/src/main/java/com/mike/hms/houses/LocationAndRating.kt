@@ -25,6 +25,14 @@ import androidx.navigation.NavController
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
+/**
+ * Composable function to display house location and ratings.
+ * @param house The house entity containing location and ratings.
+ * @param ratingCount The count of ratings.
+ * @param ratingAverage The average rating.
+ * @param navController The NavController for navigation.
+ *
+ */
 @Composable
 fun HouseLocationAndRatings(house: HouseEntity, ratingCount: String, ratingAverage: String, navController: NavController) {
     Row(
@@ -60,7 +68,9 @@ fun HouseLocationAndRatings(house: HouseEntity, ratingCount: String, ratingAvera
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End,
-            modifier = Modifier.weight(1f) // Balance weight with location row
+            modifier = Modifier
+                .clickable{navController.navigate("houseReviews/${house.houseID}")}
+                .weight(1f) // Balance weight with location row
         ) {
             Icon(
                 imageVector = Icons.Default.Star,
@@ -79,7 +89,7 @@ fun HouseLocationAndRatings(house: HouseEntity, ratingCount: String, ratingAvera
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "($ratingCount reviews)",
+                text = if (ratingCount == 0.toString()) "(No Reviews)" else if (ratingCount == "1") "($ratingCount Review)" else "($ratingCount Reviews)",
                 style = CC.bodyTextStyle().copy(
                     fontSize = 12.sp,
                     color = CC.secondaryColor()
@@ -89,10 +99,7 @@ fun HouseLocationAndRatings(house: HouseEntity, ratingCount: String, ratingAvera
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "Arrow",
-                tint = CC.secondaryColor(),
-                modifier = Modifier.clickable {
-                    navController.navigate("houseReviews/${house.houseID}")
-                }
+                tint = CC.secondaryColor()
             )
         }
     }
