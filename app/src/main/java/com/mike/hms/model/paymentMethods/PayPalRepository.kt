@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class PayPalRepository(private val payPalDao: PayPalDao) {
+class PayPalRepository (private val payPalDao: PayPalDao) {
 
     private val database = FirebaseDatabase.getInstance().reference
     private val scope = CoroutineScope(Dispatchers.IO)
