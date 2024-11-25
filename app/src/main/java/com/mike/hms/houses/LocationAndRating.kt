@@ -26,7 +26,7 @@ import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
-fun HouseLocationAndRatings(house: HouseEntity, navController: NavController) {
+fun HouseLocationAndRatings(house: HouseEntity, ratingCount: String, ratingAverage: String, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +70,7 @@ fun HouseLocationAndRatings(house: HouseEntity, navController: NavController) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = house.houseRating,
+                text = if (ratingAverage.isNotEmpty()) ratingAverage else "",
                 style = CC.titleTextStyle().copy(
                     fontSize = 14.sp,
                     color = CC.textColor(),
@@ -79,7 +79,7 @@ fun HouseLocationAndRatings(house: HouseEntity, navController: NavController) {
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = "(11 reviews)",
+                text = "($ratingCount reviews)",
                 style = CC.bodyTextStyle().copy(
                     fontSize = 12.sp,
                     color = CC.secondaryColor()
