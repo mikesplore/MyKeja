@@ -2,7 +2,6 @@ package com.mike.hms.houses.statement
 
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ContentCopy
@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +63,7 @@ fun TransactionsScreen(
     transactionViewModel: TransactionViewModel = hiltViewModel(),
     context: Context
 
-    ) {
+) {
     var selectedDate by remember { mutableStateOf("") }
     var selectedHouse by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -73,7 +72,7 @@ fun TransactionsScreen(
     val transactions by transactionViewModel.transactions.collectAsState()
 
     LaunchedEffect(Unit) {
-        transactionViewModel.getTransactions(HMSPreferences.userId.value)
+        transactionViewModel.fetchTransactions(HMSPreferences.userId.value)
     }
 
 
@@ -107,7 +106,7 @@ fun TransactionsScreen(
                 ),
                 actions = {
                     // Add a refresh action
-                    IconButton(onClick = { transactionViewModel.getTransactions(HMSPreferences.userId.value) }) {
+                    IconButton(onClick = { transactionViewModel.fetchTransactions(HMSPreferences.userId.value) }) {
                         Icon(
                             Icons.Default.Refresh,
                             contentDescription = "Refresh",
@@ -215,13 +214,17 @@ fun TransactionsScreen(
                         ) {
                             itemsIndexed(filteredTransactions) { index, transaction ->
                                 TableRow(
-                                    index =  index + 1,
+                                    index = index + 1,
                                     transaction = transaction,
                                     screenWidth = screenWidth,
                                     context = context
                                 ) // Start counting from 1
                             }
+                            item {
+                                SummaryTable(filteredTransactions)
+                            }
                         }
+
                     } else {
                         EmptyState()
                     }
@@ -328,7 +331,10 @@ private fun TableRow(
                     TransactionDetailItem("Amount (Ksh)", formatNumber(transaction.amount.toInt()))
                     TransactionDetailItem("Date", CC.formatDateToShortDate(transaction.date))
                     TransactionDetailItem("Payment Method", transaction.paymentMethod.toString())
-                    TransactionDetailItem("Transaction Type", transaction.transactionType.toString())
+                    TransactionDetailItem(
+                        "Transaction Type",
+                        transaction.transactionType.toString()
+                    )
                     TransactionDetailItem("User ID", transaction.userId)
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -382,7 +388,12 @@ private fun TableRow(
                                     type = "text/plain"
                                 }
 
-                                context.startActivity(Intent.createChooser(sendIntent, "Share Transaction"))
+                                context.startActivity(
+                                    Intent.createChooser(
+                                        sendIntent,
+                                        "Share Transaction"
+                                    )
+                                )
                             }
                         )
                     }
@@ -453,7 +464,7 @@ private fun TableCell(
     textColor: Color = CC.textColor()
 ) {
     val density = LocalDensity.current
-    val textSize = with(density) {(screenWidth * 0.03f).toSp()}
+    val textSize = with(density) { (screenWidth * 0.03f).toSp() }
 
     Text(
         text = text,
@@ -466,7 +477,6 @@ private fun TableCell(
         overflow = TextOverflow.Ellipsis
     )
 }
-
 
 
 @Composable
@@ -495,6 +505,102 @@ private fun EmptyState() {
         }
     }
 }
+
+
+@Composable
+fun SummaryTable(transactions: List<TransactionEntity>) {
+    val totalAmountIn = transactions
+        .filter { it.transactionType == TransactionType.ADDITION }
+        .sumOf { it.amount.toInt() }
+
+    val totalAmountOut = transactions
+        .filter { it.transactionType == TransactionType.SUBTRACTION }
+        .sumOf { it.amount.toInt() }
+
+    val balance = totalAmountIn - totalAmountOut
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CC.extraSecondaryColor()
+        ),
+        shape = RoundedCornerShape(12.dp) // Rounded corners for better aesthetics
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp) // Space between sections
+        ) {
+            Text(
+                text = "Transaction Summary",
+                style = CC.titleTextStyle(),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            HorizontalDivider(
+                color = Color.Gray.copy(alpha = 0.5f),
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        text = "Credit",
+                        style = CC.titleTextStyle()
+                    )
+                    Text(
+                        text = formatNumber(totalAmountIn),
+                        style = CC.contentTextStyle(),
+                        color = Color.Green
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = "Debit",
+                        style = CC.titleTextStyle()
+                    )
+                    Text(
+                        text = formatNumber(totalAmountOut),
+                        style = CC.contentTextStyle(),
+                        color = Color.Red
+                    )
+                }
+            }
+
+            HorizontalDivider(
+                color = Color.Gray.copy(alpha = 0.5f),
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            // Balance Section
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Balance",
+                    style = CC.titleTextStyle()
+                )
+                Text(
+                    text = formatNumber(balance),
+                    style = CC.contentTextStyle(),
+                    color = if (balance >= 0) Color.Green else Color.Red
+                )
+            }
+        }
+    }
+}
+
+
 
 
 
