@@ -18,9 +18,6 @@ class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRe
     private val _reviews = MutableStateFlow<List<ReviewsWithUserInfo>>(emptyList())
     val reviews: StateFlow<List<ReviewsWithUserInfo>> = _reviews
 
-    // Collect all reviews as a Flow
-    val allReviews = reviewRepository.observeReviews()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     // Insert a review
     fun insertReview(review: ReviewEntity, onResult: (Boolean) -> Unit) {
@@ -48,10 +45,10 @@ class ReviewViewModel @Inject constructor(private val reviewRepository: ReviewRe
 
 
     // Delete a review
-    fun deleteReview(reviewId: Int, onResult: (Result<Boolean>) -> Unit) {
+    fun deleteReview(reviewId: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             reviewRepository.deleteReview(reviewId)
-                .collect { result -> onResult(result) }
+                .collect { result -> onResult(result.isSuccess) }
         }
     }
 }
