@@ -28,7 +28,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun HouseAmenities(house: HouseEntity) {
+fun HouseAmenities(house: HouseEntity, modifier: Modifier = Modifier) {
     val amenities = house.houseAmenities.map { it.name }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -39,7 +39,7 @@ fun HouseAmenities(house: HouseEntity) {
 
 
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 10.dp)
             .fillMaxWidth(0.9f)
             .heightIn(max = screenHeight * 0.16f),
