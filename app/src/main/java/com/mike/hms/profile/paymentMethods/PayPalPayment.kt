@@ -244,7 +244,7 @@ fun AddPayPalPayment(
                         paypalEmail = if (useCurrentEmail) userEntity.email else paypalEmail,
                         paypalId = id
                     )
-                    payPalViewModel.insertPayPal(paypal) { success ->
+                    payPalViewModel.addPayPal(paypal) { success ->
                         if (success) {
                             loading = false
                             payPalViewModel.getPayPal(userEntity.userID)
