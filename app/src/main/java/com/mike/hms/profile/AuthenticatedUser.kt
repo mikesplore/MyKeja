@@ -69,7 +69,7 @@ fun AuthenticatedUser(
     val user by userViewModel.user.collectAsState()
     val creditCard by creditCardViewModel.creditCard.collectAsState()
     val mpesa by mpesaViewModel.mpesa.collectAsState()
-    val payPal by payPalViewModel.payPal.collectAsState()
+    val payPal by payPalViewModel.paypal.collectAsState()
 
     listOf(
         "Credit Card",
@@ -91,7 +91,7 @@ fun AuthenticatedUser(
             payPalViewModel.getPayPal(HMSPreferences.userId.value)
 
             Log.d(
-                "CreditCardViewModel",
+                "CardFetching",
                 "Attempt ${attempt + 1}: Fetching credit card for user ID: ${HMSPreferences.userId.value}"
             )
 
@@ -101,7 +101,17 @@ fun AuthenticatedUser(
             // Check if the credit card is fetched (assuming creditCard is a state or flow)
 
             if (creditCard != null) {
-                Log.d("CreditCardViewModel", "Credit card fetched successfully: $creditCard")
+                Log.d("CardFetching", "Credit card fetched successfully: $creditCard")
+                break
+            }
+
+            if (payPal != null) {
+                Log.d("CardFetching", "PayPal fetched successfully: $payPal")
+                break
+            }
+
+            if (mpesa != null) {
+                Log.d("CardFetching", "M-PESA fetched successfully: $mpesa")
                 break
             }
 
@@ -110,8 +120,17 @@ fun AuthenticatedUser(
         }
 
         if (creditCard == null) {
-            Log.d("CreditCardViewModel", "Failed to fetch credit card after $maxRetries attempts.")
+            Log.d("CardFetching", "Failed to fetch credit card after $maxRetries attempts.")
         }
+
+        if (payPal == null) {
+            Log.d("CardFetching", "Failed to fetch PayPal after $maxRetries attempts.")
+        }
+
+        if (mpesa == null) {
+            Log.d("CardFetching", "Failed to fetch M-PESA after $maxRetries attempts.")
+        }
+
     }
 
 
