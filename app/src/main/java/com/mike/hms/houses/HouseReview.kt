@@ -265,7 +265,7 @@ fun ReviewForm(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    "Your Review",
+                    "Your Review (Optional)",
                     style = CC.contentTextStyle().copy(fontWeight = FontWeight.Medium),
                     color = CC.textColor()
                 )
@@ -292,8 +292,8 @@ fun ReviewForm(
             // Submit button
             Button(
                 onClick = {
-                    if (rating == 0 || reviewText.isBlank() || HMSPreferences.userId.value.isBlank() || houseId.isEmpty()) {
-                        Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    if (rating == 0 || HMSPreferences.userId.value.isBlank() || houseId.isEmpty()) {
+                        Toast.makeText(context, "Please fill required fields", Toast.LENGTH_SHORT).show()
                         return@Button
                     }
                     CC.generateReviewId { id ->
@@ -322,7 +322,7 @@ fun ReviewForm(
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = CC.buttonColors(),
-                enabled = rating > 0 && reviewText.isNotBlank(),
+                enabled = rating > 0 ,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
@@ -352,6 +352,7 @@ fun RatingStatistics(averageRating: Double, totalReviews: Int) {
 
     Card(
         modifier = Modifier
+
             .fillMaxWidth()
             .padding(16.dp)
             .height(screenHeight * 0.15f),
