@@ -435,7 +435,7 @@ fun AddFundsDialog(
                                             date = CC.getCurrentDate()
                                         )
 
-                                        transactionViewModel.insertTransaction(transaction){ success ->
+                                        transactionViewModel.addTransaction(transaction){ success ->
                                             if(success){
                                                 successMessage = "Funds added successfully!"
                                                 creditCardViewModel.getCreditCard(creditCard.creditCard.userId)
