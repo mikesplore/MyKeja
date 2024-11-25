@@ -50,7 +50,7 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
 
 
     // Delete a review from Firebase and Room
-    fun deleteReview(reviewId: Int): Flow<Result<Boolean>> = callbackFlow {
+    fun deleteReview(reviewId: String): Flow<Result<Boolean>> = callbackFlow {
         try {
             reviewDao.deleteReviewById(reviewId)
             database.child(reviewId.toString()).removeValue()
@@ -94,7 +94,7 @@ class ReviewRepository(private val reviewDao: ReviewDao) {
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 snapshot.getValue(ReviewEntity::class.java)?.let { review ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        reviewDao.deleteReviewById(review.id.toInt()) // Delete from Room
+                        reviewDao.deleteReviewById(review.id) // Delete from Room
                         emitReviewsFromRoom() // Emit updated list from Room
                     }
                 }
