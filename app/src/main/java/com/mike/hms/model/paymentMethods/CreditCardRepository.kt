@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Repository for managing credit card payments.
+ * @param creditCardDao The DAO for accessing credit card data locally via Room.
+ */
 class CreditCardRepository(private val creditCardDao: CreditCardDao) {
 
     private val database = FirebaseDatabase.getInstance().reference
@@ -19,6 +23,10 @@ class CreditCardRepository(private val creditCardDao: CreditCardDao) {
         startFirebaseSync()
     }
 
+    /**
+     * Inserts a new credit card payment record into the Room database and Firebase.
+     * @param creditCard The CreditCardEntity object to insert.
+     */
     // Insert Credit Card
     fun insertCreditCard(creditCard: CreditCardEntity): Flow<Boolean> = flow {
         creditCardDao.insertCreditCard(creditCard)
