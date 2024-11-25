@@ -18,66 +18,55 @@ class TransactionViewModel @Inject constructor(
     private val _transactions = MutableStateFlow<List<TransactionEntity>>(emptyList())
     val transactions: StateFlow<List<TransactionEntity>> = _transactions
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    // Insert Transaction
-    fun insertTransaction(transaction: TransactionEntity, onSuccess: (Boolean) -> Unit) {
+    /**
+     * Retrieves transactions for a specific user by their ID.
+     * Updates the `_transactions` StateFlow with the results or sets an error message if the operation fails.
+     *
+     * @param userId The ID of the user whose transactions are to be fetched.
+     */
+    fun fetchTransactions(userId: String) {
         viewModelScope.launch {
-            _isLoading.value = true
-            repository.insertTransaction(transaction)
-                .catch { exception ->
-                    Log.e("TransactionViewModel", "Error inserting transaction: ${exception.message}")
-                    _error.value = exception.localizedMessage
-                    onSuccess(false)
+            repository.retrieveTransactionsByUserId(userId)
+                .catch { e ->
+                    _error.value = "Error fetching transactions: ${e.message}"
                 }
-                .collect { result ->
-                    if (result) {
-                        Log.d("TransactionViewModel", "Inserted transaction: $transaction")
+                .collect { transactions ->
+                    _transactions.value = transactions
+                }
+        }
+    }
+
+    /**
+     * Adds a new transaction to the repository.
+     * Updates the `_transactions` StateFlow after successful insertion or sets an error message on failure.
+     *
+     * @param transaction The transaction to add.
+     */
+    fun addTransaction(transaction: TransactionEntity, onSuccess: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            repository.insertTransaction(transaction)
+                .catch { e ->
+                    _error.value = "Error adding transaction: ${e.message}"
+                }
+                .collect { success ->
+                    if (success) {
                         onSuccess(true)
-                        getTransactions(transaction.userId) // Refresh data
+                        fetchTransactions(transaction.userId) // Refresh the transactions list
                     } else {
-                        _error.value = "Failed to insert transaction."
                         onSuccess(false)
+                        _error.value = "Failed to add transaction."
                     }
                 }
-            _isLoading.value = false
         }
     }
 
-    // Get Transactions by User ID
-    fun getTransactions(userId: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            repository.retrieveTransactionsByUserId(userId)
-                .catch { exception ->
-                    Log.e("TransactionViewModel", "Error retrieving transactions: ${exception.message}")
-                    _error.value = exception.localizedMessage
-                }
-                .collect { transactionsFlow ->
-                    transactionsFlow
-                        .catch { innerException ->
-                            Log.e(
-                                "TransactionViewModel",
-                                "Error in inner flow: ${innerException.message}"
-                            )
-                            _error.value = innerException.localizedMessage
-                        }
-                        .collect { retrievedTransactions ->
-                            if (retrievedTransactions.isNotEmpty()) {
-                                Log.d("TransactionViewModel", "Retrieved transactions: $retrievedTransactions")
-                                _transactions.value = retrievedTransactions
-                            } else {
-                                _error.value = "No transactions found for user ID: $userId"
-                            }
-                        }
-                }
-            _isLoading.value = false
-        }
+    /**
+     * Clears the error message from the `_error` StateFlow.
+     */
+    fun clearError() {
+        _error.value = null
     }
-
-
 }
