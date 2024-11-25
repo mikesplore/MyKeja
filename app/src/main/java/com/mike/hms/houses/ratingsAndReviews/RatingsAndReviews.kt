@@ -1,6 +1,7 @@
 package com.mike.hms.houses.ratingsAndReviews
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -10,7 +11,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,14 +27,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarHalf
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material.icons.rounded.Campaign
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,9 +67,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -135,17 +147,22 @@ fun ReviewsScreen(
             // Reviews List
             LazyColumn(
                 modifier = Modifier
+                    .animateContentSize()
                     .fillMaxSize()
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
+                contentPadding = PaddingValues(vertical = 5.dp)
             ) {
+                item{
+                    Notice()
+                }
                 if (filteredReviews.isEmpty()) {
                     item {
                         NoReviewsYetColumn(modifier.fillMaxSize())
                     }
                 } else {
                     items(filteredReviews.size) { index ->
+                        Spacer(modifier = Modifier.height(16.dp))
                         ReviewCard(filteredReviews[index])
                     }
                 }
@@ -174,321 +191,128 @@ fun NoReviewsYetColumn(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RatingSummaryCard(reviews: List<ReviewsWithUserInfo>) {
-    val averageRating = reviews.takeIf { it.isNotEmpty() }?.let {
-        it.map { review -> review.review.rating }.average()
-    } ?: 0.0
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CC.extraSecondaryColor()
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                String.format("%.1f", averageRating),
-                style = CC.titleTextStyle().copy(
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-            Row(
-                modifier = Modifier.padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RatingBar(rating = averageRating.toFloat(), size = 24.dp)
-            }
-            Text(
-                "${reviews.size} ${if (reviews.size == 1) "Review" else "Reviews"}",
-                style = CC.contentTextStyle().copy(
-                    color = CC.textColor().copy(alpha = 0.7f)
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun RatingFilterChips(
-    selectedRating: Int?,
-    onRatingSelected: (Int?) -> Unit
-) {
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            FilterChip(
-                selected = selectedRating == null,
-                onClick = { onRatingSelected(null) },
-                label = {
-                    Text(
-                        "All",
-                        style = CC.contentTextStyle()
-                            .copy(color = if (selectedRating == null) CC.primaryColor() else CC.textColor())
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = CC.secondaryColor(),
-                )
-            )
-        }
-        items(5) { rating ->
-            FilterChip(
-                selected = selectedRating == rating + 1,
-                onClick = { onRatingSelected(if (selectedRating == rating + 1) null else rating + 1) },
-                label = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Star,
-                            contentDescription = null,
-                            tint = if (selectedRating == rating + 1) CC.primaryColor() else CC.textColor(),
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            "${rating + 1}",
-                            style = CC.contentTextStyle()
-                                .copy(color = if (selectedRating == rating + 1) CC.primaryColor() else CC.textColor())
-                        )
-                    }
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = CC.secondaryColor(),
-                    selectedLabelColor = CC.textColor()
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun ReviewCard(reviewWithUser: ReviewsWithUserInfo) {
-    var isExpanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
-    val rotationState by animateFloatAsState(
-        targetValue = if (isExpanded) 180f else 0f,
-        label = "rotation"
-    )
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
-                )
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = CC.extraSecondaryColor()
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            // Header Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // User Info and Rating
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // User Avatar
-                    Surface(
-                        modifier = Modifier.size(40.dp),
-                        shape = CircleShape,
-                        color = CC.secondaryColor()
-                    ) {
-                        if (reviewWithUser.user.photoUrl.isNotEmpty()) {
-                            AsyncImage(
-                                model = reviewWithUser.user.photoUrl,
-                                contentDescription = "User Avatar",
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        } else {
-                            Text(
-                                text = reviewWithUser.user.firstName.first().toString(),
-                                modifier = Modifier.fillMaxSize(),
-                                textAlign = TextAlign.Center,
-                                style = CC.titleTextStyle().copy(fontSize = 20.sp),
-                                color = CC.primaryColor()
-                            )
-                        }
-                    }
-
-                    // User Name and Rating
-                    Column {
-                        Text(
-                            text = reviewWithUser.user.firstName,
-                            style = CC.contentTextStyle().copy(
-                                fontWeight = FontWeight.Medium
-                            )
-                        )
-                        RatingBar(
-                            rating = reviewWithUser.review.rating.toFloat(),
-                            size = 16.dp
-                        )
-                    }
-                }
-
-                // Expand Button
-                IconButton(
-                    onClick = { isExpanded = !isExpanded }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = if (isExpanded) "Show less" else "Show more",
-                        modifier = Modifier.rotate(rotationState)
-                    )
-                }
-            }
-
-            // Review Preview (always visible)
-            Text(
-                text = reviewWithUser.review.reviewText,
-                style = CC.contentTextStyle(),
-                maxLines = if (isExpanded) Int.MAX_VALUE else 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            // Expanded Content
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = CC.secondaryColor().copy(alpha = 0.2f)
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Posted on ${formatDate(reviewWithUser.review.timestamp)}",
-                            style = CC.contentTextStyle().copy(
-                                fontSize = 12.sp,
-                                color = CC.textColor().copy(alpha = 0.7f)
-                            )
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    // Copy review text to clipboard
-
-                                    clipboardManager.setText(AnnotatedString(reviewWithUser.review.reviewText))
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.ContentCopy,
-                                    contentDescription = "Copy review",
-                                    tint = CC.secondaryColor()
-                                )
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    val sendIntent = Intent().apply {
-                                        action = Intent.ACTION_SEND
-                                        putExtra(
-                                            Intent.EXTRA_TEXT, """
-                                            Review by ${reviewWithUser.user.firstName}
-                                            Rating: ${reviewWithUser.review.rating}/5
-                                            "${reviewWithUser.review.reviewText}"
-                                        """.trimIndent()
-                                        )
-                                        type = "text/plain"
-                                    }
-
-                                    context.startActivity(
-                                        Intent.createChooser(
-                                            sendIntent,
-                                            "Share Review"
-                                        )
-                                    )
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Share,
-                                    contentDescription = "Share review",
-                                    tint = CC.secondaryColor()
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun RatingBar(
-    rating: Float,
-    size: Dp,
+fun Notice(
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        repeat(5) { index ->
-            val isFilled = index < rating
-            val isHalfFilled = index == rating.toInt() && rating % 1 != 0f
+    var isVisible by remember { mutableStateOf(true) }
 
-            Icon(
-                imageVector = when {
-                    isFilled -> Icons.Filled.Star
-                    isHalfFilled -> Icons.Filled.StarHalf
-                    else -> Icons.Filled.StarOutline
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut()
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .background(
+                    color = CC.extraSecondaryColor(),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    color = CC.primaryColor().copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(16.dp)
+                )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, end = 12.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .align(Alignment.CenterStart),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Campaign,
+                        contentDescription = null,
+                        tint = CC.secondaryColor(),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(
+                        text = "Your Reviews Matter!",
+                        style = CC.titleTextStyle().copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = CC.secondaryColor()
+                    )
+                }
+
+                IconButton(
+                    onClick = { isVisible = false },
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = CC.textColor().copy(alpha = 0.1f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = "Close Notice",
+                        tint = CC.textColor(),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Medium,
+                            color = CC.titleColor()
+                        )
+                    ) {
+                        append("Did you know? ")
+                    }
+                    append("Your overall rating is visible to hosts and other users. " +
+                            "A higher rating increases your chances of being accepted for bookings!")
                 },
-                contentDescription = null,
-                modifier = Modifier.size(size),
-                tint = Color(0xFFFFD700) // Gold color for stars
+                style = CC.contentTextStyle(),
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 12.dp,
+                    bottom = 16.dp
+                ),
+                lineHeight = 20.sp,
+                color = CC.textColor().copy(alpha = 0.8f)
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        CC.primaryColor().copy(alpha = 0.1f),
+                        RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+                    )
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Info,
+                    contentDescription = null,
+                    tint = CC.extraPrimaryColor(),
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = "Your rating affects your booking success rate",
+                    style = CC.contentTextStyle().copy(
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = CC.extraPrimaryColor()
+                )
+            }
         }
     }
 }
 
-private fun formatDate(timestamp: String): String {
-    return try {
-        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date = formatter.parse(timestamp)
-        SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
-    } catch (e: Exception) {
-        timestamp
-    }
-}
+
