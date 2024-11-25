@@ -80,7 +80,7 @@ fun TopAppBarComponent(context: Context, userViewModel: UserViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Hi, ${user?.firstName}!",
+                        text = "Hey, ${user?.firstName?:"Guest"}",
                         style = TextStyle(
                             color = CC.textColor(),
                             fontWeight = FontWeight.ExtraBold,
@@ -137,7 +137,7 @@ fun ProfilePicture(imageUrl: String, size: Dp, onClick: () -> Unit) {
                 shape = CircleShape
             )
     ) {
-        if (imageUrl.isNullOrEmpty()) {
+        if (FirebaseAuth.getInstance().currentUser?.photoUrl == null) {
             Icon(
                 imageVector = Icons.Default.Person,
                 contentDescription = "Profile Picture",
