@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mike.hms.model.paymentMethods.MpesaEntity
 import com.mike.hms.model.paymentMethods.MpesaViewModel
 import com.mike.hms.model.userModel.UserEntity
@@ -207,7 +208,7 @@ fun AddMpesaPayment(
                         phoneNumber = if (useCurrentNumber) userEntity.phoneNumber else mpesaNumber,
                         userId = userEntity.userID,
                     )
-                    mpesaViewModel.insertMpesa(mpesa){success ->
+                    mpesaViewModel.addMpesa(mpesa){success ->
                         if(success) {
                             loading = false
                             Toast.makeText(context, "M-PESA payment added successfully", Toast.LENGTH_SHORT).show()
