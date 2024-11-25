@@ -1,6 +1,5 @@
 package com.mike.hms.model.paymentMethods
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,104 +9,90 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing Mpesa payment data.
+ *
+ * Exposes state via flows to UI for data observation.
+ *
+ * @param mpesaRepository The repository managing Mpesa payment data.
+ */
 @HiltViewModel
-class MpesaViewModel @Inject constructor(
-    private val mpesaRepository: MpesaRepository
-) : ViewModel() {
+class MpesaViewModel @Inject constructor(private val mpesaRepository: MpesaRepository) : ViewModel() {
 
     private val _mpesa = MutableStateFlow<MpesaWithUser?>(null)
     val mpesa: StateFlow<MpesaWithUser?> = _mpesa
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
-    // Insert Pay Pal
-    fun insertMpesa(mpesa: MpesaEntity, onSuccess: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            mpesaRepository.insertMpesa(mpesa)
-                .catch { exception ->
-                    Log.e(
-                        "MpesaViewModel",
-                        "Error inserting mpesa: ${exception.message}"
-                    )
-                    _error.value = exception.localizedMessage
-                    onSuccess(false)
-                }
-                .collect { result ->
-                    if (result) {
-                        Log.d("MpesaViewModel", "Inserted mpesa: $mpesa")
-                        onSuccess(true)
-                        getMpesa(mpesa.userId) // Fetch the updated mpesa
-                    } else {
-                        _error.value = "Failed to insert mpesa."
-                        onSuccess(false)
-                    }
-                }
-            _isLoading.value = false
-        }
-    }
-
-    // Get Credit Card
+    /**
+     * Retrieves Mpesa data by user ID.
+     *
+     * Updates `_mpesa` with the retrieved data or `_error` with an error message on failure.
+     *
+     * @param userId The ID of the user to fetch Mpesa data for.
+     */
     fun getMpesa(userId: String) {
         viewModelScope.launch {
-            _isLoading.value = true
             mpesaRepository.retrieveMpesaByUserId(userId)
-                .catch { exception ->
-                    Log.e(
-                        "MpesaViewModel",
-                        "Error retrieving mpesa: ${exception.message}"
-                    )
-                    _error.value = exception.localizedMessage
+                .catch { e ->
+                    _error.value = "Error fetching Mpesa data: ${e.message}"
                 }
-                .collect { mpesaFlow ->
-                    mpesaFlow
-                        .catch { innerException ->
-                            Log.e(
-                                "MpesaViewModel",
-                                "Error in inner flow: ${innerException.message}"
-                            )
-                            _error.value = innerException.localizedMessage
-                        }
-                        .collect { mpesaWithUser ->
-                            if (true) {
-                                Log.d(
-                                    "MpesaViewModel",
-                                    "Retrieved mpesa: $mpesaWithUser"
-                                )
-                                _mpesa.value = mpesaWithUser
-                            } else {
-                                _error.value = "No mpesa found for user ID: $userId"
-                            }
-                        }
+                .collect { retrievedMpesa ->
+                    _mpesa.value = retrievedMpesa
+                    _error.value = null // Clear any previous errors
                 }
-            _isLoading.value = false
         }
     }
 
-    // Delete Credit Card
-    fun deleteMpesa(userId: String, onSuccess: (Boolean) -> Unit = {}) {
+    /**
+     * Inserts a new Mpesa payment record.
+     *
+     * Updates `_error` with an error message on failure or clears it on success.
+     *
+     * @param mpesa The MpesaEntity object to insert.
+     */
+    fun addMpesa(mpesa: MpesaEntity, onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
-            _isLoading.value = true
-            mpesaRepository.deleteMpesa(userId)
-                .catch { exception ->
-                    Log.e("MpesaViewModel", "Error deleting mpesa: ${exception.message}")
-                    _error.value = exception.localizedMessage
+            mpesaRepository.insertMpesa(mpesa)
+                .catch { e ->
+                    _error.value = "Error inserting Mpesa: ${e.message}"
                 }
-                .collect { result ->
-                    if (result) {
-                        Log.d("MpesaViewModel", "Deleted mpesa for user ID: $userId")
+                .collect { isSuccess ->
+                    if (isSuccess) {
                         onSuccess(true)
-                        _mpesa.value = null // Clear the state after deletion
+                        _error.value = null // Clear any previous errors
                     } else {
                         onSuccess(false)
-                        _error.value = "Failed to delete payPal for user ID: $userId"
+                        _error.value = "Failed to insert Mpesa data."
                     }
                 }
-            _isLoading.value = false
+        }
+    }
+
+    /**
+     * Deletes an Mpesa payment record by user ID.
+     *
+     * Updates `_error` with an error message on failure or clears it on success.
+     *
+     * @param userId The ID of the user whose Mpesa data is being deleted.
+     */
+    fun deleteMpesa(userId: String, onSuccess: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            mpesaRepository.deleteMpesa(userId)
+                .catch { e ->
+                    _error.value = "Error deleting Mpesa: ${e.message}"
+                }
+                .collect { isSuccess ->
+                    if (isSuccess) {
+                        onSuccess(true)
+                        _mpesa.value = null // Clear cached Mpesa data
+                        _error.value = null // Clear any previous errors
+                    } else {
+                        onSuccess(false)
+                        _error.value = "Failed to delete Mpesa data."
+                    }
+                }
         }
     }
 }
