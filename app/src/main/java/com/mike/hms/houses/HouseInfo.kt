@@ -46,6 +46,7 @@ import com.mike.hms.houses.houseComponents.HouseAmenities
 import com.mike.hms.houses.houseComponents.InsideView
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.review.ReviewViewModel
 import java.text.NumberFormat
 import com.mike.hms.ui.theme.CommonComponents as CC
 
@@ -54,6 +55,7 @@ import com.mike.hms.ui.theme.CommonComponents as CC
 @Composable
 fun HouseInfoScreen(navController: NavController, context: Context, houseID: String) {
     val houseViewModel: HouseViewModel = hiltViewModel()
+    val reviewViewModel: ReviewViewModel = hiltViewModel()
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
     val screenHeight = configuration.screenHeightDp.dp
@@ -62,11 +64,16 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
     val isHouseFavorite = remember { mutableStateOf(false) }
 
     val house by houseViewModel.house.collectAsState()
+    val reviews by reviewViewModel.reviews.collectAsState()
+    val reviewsCount = reviews.size
+    val reviewsAverage = reviews.map { it.review.rating }.average()
+    val formattedAverage = "%.1f".format(reviewsAverage)
     val selectedImage = remember { mutableStateOf<String?>(null) }
 
 
     LaunchedEffect(houseID) {
         houseViewModel.getHouseByID(houseID)
+        reviewViewModel.getReviewsByHouseId(houseID)
     }
 
     Column(
@@ -98,7 +105,7 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
         Spacer(modifier = Modifier.height(10.dp))
 
         // Location and Ratings
-        house?.let { HouseLocationAndRatings(it, navController) }
+        house?.let { house -> HouseLocationAndRatings(house, reviewsCount.toString(), formattedAverage.toString(), navController) }
 
         Spacer(modifier = Modifier.height(10.dp))
 
