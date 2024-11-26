@@ -15,13 +15,13 @@ import com.mike.hms.houses.HouseInfoScreen
 import com.mike.hms.houses.HouseReviewsScreen
 import com.mike.hms.houses.Houses
 import com.mike.hms.houses.addOrEditHouse.HouseForm
-import com.mike.hms.houses.bookHouse.BookingInfoScreen
+import com.mike.hms.houses.bookHouse.HouseBookingScreen
 import com.mike.hms.houses.ratingsAndReviews.ReviewsScreen
 import com.mike.hms.houses.statement.TransactionsScreen
-import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
+import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.ManageAccount
 
@@ -36,14 +36,19 @@ fun NavGraph(
 ) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "settings") {
+    NavHost(navController = navController, startDestination = "homeScreen") {
         composable("dashboard") {
             DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
         }
 
-        composable("settings"){
-            SettingsScreen()
+        composable("book/{houseID}", arguments = listOf(navArgument("houseID") {
+            type = NavType.StringType
+        })) {
+            val houseID = it.arguments?.getString("houseID")
+            HouseBookingScreen(context = context, houseId = houseID!!)
         }
+
+
 
         composable("homeScreen") {
             HomeScreen(
@@ -86,22 +91,22 @@ fun NavGraph(
             type = NavType.StringType
         })) {
             val houseID = it.arguments?.getString("houseID")
-            BookingInfoScreen(context, houseID!!)
+            HouseBookingScreen(context = context, houseId = houseID!!)
         }
 
         composable("addHouse") {
             HouseForm(context)
         }
 
-        composable("manageAccount"){
+        composable("manageAccount") {
             ManageAccount(userViewModel, context, navController)
         }
 
-        composable("transaction"){
+        composable("transaction") {
             TransactionsScreen(navController = navController, context = context)
         }
 
-        composable("reviews"){
+        composable("reviews") {
             ReviewsScreen(navController)
         }
 
