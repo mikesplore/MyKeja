@@ -25,12 +25,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mike.hms.ui.theme.CommonComponents as CC
 
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScreenTemplate(
     navController: NavController,
+    title: String,
     topContent: @Composable () -> Unit,
-    title: String
+    bodyContent: @Composable () -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -45,6 +48,15 @@ fun ScreenTemplate(
     // Track toolbar offset
     var toolbarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
     val maxOffset = expandedToolbarHeightPx - toolbarHeightPx
+
+    // System UI Controller
+    val systemUiController = rememberSystemUiController()
+    val isTopBarFullyShown = remember(toolbarOffsetHeightPx) { toolbarOffsetHeightPx >= 0 }
+
+    // Update the status bar visibility
+    LaunchedEffect(isTopBarFullyShown) {
+        systemUiController.isStatusBarVisible = !isTopBarFullyShown
+    }
 
     // Create nested scroll connection
     val nestedScrollConnection = remember {
@@ -65,30 +77,25 @@ fun ScreenTemplate(
 
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(
+                CC.primaryColor()
+            )
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
     ) {
         // Main content
         Column(
             modifier = Modifier
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .background(
-                    CC.primaryColor()
+                    CC.primaryColor(), RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                 )
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
         ) {
             // Spacer to ensure the content starts below the expanded toolbar
             Spacer(modifier = Modifier.height(expandedToolbarHeight))
-
-            for (i in 1..100) {
-                Text(
-                    text = "Item $i",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
+            bodyContent()
         }
 
         // Toolbar with animations
