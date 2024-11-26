@@ -36,9 +36,13 @@ fun NavGraph(
 ) {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "homeScreen") {
+    NavHost(navController = navController, startDestination = "settings") {
         composable("dashboard") {
             DashboardScreen(context, houses, navController, houseViewModel, userViewModel)
+        }
+
+        composable("settings"){
+            SettingsScreen()
         }
 
         composable("homeScreen") {
