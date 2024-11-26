@@ -30,7 +30,7 @@ private val LightColorScheme = lightColorScheme(
     secondary = WhiteSchemeTextColor,
     tertiary = Red,
     onPrimary = Purple,
-    onSecondary = Green,
+    onSecondary = WhiteContainer,
     onBackground = blackSurfaceContainer,
 )
 
