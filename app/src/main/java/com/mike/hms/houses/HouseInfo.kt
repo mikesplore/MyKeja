@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,18 +16,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -53,8 +58,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.mike.hms.ScreenTemplate
 import com.mike.hms.houses.houseComponents.HouseAmenities
 import com.mike.hms.houses.houseComponents.InsideView
+import com.mike.hms.houses.ratingsAndReviews.ReviewCard
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.review.ReviewViewModel
@@ -98,65 +105,120 @@ fun HouseInfoScreen(navController: NavController, context: Context, houseID: Str
         }
     }
 
-    ParallaxHeaderScreen(
-        navController = navController,
-        imageUrl = house?.houseImageLink?.firstOrNull().toString(),
-        title = house?.houseName ?: "Loading"
-    ) {
-        // Your content here
+    ScreenTemplate(navController, house?.houseName.toString(),
+        topContent = {
+            Box(
+                modifier = Modifier
+            ) {
+                AsyncImage(
+                    model = house?.houseImageLink?.firstOrNull(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopStart),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = CC.primaryColor(),
+                        contentColor = CC.textColor()
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBackIos,
+                        contentDescription = "Back",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .offset(x = (5).dp,)
+                            .size(24.dp) // Adjust size as needed
+                    )
+                }
+            }
+
+        }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(CC.primaryColor(), RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-                .systemBarsPadding()
-                .padding(bottom = 10.dp),
+        ) {
+        Spacer(modifier = Modifier.height(10.dp))
+        // Title
+        house?.let { HouseTitleRow(it, textSize) }
+        // Location and Ratings
+        house?.let { house ->
+            HouseLocationAndRatings(
+                house,
+                reviewsCount.toString(),
+                formattedAverage.toString(),
+                navController
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Rooms and Availability
+        house?.let { RoomsAndAvailability(it) }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // House Amenities
+        house?.let {
+            HouseAmenities(
+                it, modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // House Description
+        house?.let { HouseOverview(it) }
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Available Rooms
+        InsideView(navController, context, houseID)
+
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Latest Reviews", style = CC.titleTextStyle())
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        val firstThreeReviews = reviews.take(3)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(10.dp))
-            house?.let { HouseTitleRow(house = it, textSize = textSize) }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Location and Ratings
-            house?.let { house ->
-                HouseLocationAndRatings(
-                    house,
-                    reviewsCount.toString(),
-                    formattedAverage.toString(),
-                    navController
-                )
+            firstThreeReviews.forEach { review ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    ReviewCard(review)
+                }
+                Spacer(modifier = Modifier.height(10.dp))
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Rooms and Availability
-            house?.let { RoomsAndAvailability(it) }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // House Amenities
-            house?.let {
-                HouseAmenities(
-                    it,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // House Description
-            house?.let { HouseOverview(it) }
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Available Rooms
-            InsideView(navController, context, houseID)
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Book Now
-            house?.let { BookNow(it, navController) }
-
-
         }
-    }
+        Spacer(modifier = Modifier.height(10.dp))
+        HorizontalDivider(
+            color = CC.secondaryColor(),
+            thickness = 1.dp
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Book Now
+        house?.let { BookNow(it, navController) }
+        Spacer(modifier = Modifier.height(20.dp))
+    }}
 }
 
 
