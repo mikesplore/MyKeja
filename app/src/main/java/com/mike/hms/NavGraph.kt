@@ -17,7 +17,7 @@ import com.mike.hms.houses.Houses
 import com.mike.hms.houses.addOrEditHouse.HouseForm
 import com.mike.hms.houses.bookHouse.HouseBookingScreen
 import com.mike.hms.houses.ratingsAndReviews.ReviewsScreen
-import com.mike.hms.houses.statement.TransactionsScreen
+import com.mike.hms.houses.transactions.TransactionsScreen
 import com.mike.hms.model.favorites.FavoriteViewModel
 import com.mike.hms.model.houseModel.HouseEntity
 import com.mike.hms.model.houseModel.HouseViewModel
