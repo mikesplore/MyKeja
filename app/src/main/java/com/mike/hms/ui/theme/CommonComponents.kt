@@ -45,7 +45,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -412,6 +415,43 @@ object CommonComponents {
 
     }
 
+    //Date picker by Local date
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun DatePickerLocalDate(
+        onDateSelected: (LocalDate) -> Unit,
+        onShowDatePickerChange: (Boolean) -> Unit
+    ) {
+        val datePickerState = rememberDatePickerState()
+        DatePickerDialog(
+            onDismissRequest = { onShowDatePickerChange(false) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onShowDatePickerChange(false)
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        val selectedDate = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
+                        onDateSelected(selectedDate) // Pass selected date to the callback
+                    }
+                }) {
+                    Text("OK", style = MaterialTheme.typography.bodyMedium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { onShowDatePickerChange(false) }) {
+                    Text("Cancel", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                showModeToggle = true
+            )
+        }
+
+    }
+
 
     data class MyCode(
         val id: String = UUID.randomUUID().toString(),
@@ -500,7 +540,7 @@ object CommonComponents {
         }
     }
 
-    fun generateReviewId(onCodeUpdated: (String) -> Unit){
+    fun generateReviewId(onCodeUpdated: (String) -> Unit) {
         updateAndGetCode("Reviews") { code ->
             val reviewId = "Rev$code"
             onCodeUpdated(reviewId)
