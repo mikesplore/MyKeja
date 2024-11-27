@@ -238,7 +238,7 @@ fun AuthenticatedUser(
 
 @Composable
 fun RowTopic(icon: ImageVector, text: String, navController: NavController, destination: String) {
-    val configuration = LocalConfiguration.current
+        val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
     Row(
