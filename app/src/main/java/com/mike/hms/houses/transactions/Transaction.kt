@@ -1,4 +1,4 @@
-package com.mike.hms.houses.statement
+package com.mike.hms.houses.transactions
 
 import android.content.Context
 import android.content.Intent
@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -87,7 +88,7 @@ fun TransactionsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Transactions",
+                        "Transaction History",
                         style = CC.titleTextStyle(),
                         modifier = Modifier.padding(start = 8.dp)
                     )
@@ -304,7 +305,7 @@ private fun TableRow(
                 TableCell(
                     formatNumber(transaction.amount.toInt()),
                     screenWidth,
-                    if (transaction.transactionType == TransactionType.ADDITION) Color.Green else Color.Red
+                    if (transaction.transactionType == TransactionType.ADDITION) Color(0xff347928) else Color(0xffC21010)
                 )
                 TableCell(CC.formatDateToShortDate(transaction.date), screenWidth)
                 Icon(
@@ -470,9 +471,10 @@ private fun TableCell(
         text = text,
         style = CC.contentTextStyle().copy(color = textColor, fontSize = textSize),
         modifier = Modifier
+
             .width(screenWidth / 4.5f)
             .padding(horizontal = 4.dp),
-        textAlign = TextAlign.Center,
+        textAlign = TextAlign.Start,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
@@ -559,7 +561,7 @@ fun SummaryTable(transactions: List<TransactionEntity>) {
                     Text(
                         text = formatNumber(totalAmountIn),
                         style = CC.contentTextStyle(),
-                        color = Color.Green
+                        color = Color(0xff347928)
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
@@ -570,7 +572,7 @@ fun SummaryTable(transactions: List<TransactionEntity>) {
                     Text(
                         text = formatNumber(totalAmountOut),
                         style = CC.contentTextStyle(),
-                        color = Color.Red
+                        color = Color(0xffC21010)
                     )
                 }
             }
@@ -593,7 +595,7 @@ fun SummaryTable(transactions: List<TransactionEntity>) {
                 Text(
                     text = formatNumber(balance),
                     style = CC.contentTextStyle(),
-                    color = if (balance >= 0) Color.Green else Color.Red
+                    color = if (balance >= 0) Color(0xff347928) else Color(0xffC21010)
                 )
             }
         }
