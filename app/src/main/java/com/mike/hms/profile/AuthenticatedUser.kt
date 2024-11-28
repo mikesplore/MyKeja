@@ -1,7 +1,6 @@
 package com.mike.hms.profile
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,8 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,96 +40,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
 import com.mike.hms.HMSPreferences
-import com.mike.hms.model.paymentMethods.CreditCardViewModel
-import com.mike.hms.model.paymentMethods.MpesaViewModel
-import com.mike.hms.model.paymentMethods.PayPalViewModel
-import com.mike.hms.model.transactions.TransactionViewModel
 import com.mike.hms.model.userModel.UserViewModel
-import com.mike.hms.profile.paymentMethods.PaymentMethodsSection
-import kotlinx.coroutines.delay
 import com.mike.hms.ui.theme.CommonComponents as CC
 
 @Composable
 fun AuthenticatedUser(
     navController: NavController,
-    context: Context = LocalContext.current
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
-    val creditCardViewModel: CreditCardViewModel = hiltViewModel()
-    val mpesaViewModel: MpesaViewModel = hiltViewModel()
-    val payPalViewModel: PayPalViewModel = hiltViewModel()
-    val transactionViewModel: TransactionViewModel = hiltViewModel()
 
-    val email = FirebaseAuth.getInstance().currentUser?.email
     val user by userViewModel.user.collectAsState()
-    val creditCard by creditCardViewModel.creditCard.collectAsState()
-    val mpesa by mpesaViewModel.mpesa.collectAsState()
-    val payPal by payPalViewModel.paypal.collectAsState()
 
-    listOf(
-        "Credit Card",
-        "PayPal",
-        "M-PESA"
-    )
-
-    remember { mutableStateOf<String?>("Credit Card") }
-    LaunchedEffect(HMSPreferences.userId.value) {
-        val maxRetries = 3
-        var attempt = 0
-
-        while (attempt < maxRetries) {
-            // Fetch the user by email
-            userViewModel.getUserByEmail(email!!)
-
-            // Fetch the M-PESA and PayPal entities
-            mpesaViewModel.getMpesa(HMSPreferences.userId.value)
-            payPalViewModel.getPayPal(HMSPreferences.userId.value)
-
-            Log.d(
-                "CardFetching",
-                "Attempt ${attempt + 1}: Fetching credit card for user ID: ${HMSPreferences.userId.value}"
-            )
-
-            // Fetch the credit card
-            creditCardViewModel.getCreditCard(HMSPreferences.userId.value)
-
-            // Check if the credit card is fetched (assuming creditCard is a state or flow)
-
-            if (creditCard != null) {
-                Log.d("CardFetching", "Credit card fetched successfully: $creditCard")
-                break
-            }
-
-            if (payPal != null) {
-                Log.d("CardFetching", "PayPal fetched successfully: $payPal")
-                break
-            }
-
-            if (mpesa != null) {
-                Log.d("CardFetching", "M-PESA fetched successfully: $mpesa")
-                break
-            }
-
-            attempt++
-            delay(1000L) // Wait for 1 second before retrying
-        }
-
-        if (creditCard == null) {
-            Log.d("CardFetching", "Failed to fetch credit card after $maxRetries attempts.")
-        }
-
-        if (payPal == null) {
-            Log.d("CardFetching", "Failed to fetch PayPal after $maxRetries attempts.")
-        }
-
-        if (mpesa == null) {
-            Log.d("CardFetching", "Failed to fetch M-PESA after $maxRetries attempts.")
-        }
+    LaunchedEffect(Unit) {
+        userViewModel.getUserByID(HMSPreferences.userId.value)
 
     }
-
 
     Column(
         modifier = Modifier
@@ -182,9 +105,9 @@ fun AuthenticatedUser(
             item {
                 RowTopic(
                     icon = Icons.Default.CreditCard,
-                    text = "Transaction History",
+                    text = "My Wallet",
                     navController = navController,
-                    destination = "transaction"
+                    destination = "wallet"
                 )
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
@@ -215,22 +138,7 @@ fun AuthenticatedUser(
             }
             item { Spacer(modifier = Modifier.height(20.dp)) }
 
-            // Payment Methods Section
-            user?.let { user ->
-                item {
-                    PaymentMethodsSection(
-                        userEntity = user,
-                        creditCard = creditCard,
-                        payPal = payPal,
-                        mpesa = mpesa,
-                        creditCardViewModel = creditCardViewModel,
-                        transactionViewModel = transactionViewModel,
-                        payPalViewModel = payPalViewModel,
-                        mpesaViewModel = mpesaViewModel,
-                        context = context
-                    )
-                }
-            }
+
         }
     }
 }
@@ -238,7 +146,7 @@ fun AuthenticatedUser(
 
 @Composable
 fun RowTopic(icon: ImageVector, text: String, navController: NavController, destination: String) {
-        val configuration = LocalConfiguration.current
+    val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
     Row(
@@ -270,7 +178,7 @@ fun RowTopic(icon: ImageVector, text: String, navController: NavController, dest
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = CC.textColor(),
+                tint = CC.primaryColor(),
                 modifier = Modifier.size(screenWidth * 0.05f)
             )
         }
