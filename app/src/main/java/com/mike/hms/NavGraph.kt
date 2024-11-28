@@ -24,6 +24,7 @@ import com.mike.hms.model.houseModel.HouseViewModel
 import com.mike.hms.model.paymentMethods.CreditCardViewModel
 import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.profile.ManageAccount
+import com.mike.hms.profile.WalletScreen
 
 @Composable
 fun NavGraph(
@@ -108,6 +109,10 @@ fun NavGraph(
 
         composable("reviews") {
             ReviewsScreen(navController)
+        }
+
+        composable("wallet"){
+            WalletScreen(context, navController)
         }
 
         composable("houseGallery/{houseID}", arguments = listOf(navArgument("houseID") {
