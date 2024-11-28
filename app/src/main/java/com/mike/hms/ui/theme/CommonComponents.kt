@@ -33,11 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.database.DataSnapshot
@@ -267,9 +269,15 @@ object CommonComponents {
     }
 
     @Composable
-    fun getScreenWidth(): Dp {
+    fun screenWidth(): Dp {
         return LocalConfiguration.current.screenWidthDp.dp
 
+    }
+    
+    @Composable
+    fun textSize(): TextUnit {
+        val density= LocalDensity.current
+        return with(density){(screenWidth()*0.05f).toSp()}
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -358,7 +366,7 @@ object CommonComponents {
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(16.dp)
-                .width(getScreenWidth() * 0.8f),
+                .width(screenWidth() * 0.8f),
             tonalElevation = 8.dp
         )
     }
