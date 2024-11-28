@@ -68,7 +68,8 @@ fun PaymentMethodsSection(
     transactionViewModel: TransactionViewModel,
     payPalViewModel: PayPalViewModel,
     mpesaViewModel: MpesaViewModel,
-    context: Context
+    context: Context,
+    modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var showAddPaymentMethod by remember { mutableStateOf(false) }
@@ -113,18 +114,10 @@ fun PaymentMethodsSection(
     )
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp)
     ) {
-        Text(
-            text = "Payment Methods",
-            style = CC.titleTextStyle(),
-            modifier = Modifier.align(Alignment.Start)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         // Payment Method Tabs
         Row(
             modifier = Modifier
@@ -162,42 +155,6 @@ fun PaymentMethodsSection(
                             }
                         }
                     })
-                    HorizontalDivider(
-                        color = CC.textColor().copy(alpha = 0.2f),
-                        thickness = 1.dp
-                    )
-
-                    //Card Sub Menu
-                    Spacer(modifier = Modifier.height(10.dp))
-                    CardSubMenu(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        displayCvvDialog = { displayCvvDialog = !displayCvvDialog },
-                        text = "Display Card Details",
-                        icon = Icons.Filled.RemoveRedEye
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    CardSubMenu(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        displayCvvDialog = { displayCardBalance = !displayCardBalance },
-                        text = "Display Card Balance",
-                        icon = Icons.Outlined.Money
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    CardSubMenu(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        displayCvvDialog = { displayAddFundsDialog = !displayAddFundsDialog },
-                        text = "Add Funds",
-                        icon = Icons.Filled.AttachMoney
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    HorizontalDivider(
-                        color = CC.textColor().copy(alpha = 0.2f),
-                        thickness = 1.dp
-                    )
 
                 } else {
                     PaymentMethodEmptyState(
