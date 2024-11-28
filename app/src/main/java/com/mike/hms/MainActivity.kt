@@ -22,6 +22,7 @@ import com.mike.hms.model.userModel.UserViewModel
 import com.mike.hms.ui.theme.HostelManagementSystemTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.getValue
+import com.mike.hms.profile.WalletScreen
 import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Your content goes here
 
-                NavGraph(houseViewModel, houses.value, favoriteViewModel, userViewModel, creditCardViewModel, this)
+              NavGraph(houseViewModel, houses.value, favoriteViewModel, userViewModel, creditCardViewModel, this)
             }
         }
     }
