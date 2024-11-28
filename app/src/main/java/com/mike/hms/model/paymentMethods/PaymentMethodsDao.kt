@@ -31,6 +31,9 @@ interface PayPalDao {
 
     @Query("DELETE FROM paypal WHERE userId = :userId")
     suspend fun deletePayPal(userId: String)
+
+    @Query("UPDATE credit_cards SET balance = :balance WHERE userId = :userId")
+    suspend fun updatePayPalBalance(userId: String, balance: String)
 }
 
 @Dao
